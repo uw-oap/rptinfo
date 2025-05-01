@@ -40,6 +40,8 @@ class Rpt_Info_Admin {
 	 */
 	private $version;
 
+    private $option_name = 'rpt_info';
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -100,4 +102,74 @@ class Rpt_Info_Admin {
 
 	}
 
+    /**
+     * Add an options page under the Settings submenu
+     *
+     * @since  1.0.0
+     */
+    public function add_options_page()
+    {
+        $this->plugin_screen_hook_suffix = add_options_page(
+            __( 'RPTinfo Settings', 'rptinfo' ),
+            __( 'RPTinfo', 'rptinfo' ),
+            'manage_options',
+            $this->plugin_name,
+            array( $this, 'display_options_page' )
+        );
+    }
+
+    /**
+     * Render the options page for plugin
+     *
+     * @since  1.0.0
+     */
+    public function display_options_page()
+    {
+        include_once 'partials/rpt-info-admin-display.php';
+    }
+
+    public function register_settings()
+    {
+        // General Interfolio settings
+        add_settings_section(
+            $this->option_name . '_interfolio_setup',
+            __( 'RPT', 'rptinfo' ),
+            array( $this, $this->option_name . '_interfolio_setup_cb' ),
+            $this->plugin_name
+        );
+        add_settings_field(
+            $this->option_name . '_rpt_site_url',
+            __( 'RPT home URL', 'rptinfo' ),
+            array( $this, $this->option_name . '_rpt_site_url_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_interfolio_setup',
+            array( 'label_for' => $this->option_name . '_rpt_site_url' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_rpt_site_url' );
+    }
+
+    /**
+     * Render the text for the Interfolio section
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_interfolio_setup_cb() {
+        echo '<p>' . __( 'Settings dealing with Interfolio.', 'rptinfo' ) . '</p>';
+    }
+
+    /**
+     * Setting callback function
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_rpt_site_url_cb()
+    {
+        $site_url = get_option( $this->option_name . '_rpt_site_url' );
+        echo '<input type="text" name="' . $this->option_name . '_rpt_site_url'
+            . '" id="' . $this->option_name . '_rpt_site_url'
+            . '" size="100'
+            . '" value="' . $site_url
+            . '">';
+        echo '<p><em>Link to the Interfolio RPT home page.</em></p>';
+    }
 }
