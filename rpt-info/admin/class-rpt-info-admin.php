@@ -42,6 +42,8 @@ class Rpt_Info_Admin {
 
     private $option_name = 'rpt_info';
 
+    private $rpt_db = NULL;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -53,7 +55,10 @@ class Rpt_Info_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+        $db_name = get_option('rpt_info_database_name');
+        if ( $db_name) {
+            $this->rpt_db = new Rpt_Info_DB($db_name);
+        }
 	}
 
 	/**
@@ -162,6 +167,23 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_database_name' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_database_name' );
+        // Template type settings
+        add_settings_section(
+            $this->option_name . '_template_types_section',
+            __( 'Template types', 'rptinfo' ),
+            array( $this, $this->option_name . '_template_types_section_cb' ),
+            $this->plugin_name
+        );
+        add_settings_field(
+            $this->option_name . '_template_types',
+            __( 'Enable/disable', 'rptinfo' ),
+            array( $this, $this->option_name . '_template_types_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_template_types_section',
+            array( 'label_for' => $this->option_name . '_template_types' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_template_types' );
+
     }
 
     /**
@@ -205,13 +227,48 @@ class Rpt_Info_Admin {
      */
     public function rpt_info_database_name_cb()
     {
-        $site_url = get_option( $this->option_name . '_database_name' );
+        $database_name = get_option( $this->option_name . '_database_name' );
         echo '<input type="text" name="' . $this->option_name . '_database_name'
             . '" id="' . $this->option_name . '_database_name'
             . '" size="100'
-            . '" value="' . $site_url
+            . '" value="' . $database_name
             . '">';
-        echo '<p><em>Name of database to use for RPT info.</em></p>';
+        echo '<p><em>Name of database to use for RPT info';
+        if ( $this->rpt_db ) {
+            echo ' (connected)';
+        }
+        else {
+            echo ' (not connected)';
+        }
+        echo '.</em></p>';
+    }
+
+    /**
+     * Render the text for the template types section
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_template_types_section_cb() {
+        echo '<p>' . __( 'Settings dealing with template types.', 'rptinfo' ) . '</p>';
+    }
+
+    /**
+     * Setting callback function - template types
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_template_types_cb()
+    {
+        $template_type_list = $this->rpt_db->get_template_type_list();
+        echo '<table class="form-table">';
+        foreach ( $template_type_list as $id => $template_type ) {
+            echo '<tr>';
+            echo '<td>' . $template_type->TemplateTypeName . '</td>';
+            echo '<td>' . $template_type->InUse . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+        echo '<p><em>Choose which template types to enable.</em></p>';
     }
 
 }
