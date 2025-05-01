@@ -133,7 +133,7 @@ class Rpt_Info_Admin {
         // General Interfolio settings
         add_settings_section(
             $this->option_name . '_interfolio_setup',
-            __( 'RPT', 'rptinfo' ),
+            __( 'Interfolio', 'rptinfo' ),
             array( $this, $this->option_name . '_interfolio_setup_cb' ),
             $this->plugin_name
         );
@@ -146,6 +146,22 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_rpt_site_url' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_rpt_site_url' );
+        // Database settings
+        add_settings_section(
+            $this->option_name . '_database_setup',
+            __( 'Database', 'rptinfo' ),
+            array( $this, $this->option_name . '_database_setup_cb' ),
+            $this->plugin_name
+        );
+        add_settings_field(
+            $this->option_name . '_database_name',
+            __( 'Database name', 'rptinfo' ),
+            array( $this, $this->option_name . '_database_name_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_database_setup',
+            array( 'label_for' => $this->option_name . '_database_name' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_database_name' );
     }
 
     /**
@@ -158,7 +174,7 @@ class Rpt_Info_Admin {
     }
 
     /**
-     * Setting callback function
+     * Setting callback function - RPT site URL
      *
      * @since  1.0.0
      */
@@ -172,4 +188,30 @@ class Rpt_Info_Admin {
             . '">';
         echo '<p><em>Link to the Interfolio RPT home page.</em></p>';
     }
+
+    /**
+     * Render the text for the database section
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_database_setup_cb() {
+        echo '<p>' . __( 'Settings dealing with the local database.', 'rptinfo' ) . '</p>';
+    }
+
+    /**
+     * Setting callback function - RPT site URL
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_database_name_cb()
+    {
+        $site_url = get_option( $this->option_name . '_database_name' );
+        echo '<input type="text" name="' . $this->option_name . '_database_name'
+            . '" id="' . $this->option_name . '_database_name'
+            . '" size="100'
+            . '" value="' . $site_url
+            . '">';
+        echo '<p><em>Name of database to use for RPT info.</em></p>';
+    }
+
 }
