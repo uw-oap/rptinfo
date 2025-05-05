@@ -33,4 +33,20 @@ class Rpt_Info_DB
         return $result;
     }
 
+    public function update_template_types( $update_list )
+    {
+        $result = 0;
+        foreach ( $update_list as $template_type_id => $in_use ) {
+            $query_result = $this->rpt_db->update('RptTemplateType',
+                array('InUse' => $in_use),
+                array('RptTemplateTypeID' => $template_type_id));
+            $this->last_query = $this->rpt_db->last_error;
+            if ( $query_result === FALSE ) {
+                return 0;
+            }
+            $result++;
+        }
+        return $result;
+    }
+
 }

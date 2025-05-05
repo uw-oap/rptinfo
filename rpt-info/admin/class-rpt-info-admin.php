@@ -44,6 +44,8 @@ class Rpt_Info_Admin {
 
     private $rpt_db = NULL;
 
+    private $template_types = [];
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -130,6 +132,8 @@ class Rpt_Info_Admin {
      */
     public function display_options_page()
     {
+        $this->template_types = $this->rpt_db->get_template_type_list();
+        $template_types = $this->template_types;
         include_once 'partials/rpt-info-admin-display.php';
     }
 
@@ -167,23 +171,6 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_database_name' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_database_name' );
-        // Template type settings
-        add_settings_section(
-            $this->option_name . '_template_types_section',
-            __( 'Template types', 'rptinfo' ),
-            array( $this, $this->option_name . '_template_types_section_cb' ),
-            $this->plugin_name
-        );
-        add_settings_field(
-            $this->option_name . '_template_types',
-            __( 'Enable/disable', 'rptinfo' ),
-            array( $this, $this->option_name . '_template_types_cb' ),
-            $this->plugin_name,
-            $this->option_name . '_template_types_section',
-            array( 'label_for' => $this->option_name . '_template_types' )
-        );
-        register_setting( $this->plugin_name, $this->option_name . '_template_types' );
-
     }
 
     /**
@@ -252,23 +239,24 @@ class Rpt_Info_Admin {
         echo '<p>' . __( 'Settings dealing with template types.', 'rptinfo' ) . '</p>';
     }
 
-    /**
-     * Setting callback function - template types
-     *
-     * @since  1.0.0
-     */
-    public function rpt_info_template_types_cb()
+    public function process_template_type_updates()
     {
-        $template_type_list = $this->rpt_db->get_template_type_list();
-        echo '<table class="form-table">';
-        foreach ( $template_type_list as $id => $template_type ) {
-            echo '<tr>';
-            echo '<td>' . $template_type->TemplateTypeName . '</td>';
-            echo '<td>' . $template_type->InUse . '</td>';
-            echo '</tr>';
+        if ( ! empty( $_POST ) ) {
+            $update_list = [];
+/*            $template_type_list = $this->rpt_db->get_template_type_list();
+            foreach ($template_type_list as $id => $template_type) {
+                $new_value = sanitize_text_field($_POST['InUse-' . $id]);
+                if ($new_value != $template_type->InUse) {
+                    $update_list[$id] = $new_value;
+                }
+            }
+            if (!empty($update_list)) {
+                $result = $this->rpt_db->update_template_types($update_list);
+            } */
+            wp_safe_redirect(add_query_arg(array('page' => 'rpt-info'),
+                home_url('wp-admin/options-general.php/')));
+            exit;
         }
-        echo '</table>';
-        echo '<p><em>Choose which template types to enable.</em></p>';
     }
 
 }
