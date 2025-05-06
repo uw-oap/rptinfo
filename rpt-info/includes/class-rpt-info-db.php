@@ -38,7 +38,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
-            $result = new Pt_Info_Cycle($result_row);
+            $result = new Rpt_Info_Cycle($result_row);
         }
         return $result;
     }
@@ -134,5 +134,108 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         return $result;
     }
 
+    public function get_promotion_case_for_candidate(int $track_id)
+    {
+        $result = NULL;
+        $query = "SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID, CaseStatus,
+            LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
+            UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, 
+            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName,
+            EffectiveDate, HasJoint, HasSecondary FROM RptPromotionDetails where UWODSAppointmentTrackKey = '"
+            . $track_id . "'";
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Pt_Info_Promotion($result_row);
+        }
+        return $result;
+    }
+
+    public function get_promotion_from_track(int $track_id)
+    {
+        $result = NULL;
+        $query = $this->rpt_db->prepare("SELECT '0' CaseID, '0' InterfolioCaseID,  '0' InterfolioTemplateID,  InterfolioUserID CandidateID,
+	LegalName, '0' InitiatorID, '' InitiatorName, UWODSPersonKey CandidateKey, UWODSAppointmentTrackKey, EmployeeID,
+	AppointmentType, UWODSUnitKey, UnitName, UWODSRankKey CurrentRankKey, RankName CurrentRankName, 'N/A' CaseStatus,
+    InterfolioUnitID, Level1InterfolioUnitID LevelOneID, Level1UnitName LevelOneName, PromotionTypeID, PromotionTypeName,
+	'0' TargetRankKey, '' TargetRankName, NULL DueDate, NULL EffectiveDate, '' HasJoint, '' HasSecondary,
+	ServicePeriod, TrackTypeName, RankCategory, ParentID
+FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Promotion($result_row);
+        }
+        return $result;
+    }
+
+    public function get_promotion_by_id(int $case_id)
+    {
+        $result = NULL;
+        $query = $this->rpt_db->prepare("SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID, CaseStatus, InterfolioUnitID,
+            LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
+            UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
+            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName, ServicePeriod,
+            EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
+            Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
+            Vote2Negative, Vote2Absent, Vote2Abstaining FROM RptPromotionDetails where CaseID = %s", $case_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Promotion($result_row);
+        }
+        return $result;
+    }
+
+    public function get_other_appointments(Rpt_Info_Case $case_obj )
+    {
+        $query = $this->rpt_db->prepare("select distinct UWODSAppointmentTrackKey, UWODSAppointmentKey, UWODSUnitKey, 
+    UnitName, UWODSRankKey, RankName, AppointmentType from CurrentPromotable 
+    where UWODSPersonKey = %s and UWODSAppointmentTrackKey != %s",
+            $case_obj->CandidateKey, $case_obj->UWODSAppointmentTrackKey);
+        $this->last_query = $query;
+//        echo $query; exit;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $case_obj->OtherAppointments[$row->UWODSAppointmentTrackKey] = $row;
+        }
+    }
+
+    public function get_valid_templates_for_case( Rpt_Info_Case $case_obj)
+    {
+        $result = [];
+        $query = "select RptTemplateID, TemplateName, UnitName from RptTemplateDetails 
+where (InterfolioUnitID = '" . $case_obj->InterfolioUnitID . "' or InterfolioUnitID = '" . $case_obj->ParentID
+            . "' or InterfolioUnitID = '" . $case_obj->LevelOneID
+            . "' or InterfolioUnitID = '29153') and InUse = 'Yes' and RptTemplateTypeID = '"
+            . $case_obj->RptTemplateTypeID . "'";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['InterfolioTemplateID']] = $row;
+        }
+        return $result;
+    }
+
+    public function get_valid_promotion_target_ranks($source_rank_key) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select TargetUWODSRankKey, TargetRankName, ActionType from ValidPromotion 
+where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['TargetUWODSRankKey']] = $row;
+        }
+        return $result;
+    }
+
+    public function get_promotion_type_list( $rank_category)
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select ID, PromotionCategoryName from PromotionCategory where RankCategory = %s", $rank_category);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['ID']] = $row['PromotionCategoryName'];
+        }
+        return $result;
+    }
 
 }

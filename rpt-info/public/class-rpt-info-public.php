@@ -50,6 +50,9 @@ class Rpt_Info_Public
     private $active_page = 'home';
 
     private $active_template_type = '';
+    private $current_cycle = NULL;
+
+    private $rpt_case_review_url = '';
 
     /**
      * Initialize the class and set its properties.
@@ -210,12 +213,12 @@ class Rpt_Info_Public
             echo '<div class="btn-group mr-2" role="group" aria-label="Area sub-pages">';
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
                     'ay' => $this->current_cycle->AcademicYear,
-                    'rpt_page' => 'cases'), home_url($wp->request)))
+                    'rpt_page' => 'case'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
             echo '">Cases</a>';
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
                     'ay' => $this->current_cycle->AcademicYear,
-                    'rpt_page' => 'templates'), home_url($wp->request)))
+                    'rpt_page' => 'template'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
             echo '">Templates</a>';
             echo '</div>'; // button group
@@ -253,12 +256,12 @@ class Rpt_Info_Public
         $this->show_main_menu();
         echo '<p><strong>Selected Academic Year: '
             . $this->current_cycle->Display . '</strong></p>';
-        echo '<p><strong>Template Type: '
+/*        echo '<p><strong>Template Type: '
             . $this->active_template_type . '</strong></p>';
         echo '<p><strong>Page: '
             . $this->active_page . '</strong></p>';
         echo '<p><strong>Case ID: '
-            . $case_id . '</strong></p>';
+            . $case_id . '</strong></p>'; */
         echo '</div>';
         echo '</div>';
         switch ( $this->active_template_type ) {
@@ -267,10 +270,10 @@ class Rpt_Info_Public
             case '2' : // promotions
             case '5': // sabbaticals
                 switch ( $this->active_page ) {
-                    case 'cases':
+                    case 'case':
                         $this->case_page();
                         break;
-                    case 'templates':
+                    case 'template':
                         $this->template_page();
                         break;
                 }
@@ -314,8 +317,8 @@ class Rpt_Info_Public
 
     private function case_page()
     {
-        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
-            . ' Case maintenance page</p>';
+/*        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
+            . ' Case maintenance page</p>'; */
         $case_id = get_query_var('case_id', '0');
         $candidate_id = get_query_var('candidate_id', '0');
         $track_id = get_query_var('track_id', '0');
@@ -326,7 +329,7 @@ class Rpt_Info_Public
             $this->search_form();
         }
         elseif ( $track_id > '0' ) {
-//            $this->case_edit($case_id, $track_id);
+            $this->case_edit($case_id, $track_id);
         }
     }
 
@@ -360,7 +363,7 @@ class Rpt_Info_Public
         echo '</div>'; // col 6
         echo '<div class="col-6 text-right">';
         echo '<a href="'
-            . esc_url(add_query_arg(array('rpt_page' => 'cases', 'case_id' => 'new',
+            . esc_url(add_query_arg(array('rpt_page' => 'case', 'case_id' => 'new',
                 'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => $this->active_template_type), home_url($wp->request)))
             . '" class="btn btn-primary">Initiate a new case</a>';
@@ -468,26 +471,262 @@ class Rpt_Info_Public
         check_ajax_referer( 'rpt_info_search' );
         $search_string = sanitize_text_field($_POST['searchstring']);
         $user_netid = sanitize_text_field($_POST['user_id']);
-        $user_units = array_keys($this->rpt_db->get_user_units($user_netid));
+        $user_obj = $this->rpt_db->get_rpt_user_info($user_netid);
+        $user_units = array_keys($user_obj->Units);
         $unit_query = $this->rpt_db->get_last_query();
         $template_type = intval($_POST['template_type']);
+        $search_result = [];
         switch ( $template_type ) {
             case '2':
                 $search_result = $this->rpt_db->promotion_candidate_search($user_units, $search_string);
                 break;
         }
-
+        $sql = '';
+        $sql = $this->rpt_db->get_last_query();
         $response = [
             'status' => 'ok',
             'searchstring' => $search_string,
-            'query' => $this->rpt_db->get_last_query(),
+            'query' => $sql,
             'data' => $search_result
         ];
         wp_send_json($response);
     }
 
+    /**
+     * case_edit
+     *      page/form for creating and editing case records
+     *
+     * @param $case_id
+     * @param $candidate_id
+     * @return void
+     */
+    private function case_edit( int $case_id = 0, int $track_id = 0)
+    {
+        global $wp;
+        $case_obj = NULL;
+        if ( ( $track_id ) && ( ! $case_id ) ) { // candidate but no case - see if there is one
+            switch ( $this->active_template_type) {
+                case '2': // promotion
+                    $case_obj = $this->rpt_db->get_promotion_case_for_candidate($track_id);
+                    break;
+                case '5': // sabbatical
+                    //
+                    break;
+            }
+            if ( $case_obj ) { // case already exists
+                $case_id = $case_obj->CaseID;
+            }
+            else { // initialize object with known info for candidate
+                switch ( $this->active_template_type) {
+                    case '2': // promotion
+                        $case_obj = $this->rpt_db->get_promotion_from_track($track_id);
+                        break;
+                    case '5': // sabbatical
+                        //
+                        break;
+                }
+                $case_obj->InitiatorID = $this->rpt_user->InterfolioUserID;
+            }
+        }
+        elseif ( $case_id ) { // incoming case id - just get it
+            switch ( $this->active_template_type) {
+                case '2': // promotion
+                    $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
+                    break;
+                case '5': // sabbatical
+                    //
+                    break;
+            }
+        }
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+        $this->rpt_db->get_other_appointments($case_obj);
+        $case_obj->set_calculated_values();
+        $this->case_form($case_obj);
+    }
 
+    private function case_form( Rpt_Info_Case $case_obj )
+    {
+        global $wp;
+        echo'<div class="row">';
+        echo '<div class="col-12">';
+        if ( $case_obj ) {
+            if ( $case_obj->InterfolioCaseID == '0')
+            {
+                echo '<p><strong>Initiating new case</strong></p>';
+                echo '<p>Please complete this page and <strong>Submit</strong> the information to initiate '
+                    . 'the creation of an RPT case for a candidate. The information from this page will '
+                    . 'be added to the case for reference. For an overview of the RPT '
+                    . 'case review process, see <a href="' . $this->rpt_case_review_url
+                    . '" alt="RPT case review instructions">this guide</a></p>';
+            }
+            // display main case fields in card
+            echo '<div class="row">';
+            echo '<div class="col-6">';
+            echo '<div class="card">';
+            echo '<div class="card-body">';
+            echo '<h4 class="card-title">Candidate info</h4>';
+            echo '<p class="card-subtitle mb-2 text-muted">';
+            echo "Please review the candidate's Workday information below. If any data is incorrect, make the "
+                . 'change in Workday. Once updated, return to this page to initiate the case. <em>Do not</em> '
+                . 'initiate a case with incorrect information.</p>';
+            echo '<dl class="ptinfo-list">';
+            echo '<dt>Employee ID</dt>';
+            echo '<dd>' . $case_obj->EmployeeID . '</dd>';
+            echo '<dt>Name</dt>';
+            echo '<dd>' . $case_obj->LegalName . '</dd>';
+            echo '<dt>Appointment type</dt>';
+            echo '<dd>' . $case_obj->AppointmentType . '</dd>';
+            echo '<dt>S/C/C</dt>';
+            echo '<dd>' . $case_obj->LevelOneName . '</dd>';
+            echo '<dt>Appointing unit</dt>';
+            echo '<dd>' . $case_obj->UnitName . '</dd>';
+            echo '<dt>Current rank</dt>';
+            echo '<dd>' . $case_obj->CurrentRankName . '</dd>';
+            echo '<dt>Track type</dt>';
+            echo '<dd>' . $case_obj->TrackTypeName . '</dd>';
+            if (count($case_obj->OtherAppointments)) {
+                echo '<dt>Other appointments</dt>';
+                echo '<dd><ul>';
+                foreach ($case_obj->OtherAppointments as $appointment) {
+                    echo '<li>' . $appointment->RankName . ' in ' . $appointment->UnitName . ' ('
+                        . $appointment->AppointmentType . ')</li>';
+                }
+                echo '</ul></dd>';
+            }
+            echo '</dl>';
+            echo '</div>'; // card body
+            echo '</div>'; // card
+            echo '</div>'; // col 6
+            // template type specific fields in another card
+            echo '<div class="col-6">';
+            switch ( $this->active_template_type ) {
+                case '2':
+                    $this->promotion_form( $case_obj );
+                    break;
+                case '5':
+                    break;
+            }
+            echo '</div>'; // col 6
+            echo '</div>'; // row
+        }
+        else {
+            echo '<p><em>Error loading case info</em></p>';
+        }
+        echo '</div>'; // col 12
+        echo '</div>'; // row
+    }
 
+    private function promotion_form( Rpt_Info_Case $case_obj )
+    {
+        global $wp;
+        $target_rank_list = $this->rpt_db->get_valid_promotion_target_ranks($case_obj->CurrentRankKey);
+        $promotion_type_list = $this->rpt_db->get_promotion_type_list($case_obj->RankCategory);
+        $template_list = $this->rpt_db->get_valid_templates_for_case($case_obj);
+        echo '<div class="card">';
+        echo '<div class="card-body">';
+        echo '<h4 class="card-title">Promotion information</h4>';
+        echo '<p class="card-subtitle mb-2 text-muted">Please review these '
+            . 'selections and update as needed.</p>';
+        echo '<form id="rptinfo_promotion_form" name="rptinfo_promotion_form" action="'
+            . esc_url(admin_url('admin-post.php'))
+            . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
+        echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
+        echo rpt_form_hidden_field('InterfolioCaseID', $case_obj->InterfolioCaseID);
+        echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
+        echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
+        echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
+        echo rpt_form_hidden_field('InitiatorID', $case_obj->InitiatorID);
+        echo rpt_form_hidden_field('UWODSAppointmentTrackKey', $case_obj->UWODSAppointmentTrackKey);
+        echo rpt_form_hidden_field('UWODSUnitKey', $case_obj->UWODSUnitKey);
+        echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
+        echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
+        echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
+            'Proposed rank', $target_rank_list, '', FALSE,
+            'form-control', '','', TRUE);
+        echo rpt_form_date_select('EffectiveDate',
+            $case_obj->propose_effective_date($this->current_cycle),
+            'Effective date', FALSE,
+            'form-control', FALSE, FALSE);
+        echo rpt_form_dropdown_list('PromotionTypeID', $case_obj->PromotionTypeID, 'Promotion type',
+            $promotion_type_list, '', FALSE, 'form-control', '', '');
+        echo rpt_template_select('InterfolioTemplateID', $case_obj->InterfolioTemplateID, 'RPT Template',
+            $template_list, FALSE, 'form-control', ( count($template_list) > 1) ? 'Select...' : '',
+            'Choose which template to use', TRUE);
+        echo '<div class="form-goup row">';
+        echo '<div class="col-12">';
+        if ( count($template_list) > 0 ) {
+            echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
+        }
+        else {
+            echo '<p><strong>No valid template found for candidate unit. Please make sure there is '
+                    . 'a template available before initiating a case.</strong></p>';
+        }
+        echo '<a href="' . esc_url(add_query_arg(array('pt_function' => 'case'), home_url($wp->request)))
+            . '" class="btn btn-outline-secondary">Cancel</a>';
+        echo '</div>'; // form group row
+        echo '</div>'; // col 12
+        echo '</form>';
+        echo '</div>'; // card body
+        echo '</div>'; // card
+    }
+
+    private function sabbatical_form( Rpt_Info_Case $case_obj )
+    {
+        global $wp;
+        $template_list = $this->rpt_db->get_valid_templates_for_case($case_obj);
+        echo '<div class="card">';
+        echo '<div class="card-body">';
+        echo '<h4 class="card-title">Sabbatical information</h4>';
+        echo '<p class="card-subtitle mb-2 text-muted">Please review these '
+            . 'selections and update as needed.</p>';
+        echo '<form id="rptinfo_promotion_form" name="rptinfo_promotion_form" action="'
+            . esc_url(admin_url('admin-post.php'))
+            . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
+        echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
+        echo rpt_form_hidden_field('InterfolioCaseID', $case_obj->InterfolioCaseID);
+        echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
+        echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
+        echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
+        echo rpt_form_hidden_field('InitiatorID', $case_obj->InitiatorID);
+        echo rpt_form_hidden_field('UWODSAppointmentTrackKey', $case_obj->UWODSAppointmentTrackKey);
+        echo rpt_form_hidden_field('UWODSUnitKey', $case_obj->UWODSUnitKey);
+        echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
+        echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
+        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
+        echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_template_select('InterfolioTemplateID', $case_obj->InterfolioTemplateID, 'RPT Template',
+            $template_list, FALSE, 'form-control', ( count($template_list) > 1) ? 'Select...' : '',
+            'Choose which template to use', TRUE);
+        echo '<div class="form-goup row">';
+        echo '<div class="col-12">';
+        if ( count($template_list) > 0 ) {
+            echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
+        }
+        else {
+            echo '<p><strong>No valid template found for candidate unit. Please make sure there is '
+                . 'a template available before initiating a case.</strong></p>';
+        }
+        echo '<a href="' . esc_url(add_query_arg(array('pt_function' => 'case'), home_url($wp->request)))
+            . '" class="btn btn-outline-secondary">Cancel</a>';
+        echo '</div>'; // form group row
+        echo '</div>'; // col 12
+        echo '</form>';
+        echo '</div>'; // card body
+        echo '</div>'; // card
+    }
+
+    /* ********************** functions dealing with templates ********************** */
+
+    /**
+     * template_page
+     *      main page to control template functions
+     *
+     * @return void
+     */
     private function template_page()
     {
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
