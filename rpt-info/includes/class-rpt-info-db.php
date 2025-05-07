@@ -77,26 +77,21 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
 
     /** ******************* user functions ********************************** */
 
-    public function get_rpt_user_info( $netid )
+    public function get_rpt_user_info( $netid ) : Rpt_Info_User
     {
-        $result = new Pt_Info_User($netid);
+        $user_obj = new Rpt_Info_User($netid);
         $query = $this->rpt_db->prepare("select InterfolioUserID, UWODSPersonKey, UWNetID, FirstName, LastName,
  InterfolioUnitID, UnitName, UnitType from RptUserUnitDetails where IsActive = 'Yes' and UWNetID = %s", $netid);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
-            $result->InterfolioUserID = $row->InterfolioUserID;
-            $result->UWODSPersonKey = $row->UWODSPersonKey;
-            $result->DisplayName = $row->LastName . ', ' . $row->FirstName;
-            $result->Units[$row->InterfolioUnitID] = array(
-                'UnitName' => $row->UnitName,
-                'UnitType' => $row->UnitType);
+            $user_obj->update_from_database($row);
         }
-        return $result;
+        return $user_obj;
     }
 
     /** ******************* case functions ********************************** */
 
-    public function get_promotion_cases_for_user( Pt_Info_User $user_obj ) : array
+    public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
         $query = "SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID, CaseStatus,
@@ -111,20 +106,21 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         ;
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
-            $result[$row->CaseID] = new Pt_Info_Case($row);
+            $result[$row->CaseID] = new Rpt_Info_Case($row);
         }
         return $result;
     }
 
-    public function promotion_candidate_search($user_units, $search_string) : array
+    public function promotion_candidate_search( Rpt_Info_User $user_obj, $search_string) : array
     {
         $result = [];
         $search_terms = explode(' ', $search_string);
         $query = "select InterfolioUserID, EmployeeID, LegalName, RankName, UnitName, AppointmentType, 
        UWODSAppointmentTrackKey, CaseStatus, CaseID from CurrentPromotable where (InterfolioUnitID in ("
-            . implode(',', $user_units) . ") or ParentID in (" . implode(',', $user_units)
-            . ") or Level1InterfolioUnitID in (". implode(',', $user_units)
-            . ") or '28343' in (". implode(',', $user_units)
+            . implode(',', array_keys($user_obj->Units)) . ") or ParentID in ("
+            . implode(',', array_keys($user_obj->Units))
+            . ") or Level1InterfolioUnitID in (". implode(',', array_keys($user_obj->Units))
+            . ") or '28343' in (". implode(',', array_keys($user_obj->Units))
             . ")) and (AppointmentType in ('Primary','Joint'))";
         foreach ($search_terms as $term) {
             $query .= " and (SearchText like '%" . $term . "%')";
@@ -148,7 +144,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
-            $result = new Pt_Info_Promotion($result_row);
+            $result = new Rpt_Info_Promotion($result_row);
         }
         return $result;
     }
@@ -189,7 +185,7 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         return $result;
     }
 
-    public function get_other_appointments(Rpt_Info_Case $case_obj )
+    public function get_other_appointments( Rpt_Info_Case $case_obj )
     {
         $query = $this->rpt_db->prepare("select distinct UWODSAppointmentTrackKey, UWODSAppointmentKey, UWODSUnitKey, 
     UnitName, UWODSRankKey, RankName, AppointmentType from CurrentPromotable 

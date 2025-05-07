@@ -41,16 +41,17 @@ class Rpt_Info_Public
      */
     private $version;
 
-    private $rpt_db = NULL;
+    private Rpt_Info_DB $rpt_db;
 
-    private $rpt_user = NULL;
+    private $wordpress_user;
+    private Rpt_Info_User $rpt_user;
 
     private $template_types = [];
 
     private $active_page = 'home';
 
     private $active_template_type = '';
-    private $current_cycle = NULL;
+    private Rpt_Info_Cycle $current_cycle;
 
     private $rpt_case_review_url = '';
 
@@ -270,12 +271,12 @@ class Rpt_Info_Public
         $this->show_main_menu();
         echo '<p><strong>Selected Academic Year: '
             . $this->current_cycle->Display . '</strong></p>';
-/*        echo '<p><strong>Template Type: '
+        echo '<p><strong>Template Type: '
             . $this->active_template_type . '</strong></p>';
         echo '<p><strong>Page: '
             . $this->active_page . '</strong></p>';
         echo '<p><strong>Case ID: '
-            . $case_id . '</strong></p>'; */
+            . $case_id . '</strong></p>';
         echo '</div>'; // col 12
         echo '</div>'; // row
         switch ( $this->active_template_type ) {
@@ -341,6 +342,7 @@ class Rpt_Info_Public
         echo '<div class="col-8">';
         echo '<div class="card">';
         echo '<div class="card-body">';
+//        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
         echo '<small>';
         echo '<p>';
         echo 'Wordpress user: ' . $this->wordpress_user->user_login . '<br>';
@@ -349,7 +351,7 @@ class Rpt_Info_Public
         echo 'Access to: ' . $this->rpt_user->display_units() . '<br>';
         echo 'Plugin version: ' . $this->version . '<br>';
         echo '</p>';
-        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
+//        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
         echo '</div>'; // card body
         echo '</div>'; // card
         echo '</div>'; // col 8
@@ -360,8 +362,8 @@ class Rpt_Info_Public
 
     private function case_page()
     {
-/*        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
-            . ' Case maintenance page</p>'; */
+        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
+            . ' Case maintenance page</p>';
         $case_id = get_query_var('case_id', '0');
         $candidate_id = get_query_var('candidate_id', '0');
         $track_id = get_query_var('track_id', '0');
@@ -390,7 +392,9 @@ class Rpt_Info_Public
     private function case_list()
     {
         global $wp;
-        $this->rpt_case_review_url = get_option('ap_ptinfo_rpt_case_review_url');
+        echo '<p>Case list page</p>';
+        $this->rpt_case_review_url = '';
+//        $this->rpt_case_review_url = get_option('ap_rptinfo_rpt_case_review_url');
         $case_list = [];
         switch ( $this->active_template_type) {
             case '2': // promotion
@@ -526,13 +530,12 @@ class Rpt_Info_Public
         $search_string = sanitize_text_field($_POST['searchstring']);
         $user_netid = sanitize_text_field($_POST['user_id']);
         $user_obj = $this->rpt_db->get_rpt_user_info($user_netid);
-        $user_units = array_keys($user_obj->Units);
         $unit_query = $this->rpt_db->get_last_query();
         $template_type = intval($_POST['template_type']);
         $search_result = [];
         switch ( $template_type ) {
             case '2':
-                $search_result = $this->rpt_db->promotion_candidate_search($user_units, $search_string);
+                $search_result = $this->rpt_db->promotion_candidate_search($user_obj, $search_string);
                 break;
         }
         $sql = '';

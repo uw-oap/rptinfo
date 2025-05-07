@@ -4,6 +4,8 @@ class Rpt_Info_User
 {
     public $InterfolioUserID = 0;
     public $UWODSPersonKey = 0;
+    public $FirstName = '';
+    public $LastName = '';
     public $UWNetID = '';
     public $DisplayName = '';
     public $Units = array();
@@ -11,6 +13,21 @@ class Rpt_Info_User
     public function __construct( $UWNetID )
     {
         $this->UWNetID = $UWNetID;
+    }
+
+    public function update_from_database( $row )
+    {
+        if ( $this->InterfolioUserID == 0 ) {
+            $this->InterfolioUserID = $row->InterfolioUserID;
+            $this->UWODSPersonKey = $row->UWODSPersonKey;
+            $this->FirstName = $row->FirstName;
+            $this->LastName = $row->LastName;
+            $this->DisplayName = $row->LastName . ', ' . $row->FirstName;
+        }
+        $this->Units[$row->InterfolioUnitID] = array(
+            'UnitName' => $row->UnitName,
+            'UnitType' => $row->UnitType
+        );
     }
 
     public function SystemAdmin() : bool

@@ -147,6 +147,15 @@ class Rpt_Info_Admin {
             $this->plugin_name
         );
         add_settings_field(
+            $this->option_name . '_tenant_id',
+            __( 'Interfolio tenant ID', 'rptinfo' ),
+            array( $this, $this->option_name . '_tenant_id_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_interfolio_setup',
+            array( 'label_for' => $this->option_name . '_tenant_id' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_tenant_id' );
+        add_settings_field(
             $this->option_name . '_rpt_site_url',
             __( 'RPT home URL', 'rptinfo' ),
             array( $this, $this->option_name . '_rpt_site_url_cb' ),
@@ -155,6 +164,15 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_rpt_site_url' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_rpt_site_url' );
+        add_settings_field(
+            $this->option_name . '_admin_unit_id',
+            __( 'Admin unit ID', 'rptinfo' ),
+            array( $this, $this->option_name . '_admin_unit_id_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_interfolio_setup',
+            array( 'label_for' => $this->option_name . '_admin_unit_id' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_admin_unit_id' );
         // Database settings
         add_settings_section(
             $this->option_name . '_database_setup',
@@ -187,6 +205,22 @@ class Rpt_Info_Admin {
      *
      * @since  1.0.0
      */
+    public function rpt_info_tenant_id_cb()
+    {
+        $tenant_id = get_option( $this->option_name . '_tenant_id' );
+        echo '<input type="text" name="' . $this->option_name . '_tenant_id'
+            . '" id="' . $this->option_name . '_tenant_id'
+            . '" size="100'
+            . '" value="' . $tenant_id
+            . '">';
+        echo '<p><em>The Interfolio tenant ID.</em></p>';
+    }
+
+    /**
+     * Setting callback function - RPT site URL
+     *
+     * @since  1.0.0
+     */
     public function rpt_info_rpt_site_url_cb()
     {
         $site_url = get_option( $this->option_name . '_rpt_site_url' );
@@ -196,6 +230,22 @@ class Rpt_Info_Admin {
             . '" value="' . $site_url
             . '">';
         echo '<p><em>Link to the Interfolio RPT home page.</em></p>';
+    }
+
+    /**
+     * Setting callback function - RPT site URL
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_admin_unit_id_cb()
+    {
+        $unit_id = get_option( $this->option_name . '_admin_unit_id' );
+        echo '<input type="text" name="' . $this->option_name . '_admin_unit_id'
+            . '" id="' . $this->option_name . '_admin_unit_id'
+            . '" size="100'
+            . '" value="' . $unit_id
+            . '">';
+        echo '<p><em>The ID of the unit where system admins are assigned.</em></p>';
     }
 
     /**
