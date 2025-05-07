@@ -81,13 +81,15 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
     {
         $result = new Pt_Info_User($netid);
         $query = $this->rpt_db->prepare("select InterfolioUserID, UWODSPersonKey, UWNetID, FirstName, LastName,
- InterfolioUnitID, UnitName from RptUserUnitDetails where IsActive = 'Yes' and UWNetID = %s", $netid);
+ InterfolioUnitID, UnitName, UnitType from RptUserUnitDetails where IsActive = 'Yes' and UWNetID = %s", $netid);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result->InterfolioUserID = $row->InterfolioUserID;
             $result->UWODSPersonKey = $row->UWODSPersonKey;
             $result->DisplayName = $row->LastName . ', ' . $row->FirstName;
-            $result->Units[$row->InterfolioUnitID] = $row->UnitName;
+            $result->Units[$row->InterfolioUnitID] = array(
+                'UnitName' => $row->UnitName,
+                'UnitType' => $row->UnitType);
         }
         return $result;
     }

@@ -147,6 +147,8 @@ class Rpt_Info_Public
         $vars[] = 'case_id'; // case/packet id
         $vars[] = 'candidate_id'; // candidate id
         $vars[] = 'track_id'; // appointment track id
+        $vars[] = 'unit_type'; // dep/undep
+        $vars[] = 'template_id'; // template id
         return $vars;
     }
 
@@ -197,13 +199,25 @@ class Rpt_Info_Public
         echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'home',
                 'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => '0'), home_url($wp->request)))
-            . '" class="btn btn-outline-secondary';
+            . '" class="btn ';
+        if ( $this->active_page == 'home' ) {
+            echo ' active btn-primary';
+        }
+        else {
+            echo ' btn-outline-secondary';
+        }
         echo '">RPT Home</a>';
         foreach ($this->template_types as $id => $template_type) {
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $id,
                     'ay' => $this->current_cycle->AcademicYear,
                     'rpt_page' => 'home'), home_url($wp->request)))
-                . '" class="btn btn-outline-secondary';
+                . '" class="btn ';
+            if ( $id == $this->active_template_type ) {
+                echo ' active btn-primary';
+            }
+            else {
+                echo ' btn-outline-secondary';
+            }
             echo '">' . $template_type->TemplateTypeName . '</a>';
         }
         echo '</div>'; // button group
@@ -262,11 +276,9 @@ class Rpt_Info_Public
             . $this->active_page . '</strong></p>';
         echo '<p><strong>Case ID: '
             . $case_id . '</strong></p>'; */
-        echo '</div>';
-        echo '</div>';
+        echo '</div>'; // col 12
+        echo '</div>'; // row
         switch ( $this->active_template_type ) {
-            case '0':
-                break;
             case '2' : // promotions
             case '5': // sabbaticals
                 switch ( $this->active_page ) {
@@ -276,15 +288,45 @@ class Rpt_Info_Public
                     case 'template':
                         $this->template_page();
                         break;
+                    default:
+                        $this->home_page();
+                        break;
                 }
                 break;
+            case '0':
             default:
+                $this->home_page();
                 break;
         }
         $this->show_footer();
         $output = ob_get_contents();
         ob_end_clean();
         return $output;
+    }
+
+    private function home_page()
+    {
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        switch ( $this->active_template_type) {
+            case '0' :
+                echo '<p>This system provides an interface to certain functions of the Interfolio RPT system.</p>';
+                echo "<p>Select the type of function you need from the menu above, and from there you can
+                choose among the available actions and reports.</p>";
+                break;
+            case '2' :
+                echo "<p>Functions dealing with Promotions and Tenure.</p>";
+                echo "<p>Select the type of function you need from the menu above, and from there you can
+                choose among the available actions and reports.</p>";
+                break;
+            case '5' :
+                echo "<p>Functions dealing with Sabbaticals.</p>";
+                echo "<p>Select the type of function you need from the menu above, and from there you can
+                choose among the available actions and reports.</p>";
+                break;
+        }
+        echo '</div>'; // col 12
+        echo '</div>'; // row
     }
 
     /**
@@ -304,13 +346,14 @@ class Rpt_Info_Public
         echo 'Wordpress user: ' . $this->wordpress_user->user_login . '<br>';
         echo 'Logged in as: ' . $this->rpt_user->DisplayName . ' (' . $this->rpt_user->UWNetID
             . ' &mdash; ' . $this->rpt_user->InterfolioUserID . ')<br>';
-        echo 'Access to: ' . implode(', ', $this->rpt_user->Units) . '<br>';
+        echo 'Access to: ' . $this->rpt_user->display_units() . '<br>';
         echo 'Plugin version: ' . $this->version . '<br>';
         echo '</p>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
+        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
+        echo '</div>'; // card body
+        echo '</div>'; // card
+        echo '</div>'; // col 8
+        echo '</div>'; // row
     }
 
     /* ********************** functions dealing with cases ********************** */
@@ -331,6 +374,17 @@ class Rpt_Info_Public
         elseif ( $track_id > '0' ) {
             $this->case_edit($case_id, $track_id);
         }
+    }
+
+    private function case_home()
+    {
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        echo '<p>This system provides an interface to certain functions of the Interfolio RPT system.</p>';
+        echo "<p>Select the type of function you need from the menu above, and from there you can
+                choose among the available actions and reports.</p>";
+        echo '</div>'; // col 12
+        echo '</div>'; // row
     }
 
     private function case_list()
@@ -732,10 +786,15 @@ class Rpt_Info_Public
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' Template maintenance page</p>';
         global $wp;
-        $template_list = array();
-        $template_type = get_query_var('template_type', '');
-        $template_id = get_query_var('template_id', '');
-        $in_use = get_query_var('in_use', '');
+        $template_list = [];
+        if ( $this->rpt_user->SystemAdmin() ) {
+            $unit_type = get_query_var('unit_type', '');
+            $template_id = get_query_var('template_id', '');
+            $in_use = get_query_var('in_use', '');
+        }
+        else {
+            //
+        }
     }
 
 }

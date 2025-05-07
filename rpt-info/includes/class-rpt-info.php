@@ -66,10 +66,12 @@ class Rpt_Info {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	public function __construct()
+    {
 		if ( defined( 'RPT_INFO_VERSION' ) ) {
 			$this->version = RPT_INFO_VERSION;
-		} else {
+		}
+        else {
 			$this->version = '1.0.0';
 		}
 		$this->plugin_name = 'rpt-info';
@@ -78,7 +80,6 @@ class Rpt_Info {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
-
 	}
 
 	/**
