@@ -90,12 +90,12 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         }
         $result .= '</td>';
         $result .= '<td>';
-        $result .= '<br><a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+        $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                     'template_type' => $this->RptTemplateTypeID,
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'case'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
-            echo '">Details</a>';
+        $result .= '">Details</a>';
         $result .= '</td>';
         $result .= '</tr>';
         return $result;
