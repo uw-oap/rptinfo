@@ -37,6 +37,9 @@ class Rpt_Info_Case
     public $RankCategory = '';
     public $OtherAppointments = [];
     public $CoverSheetID = '0';
+    public $AcademicYear = '';
+    public $WorkflowStepNumber = '';
+    public $WorkflowStepName = '';
 
     public function __construct( $case_row = NULL )
     {
@@ -55,6 +58,9 @@ class Rpt_Info_Case
             $this->InitiatorID = $case_row->InitiatorID;
             $this->InitiatorName = $case_row->InitiatorName;
             $this->CandidateKey = $case_row->CandidateKey;
+            $this->AcademicYear = $case_row->AcademicYear;
+            $this->WorkflowStepNumber = $case_row->WorkflowStepNumber;
+            $this->WorkflowStepName = $case_row->WorkflowStepName;
             $this->UWODSAppointmentTrackKey = $case_row->UWODSAppointmentTrackKey;
             $this->AppointmentType = $case_row->AppointmentType;
             $this->UWODSUnitKey = $case_row->UWODSUnitKey;

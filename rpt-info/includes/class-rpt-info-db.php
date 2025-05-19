@@ -170,7 +170,8 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
     public function get_promotion_by_id(int $case_id)
     {
         $result = NULL;
-        $query = $this->rpt_db->prepare("SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID, CaseStatus, InterfolioUnitID,
+        $query = $this->rpt_db->prepare("SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID,
+            CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName,
             LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
             UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
             ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName, ServicePeriod,
