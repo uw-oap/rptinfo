@@ -431,7 +431,7 @@ class Rpt_Info_Public
         echo '<div class="row">';
         echo '<div class="col-12">';
         if ( count( $case_list ) > 0 ) {
-            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
+//            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
             echo '<table class="table table-border sort-table">';
             echo '<thead>';
             echo '<tr>';
@@ -443,7 +443,7 @@ class Rpt_Info_Public
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
-//                echo $case->listing_table_row($rpt_case_url);
+                echo $case->listing_table_row($rpt_case_url);
             }
             echo '</tbody>';
             echo '</table>';
