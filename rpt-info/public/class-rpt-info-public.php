@@ -373,6 +373,9 @@ class Rpt_Info_Public
         elseif ( $case_id == 'new' ) {
             $this->search_form();
         }
+        elseif ( $case_id != 'new' ) {
+            $this->case_display($case_id);
+        }
         elseif ( $track_id > '0' ) {
             $this->case_edit($case_id, $track_id);
         }
@@ -418,7 +421,7 @@ class Rpt_Info_Public
         echo '</div>'; // row
         echo '<div class="row">';
         echo '<div class="col-6">';
-        echo '<p>Current casex: (' . count($case_list) . ' found)</p>';
+        echo '<p>Current cases: (' . count($case_list) . ' found)</p>';
         echo '</div>'; // col 6
         echo '<div class="col-6 text-right">';
         echo '<a href="'
@@ -531,6 +534,13 @@ class Rpt_Info_Public
             'data' => $search_result
         ];
         wp_send_json($response);
+    }
+
+    private function case_display( $case_id )
+    {
+        global $wp;
+        echo '<p>Case details page</p>';
+
     }
 
     /**

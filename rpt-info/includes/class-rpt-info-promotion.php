@@ -78,6 +78,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function listing_table_row( $rpt_case_url )
     {
+        global $wp;
         $result = '<tr class="border-bottom border-right">';
         $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
@@ -89,7 +90,11 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         }
         $result .= '</td>';
         $result .= '<td>';
-        $result .= 'Action button';
+        $result .= '<br><a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                    'template_type' => $this->RptTemplateTypeID,
+                    'rpt_page' => 'case'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary';
+            echo '">Cases</a>';
         $result .= '</td>';
         $result .= '</tr>';
         return $result;

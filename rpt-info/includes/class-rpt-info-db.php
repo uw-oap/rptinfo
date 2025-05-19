@@ -185,6 +185,12 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         return $result;
     }
 
+    public function get_sabbatical_by_id(int $case_id)
+    {
+        $result = NULL;
+        return $result;
+    }
+
     public function get_other_appointments( Rpt_Info_Case $case_obj )
     {
         $query = $this->rpt_db->prepare("select distinct UWODSAppointmentTrackKey, UWODSAppointmentKey, UWODSUnitKey, 
