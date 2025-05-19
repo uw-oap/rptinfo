@@ -153,6 +153,11 @@ class Rpt_Info {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
 
+        /**
+         * The class for sabbatical cases
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
+
         $this->loader = new Rpt_Info_Loader();
 
 	}
@@ -209,7 +214,10 @@ class Rpt_Info {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
         $this->loader->add_filter('query_vars', $plugin_public, 'add_query_vars' );
-        $this->loader->add_action('wp_ajax_rpt_info_candidate_search', $plugin_public, 'rpt_info_candidate_search');
+        $this->loader->add_action('wp_ajax_rpt_info_candidate_search', $plugin_public,
+            'rpt_info_candidate_search');
+        $this->loader->add_action('admin_post_process_rptinfo_case_edit', $plugin_public,
+            'process_rptinfo_case_edit');
 	}
 
 	/**

@@ -394,6 +394,7 @@ class Rpt_Info_Public
         global $wp;
         echo '<p>Case list page</p>';
         $this->rpt_case_review_url = '';
+        $rpt_case_url = get_option('rpt_info_rpt_site_url');
 //        $this->rpt_case_review_url = get_option('ap_rptinfo_rpt_case_review_url');
         $case_list = [];
         switch ( $this->active_template_type) {
@@ -441,25 +442,7 @@ class Rpt_Info_Public
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
-                echo '<tr class="border-bottom border-right">';
-                echo '<td><strong>' . $case->LegalName . ' (' . $case->EmployeeID . ')</strong><br>';
-                echo $case->CurrentRankName . ' in ' . $case->UnitName . ' (' . $case->AppointmentType . ')</td>';
-                echo '<td>' . $case->PromotionTypeName . '</td>';
-                echo '<td>' . $case->CaseStatus;
-                if ( $case->InterfolioCaseID ) {
-                    echo '<br><a href="https://rpt.interfolio.com/28343/cases/' . $case->InterfolioCaseID . '">Go to case</a>';
-                }
-                echo '</td>';
-                echo '<td>';
-                /*                echo '<a href="'
-                                    . esc_url(add_query_arg(array('pt_function' => 'case', 'case_id' => $case->CaseID), home_url($wp->request)))
-                                    . '" class="btn btn-outline-primary">Edit case</a>'; */
-                echo '<a href="'
-                    . esc_url(add_query_arg(array('pt_function' => 'case', 'case_id' => $case->CaseID,
-                        'ay' => $this->current_cycle->AcademicYear), home_url($wp->request)))
-                    . '" class="btn btn-outline-primary">Data Sheet</a>';
-                echo '</td>';
-                echo '</tr>';
+                echo $case->listing_table_row($rpt_case_url);
             }
             echo '</tbody>';
             echo '</table>';
@@ -721,7 +704,7 @@ class Rpt_Info_Public
             echo '<p><strong>No valid template found for candidate unit. Please make sure there is '
                     . 'a template available before initiating a case.</strong></p>';
         }
-        echo '<a href="' . esc_url(add_query_arg(array('pt_function' => 'case'), home_url($wp->request)))
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case'), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Cancel</a>';
         echo '</div>'; // form group row
         echo '</div>'; // col 12
@@ -767,13 +750,77 @@ class Rpt_Info_Public
             echo '<p><strong>No valid template found for candidate unit. Please make sure there is '
                 . 'a template available before initiating a case.</strong></p>';
         }
-        echo '<a href="' . esc_url(add_query_arg(array('pt_function' => 'case'), home_url($wp->request)))
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case'), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Cancel</a>';
         echo '</div>'; // form group row
         echo '</div>'; // col 12
         echo '</form>';
         echo '</div>'; // card body
         echo '</div>'; // card
+    }
+
+    /**
+     * process_ptinfo_case_edit
+     *      callback for submit button on case edit form
+     *
+     * @return void
+     */
+    public function process_rptinfo_case_edit()
+    {
+        global $wp;
+        $update_values = [];
+        $result_status = 'info';
+        $result_message = 'No data submitted';
+        $save_action = 'none';
+        $update_result = 0;
+        $redirect_url = '';
+        if ( ! empty($_POST) ) {
+            $template_type_id = intval($_POST['RptTemplateTypeID']);
+            $case_id = intval($_POST['InterfolioCaseID']);
+            $candidate_id = intval($_POST['CandidateID']);
+            $redirect_url = sanitize_text_field($_POST['RedirectURL']);
+            $ay = intval($_POST['ay']);
+            switch ( $template_type_id ) {
+                case '2': // promotion
+                    $case_obj = new Rpt_Info_Promotion();
+                    break;
+                case '5': // sabbatical
+                    $case_obj = new Rpt_Info_Sabbatical();
+                    break;
+            }
+            $case_obj->update_from_post($_POST);
+            $save_action = 'submit';
+            $case_obj->CaseStatus = 'Submitted';
+            // anything else?
+            switch ( $save_action ) {
+                case 'save_draft':
+                    if ( $case_obj->CaseID == 0 ) {
+                        $update_result = $this->rpt_db->insert_case($case_obj);
+                    }
+                    else {
+                        $update_result = $this->rpt_db->update_case($case_obj);
+                    }
+                    $result_message = 'Saved draft';
+                    break;
+                case 'submit' :
+                    $update_result = $this->rpt_db->insert_case($case_obj);
+                    $result_message = 'Case submitted to RPT queue. When it is available in RPT, a <strong>Go '
+                        .'to case</strong> link will appear.';
+                    break;
+                default :
+                    break;
+            }
+            if ( $update_result == 1 ) {
+                $result_status = 'success';
+            }
+            else {
+                $result_status = 'danger';
+                $result_message = 'Error: ' . $this->rpt_db->get_last_error() . '|' . $this->rpt_db->get_last_query();
+            }
+        }
+        wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message, 'status' => $result_status,
+            'ay' => $ay), home_url('rptinfo')));
+        exit;
     }
 
     /* ********************** functions dealing with templates ********************** */

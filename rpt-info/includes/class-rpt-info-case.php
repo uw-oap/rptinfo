@@ -3,7 +3,7 @@
 class Rpt_Info_Case
 {
     public $CaseID = 0;
-    public $InterfolioCaseID = 0;
+    public $RptCaseID = 0;
     public $RptTemplateID = 0;
     public $TemplateName = 0;
     public $RptTemplateTypeID = 0;
@@ -43,7 +43,7 @@ class Rpt_Info_Case
         if ( $case_row ) {
             $this->CaseID = $case_row->CaseID;
             $this->InterfolioCaseID = $case_row->InterfolioCaseID;
-            $this->InterfolioTemplateID = $case_row->InterfolioTemplateID;
+            $this->RptTemplateTypeID = $case_row->RptTemplateTypeID;
             if ( $case_row->CandidateID ) {
                 $this->CandidateID = $case_row->CandidateID;
             }
@@ -113,6 +113,34 @@ class Rpt_Info_Case
         else {
             return $cycle_obj->EffectiveDate[$this->ServicePeriod];
         }
+    }
+
+    public function update_from_post( $posted_values )
+    {
+        $this->CaseID = intval($posted_values['CaseID']);
+        $this->InterfolioCaseID = intval($posted_values['InterfolioCaseID']);
+        $this->CandidateID = intval($posted_values['CandidateID']);
+        $this->CandidateKey = intval($posted_values['CandidateKey']);
+        $this->InitiatorID = intval($posted_values['InitiatorID']);
+        $this->UWODSAppointmentTrackKey = intval($posted_values['UWODSAppointmentTrackKey']);
+        $this->UWODSUnitKey = intval($posted_values['UWODSUnitKey']);
+        $this->CurrentRankKey = intval($posted_values['CurrentRankKey']);
+        $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
+        $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
+        $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
+    }
+
+    public function insert_case_array()
+    {
+        return array(
+            'InterfolioCaseID' => $this->InterfolioCaseID,
+            'RptTemplateID' => $this->RptTemplateID,
+            'CandidateID' => $this->CandidateID,
+            'InitiatorID' => $this->InitiatorID,
+            'CandidateKey' => $this->CandidateKey,
+            'UWODSAppointmentTrackKey' => $this->UWODSAppointmentTrackKey,
+            'CaseStatus' => $this->CaseStatus,
+        );
     }
 
 }

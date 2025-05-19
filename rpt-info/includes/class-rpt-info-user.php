@@ -46,7 +46,10 @@ class Rpt_Info_User
                 $result .= ', ';
             }
             $result .= $unit['UnitName'];
-            if ( $id != '28343' ) {
+            if ( $id == '28343' ) {
+                $result .= ' (System admin)';
+            }
+            else {
                 $result .= ' (' . $unit['UnitType'] . ')';
             }
         }

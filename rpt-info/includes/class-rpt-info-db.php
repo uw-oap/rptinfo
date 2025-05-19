@@ -106,7 +106,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         ;
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
-            $result[$row->CaseID] = new Rpt_Info_Case($row);
+            $result[$row->CaseID] = new Rpt_Info_Promotion($row);
         }
         return $result;
     }
@@ -196,6 +196,32 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         foreach ($this->rpt_db->get_results($query) as $row) {
             $case_obj->OtherAppointments[$row->UWODSAppointmentTrackKey] = $row;
         }
+    }
+
+    public function insert_case( Rpt_Info_Promotion|Rpt_Info_Sabbatical $case_obj)
+    {
+        // insert base case record
+        $query_result = $this->rpt_db->insert('RptCase', $case_obj->insert_case_array());
+        $case_obj->CaseID = $this->rpt_db->insert_id();
+        $this->last_query = $this->rpt_db->last_error;
+        if ( $query_result === FALSE ) {
+            return 0;
+        }
+        return $query_result;
+    }
+
+    public function update_case( Rpt_Info_Case $case_obj )
+    {
+        /*        $query = "update promotions.RptCase set " . $case_obj->update_fields() . " where CaseID = '"
+                    . $case_obj->CaseID . "'";
+                $this->last_query = $query;
+                $query_result = $this->rpt_db->query($query); */
+        $query_result = $this->rpt_db->update('RptCase', $case_obj->insert_array(), array('ID' => $case_obj->CaseID));
+        $this->last_query = $this->rpt_db->last_error;
+        if ( $query_result === FALSE ) {
+            return 0;
+        }
+        return $query_result;
     }
 
     public function get_valid_templates_for_case( Rpt_Info_Case $case_obj)

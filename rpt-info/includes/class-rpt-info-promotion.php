@@ -7,7 +7,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public $ActionType = '';
     public $PromotionTypeID = 0;
     public $PromotionTypeName = '';
-    public $NewTerm = 0;
+
     // fields for datasheet
     public $Postponed = 'No';
     public $TenureAward = '';
@@ -35,12 +35,9 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $this->TargetRankName = $case_row->TargetRankName;
             $this->PromotionTypeID = $case_row->PromotionTypeID;
             $this->PromotionTypeName = $case_row->PromotionTypeName;
-            if ( isset($case_row->NewTerm) ) {
-                $this->NewTerm = $case_row->NewTerm;
-            }
             $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
             if ( isset($case_row->DatasheetID) ) {
-                $this->DatasheetID = $case_row->DatasheetID;
+                $this->DataSheetID = $case_row->DataSheetID;
                 $this->TenureAward = $case_row->TenureAward;
                 $this->NewTermLength = $case_row->NewTermLength;
                 $this->Vote1Eligible = $case_row->Vote1Eligible;
@@ -55,6 +52,47 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                 $this->Vote2Abstaining = $case_row->Vote2Abstaining;
             }
         }
+    }
+
+    public function update_from_post( $posted_values )
+    {
+        parent::update_from_post( $posted_values );
+        $this->TargetRankKey = intval($posted_values['TargetRankKey']);
+        $this->EffectiveDate = sanitize_text_field($posted_values['EffectiveDate']);
+        $this->InterfolioTemplateID = intval($posted_values['InterfolioTemplateID']);
+        $this->PromotionTypeID = intval($posted_values['PromotionTypeID']);
+    }
+
+    public function insert_promotion_array()
+    {
+        return array(
+            'CaseID' => $this->CaseID,
+            'PromotionTypeID' => $this->PromotionTypeID,
+            'CurrentRankKey' => $this->CurrentRankKey,
+            'TargetRankKey' => $this->TargetRankKey,
+            'NewTermLength' => $this->NewTermLength,
+            'EffectiveDate' => $this->EffectiveDate,
+            'HasJoint'
+        );
+    }
+
+    public function listing_table_row( $rpt_case_url )
+    {
+        $result = '<tr class="border-bottom border-right">';
+        $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
+        $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
+            . $this->AppointmentType . ')</td>';
+        $result .= '<td>' . $this->PromotionTypeName . '</td>';
+        $result .= '<td>' . $this->CaseStatus;
+        if ( $this->InterfolioCaseID ) {
+            echo '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
+        }
+        $result .= '</td>';
+        $result .= '<td>';
+        $result .= 'Action button';
+        $result .= '</td>';
+        $result .= '</tr>';
+        return $result;
     }
 
 }
