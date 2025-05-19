@@ -94,8 +94,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                     'template_type' => $this->RptTemplateTypeID,
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'case'), home_url($wp->request)))
-                . '" class="btn btn-outline-secondary';
-        $result .= '">Details</a>';
+                . '" class="btn btn-outline-secondary">Details</a>';
         $result .= '</td>';
         $result .= '</tr>';
         return $result;
