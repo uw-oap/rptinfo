@@ -85,7 +85,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<td>' . $this->PromotionTypeName . '</td>';
         $result .= '<td>' . $this->CaseStatus;
         if ( $this->InterfolioCaseID ) {
-            echo '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
+            $result .= '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
         }
         $result .= '</td>';
         $result .= '<td>';
