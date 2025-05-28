@@ -212,7 +212,7 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
 
 function report_table( $header = [], $data = [] ) : string
 {
-    $result = '<table class="table table-striped table-bordered table-hover table-condensed">';
+    $result = '<table class="table table-striped table-bordered">';
     $result .= '<thead>';
     $result .= '<tr>';
     foreach ( $header as $key => $value ) {
@@ -223,7 +223,12 @@ function report_table( $header = [], $data = [] ) : string
     $result .= '<tbody>';
     foreach ( $data as $key => $value ) {
         $result .= '<tr>';
-        $result .= '<td>' . $value . '</td>';
+        $result .= '<td>' . $key . '</td>';
+        foreach ($value as $key2 => $value2) {
+            if ( $key2 != $key ) {
+                $result .= '<td>' . $value2 . '</td>';
+            }
+        }
         $result .= '</tr>';
     }
     $result .= '</tbody>';

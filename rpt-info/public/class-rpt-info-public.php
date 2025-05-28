@@ -899,6 +899,7 @@ class Rpt_Info_Public
                 'InProgress' => ' In progress',
                 'Total' => 'Total');
         }
+        echo '<pre>' . $this->rpt_db->get_last_query() . '</pre>';
         if ( count($report_data) > 0 ) {
             echo report_table($report_header, $report_data);
         }
