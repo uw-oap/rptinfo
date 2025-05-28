@@ -295,6 +295,9 @@ class Rpt_Info_Public
                     case 'template':
                         $this->template_page();
                         break;
+                    case 'report':
+                        $this->report_page();
+                        break;
                     default:
                         $this->home_page();
                         break;
