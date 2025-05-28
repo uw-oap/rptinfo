@@ -900,6 +900,7 @@ class Rpt_Info_Public
                 'Total' => 'Total');
         }
         echo '<pre>' . $this->rpt_db->get_last_query() . '</pre>';
+        echo '<pre>' . print_r($report_data) . '</pre>';
         if ( count($report_data) > 0 ) {
             echo report_table($report_header, $report_data);
         }
