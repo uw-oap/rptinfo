@@ -210,3 +210,23 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     return $result;
 }
 
+function report_table( $header = [], $data = [] ) : string
+{
+    $result = '<table class="table table-striped table-bordered table-hover table-condensed">';
+    $result .= '<thead>';
+    $result .= '<tr>';
+    foreach ( $header as $key => $value ) {
+        $result .= '<th>' . $value . '</th>';
+    }
+    $result .= '</tr>';
+    $result .= '</thead>';
+    $result .= '<tbody>';
+    foreach ( $data as $key => $value ) {
+        $result .= '<tr>';
+        $result .= '<td>' . $value . '</td>';
+        $result .= '</tr>';
+    }
+    $result .= '</tbody>';
+    $result .= '</table>';
+    return $result;
+}

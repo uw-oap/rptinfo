@@ -261,10 +261,26 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
     public function get_promotion_type_list( $rank_category)
     {
         $result = [];
-        $query = $this->rpt_db->prepare("select ID, PromotionCategoryName from PromotionCategory where RankCategory = %s", $rank_category);
+        $query = $this->rpt_db->prepare("select ID, PromotionCategoryName from PromotionCategory 
+        where RankCategory = %s", $rank_category);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['ID']] = $row['PromotionCategoryName'];
+        }
+        return $result;
+    }
+
+    /** ******************* report functions ********************************** */
+
+    public function case_count_by_scc( $template_type_id, $academic_year )
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select LevelOneUnitName, Submitted, InProgress, Total
+from rpt.CasesByTypeYearSCC
+where RptTemplateTypeID = %s and AcademicYear = %s",  $template_type_id, $academic_year);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['LevelOneUnitName']] = $row;
         }
         return $result;
     }

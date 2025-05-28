@@ -150,6 +150,7 @@ class Rpt_Info_Public
         $vars[] = 'track_id'; // appointment track id
         $vars[] = 'unit_type'; // dep/undep
         $vars[] = 'template_id'; // template id
+        $vars[] = 'report_type'; // report name/slug
         return $vars;
     }
 
@@ -236,6 +237,11 @@ class Rpt_Info_Public
                     'rpt_page' => 'template'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
             echo '">Templates</a>';
+            echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'rpt_page' => 'report'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary';
+            echo '">Reports</a>';
             echo '</div>'; // button group
             echo '</div>'; // toolbar
         }
@@ -855,6 +861,43 @@ class Rpt_Info_Public
         }
         else {
             //
+        }
+    }
+
+    /* ********************** functions dealing with reports ********************** */
+
+    /**
+     * template_page
+     *      main page to control report functions
+     *
+     * @return void
+     */
+    private function report_page()
+    {
+        global $wp;
+        $report_data = [];
+        $report_header = [];
+        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
+            . ' RPT reporting</p>';
+        echo '<p>';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type,
+                'report_type' => 'cases-by-scc'),
+                home_url($wp->request)))
+            . '">Cases by SCC</a>';
+        echo '</p>';
+        $report_type = get_query_var('report_type', '');
+        if ( $report_type == 'cases-by-scc' ) {
+            $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type,
+                $this->current_cycle->AcademicYear);
+            $report_header = array('LevelOneUnitName' => 'S/C/C',
+                'Submitted' => 'Submitted',
+                'InProgress' => ' In progress',
+                'Total' => 'Total');
+        }
+        if ( count($report_data) > 0 ) {
+            echo report_table($report_header, $report_data);
         }
     }
 
