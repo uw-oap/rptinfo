@@ -275,14 +275,6 @@ class Rpt_Info_Public
         echo '<div class="row">';
         echo '<div class="col-12">';
         $this->show_main_menu();
-        echo '<p><strong>Selected Academic Year: '
-            . $this->current_cycle->Display . '</strong></p>';
-        echo '<p><strong>Template Type: '
-            . $this->active_template_type . '</strong></p>';
-        echo '<p><strong>Page: '
-            . $this->active_page . '</strong></p>';
-        echo '<p><strong>Case ID: '
-            . $case_id . '</strong></p>';
         echo '</div>'; // col 12
         echo '</div>'; // row
         switch ( $this->active_template_type ) {
@@ -359,6 +351,10 @@ class Rpt_Info_Public
             . ' &mdash; ' . $this->rpt_user->InterfolioUserID . ')<br>';
         echo 'Access to: ' . $this->rpt_user->display_units() . '<br>';
         echo 'Plugin version: ' . $this->version . '<br>';
+        echo 'Selected Academic Year: ' . $this->current_cycle->Display . '<br>';
+        echo 'Template Type: ' . $this->active_template_type . '<br>';
+        echo 'Page: ' . $this->active_page . '<br>';
+        echo 'Case ID: ' . $case_id . '<br>';
         echo '</p>';
 //        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
         echo '</div>'; // card body
