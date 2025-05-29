@@ -260,7 +260,7 @@ class Rpt_Info_Public
     {
         $this->force_login();
         ob_start();
-        $ay = get_query_var('ay', '2025');
+        $ay = get_query_var('ay', '2026');
         $status_type = get_query_var('status', '');
         $status_message = get_query_var('msg', '');
         $this->active_page = get_query_var('rpt_page', 'home');
