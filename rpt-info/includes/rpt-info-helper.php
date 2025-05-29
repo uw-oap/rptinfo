@@ -225,7 +225,7 @@ function report_table( $header = [], $data = [] ) : string
         $result .= '<tr>';
         $result .= '<td>' . $key . '</td>';
         foreach ($value as $key2 => $value2) {
-            if ( $key2 != $key ) {
+            if ( $value2 != $key ) {
                 $result .= '<td>' . $value2 . '</td>';
             }
         }
