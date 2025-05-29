@@ -127,7 +127,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         }
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
-            $result[$row['InterfolioUserID']] = $row;
+            $result[$row['InterfolioUserID'] . '-' . $row['UWODSAppointmentTrackKey']] = $row;
         }
         return $result;
     }
@@ -270,9 +270,41 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
         return $result;
     }
 
+    /** ******************* template functions ********************************** */
+
+    public function get_template_list($template_type_id, $unit_type ) : array
+    {
+        $result = [];
+/*        switch ( $unit_type ) {
+            case 'all':
+                $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
+LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+order by TemplateName", $template_type_id);
+                break;
+            case 'dep' :
+                $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
+LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+and UnitType = 'dep' order by TemplateName", $template_type_id);
+                break;
+            case 'undep' :
+                $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
+LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType, 
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+and UnitType = 'undep' order by TemplateName", $template_type_id);
+                break;
+        }
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->InterfolioTemplateID] = new Rpt_Info_Template($row);
+        } */
+        return $result;
+    }
+
     /** ******************* report functions ********************************** */
 
-    public function case_count_by_scc( $template_type_id, $academic_year )
+    public function case_count_by_scc( $template_type_id, $academic_year ) : array
     {
         $result = [];
         $query = $this->rpt_db->prepare("select LevelOneUnitName, Submitted, InProgress, Total

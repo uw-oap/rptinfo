@@ -266,7 +266,8 @@ class Rpt_Info_Public
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
-        if ($status_message) {
+        echo 'wtf?';
+/*        if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
         $this->rpt_user = $this->rpt_db->get_rpt_user_info($this->wordpress_user->user_login);
@@ -299,7 +300,7 @@ class Rpt_Info_Public
             default:
                 $this->home_page();
                 break;
-        }
+        } */
         $this->show_footer();
         $output = ob_get_contents();
         ob_end_clean();
@@ -849,18 +850,23 @@ class Rpt_Info_Public
      */
     private function template_page()
     {
+        global $wp;
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' Template maintenance page</p>';
-        global $wp;
         $template_list = [];
-        if ( $this->rpt_user->SystemAdmin() ) {
-            $unit_type = get_query_var('unit_type', '');
+        $unit_type = get_query_var('unit_type', '');
+/*        if ( $this->rpt_user->SystemAdmin() ) {
             $template_id = get_query_var('template_id', '');
             $in_use = get_query_var('in_use', '');
+            if ( ( $template_id != '' ) && ( $in_use != '' ) ) {
+                // update template in use
+            }
         }
         else {
             //
-        }
+        } */
+//        $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
+        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
     }
 
     /* ********************** functions dealing with reports ********************** */

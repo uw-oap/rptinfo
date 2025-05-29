@@ -158,6 +158,11 @@ class Rpt_Info {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
 
+        /**
+         * The class for templates
+         */
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-template.php';
+
         $this->loader = new Rpt_Info_Loader();
 
 	}
