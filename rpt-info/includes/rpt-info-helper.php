@@ -210,12 +210,20 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     return $result;
 }
 
-function report_table( $header = [], $data = [] ) : string
+function report_table( $header = [], $data = [], $total_columns = [] ) : string
 {
+    $totals = [];
+    foreach ($total_columns as $col) {
+        $totals[$col] = 0;
+    }
+    $label_col = '';
     $result = '<table class="table table-striped table-bordered">';
     $result .= '<thead>';
     $result .= '<tr>';
     foreach ( $header as $key => $value ) {
+        if ( $label_col == '' ) {
+            $label_col = $key;
+        }
         $result .= '<th>' . $value . '</th>';
     }
     $result .= '</tr>';
@@ -227,7 +235,62 @@ function report_table( $header = [], $data = [] ) : string
         foreach ($value as $key2 => $value2) {
             if ( $value2 != $key ) {
                 $result .= '<td>' . $value2 . '</td>';
+                if ( in_array($key2, $total_columns) ) {
+                    $totals[$col] += $value2;
+                }
             }
+        }
+        $result .= '</tr>';
+    }
+    if ( count( $total_columns) > 0 ) {
+        $result .= '<tr>';
+        $result .= '<td><strong>Total</strong></td>';
+        foreach ( $header as $key => $value ) {
+            if ( in_array($key, $total_columns) ) {
+                $result .= '<td><strong>' . $totals[$key] . '</strong></td>';
+            }
+            elseif ( $key != $label_col ) {
+                $result .= '<td></td>';
+            }
+        }
+    }
+    $result .= '</tbody>';
+    $result .= '</table>';
+    return $result;
+}
+
+function template_table( $template_list, $academic_year, $unit_type, $show_actions ) : string
+{
+    global $wp;
+    $result = '<table class="table table-striped table-bordered">';
+    $result .= '<thead>';
+    $result .= '<tr>';
+    $result .= '<th>ID</th>';
+    $result .= '<th>Name</th>';
+    $result .= '<th>Unit</th>';
+    $result .= '<th>Enabled</th>';
+    if ( $show_actions) {
+        $result .= '<th>Action</th>';
+    }
+    $result .= '</tr>';
+    $result .= '</thead>';
+    $result .= '<tbody>';
+    foreach ( $template_list as $template ) {
+        $result .= '<tr>';
+        $result .= '<td>' . $template->RptTemplateID . '</td>';
+        $result .= '<td>' . $template->TemplateName . '</td>';
+        $result .= '<td>' . $template->UnitName . '</td>';
+        $result .= '<td>' . $template->InUse . '</td>';
+        if ( $show_actions) {
+            $result .= '<td>';
+            $update_value = ($template->InUse == 'Yes') ? 'No' : 'Yes';
+            $update_action = ($template->InUse == 'Yes') ? 'Disable' : 'Enable';
+            $result .= '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                    'ay' => $academic_year, 'template_id' => $template->RptTemplateID,
+                    'template_type' => $template->RptTemplateTypeID,
+                    'in_use' => $update_value, 'unit_type' => $unit_type), home_url($wp->request)))
+                . '">' . $update_action . '</a>';
+            $result .= '</td>';
         }
         $result .= '</tr>';
     }

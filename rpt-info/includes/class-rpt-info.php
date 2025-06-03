@@ -151,12 +151,12 @@ class Rpt_Info {
         /**
          * The class for promotion cases
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
 
         /**
          * The class for sabbatical cases
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
 
         /**
          * The class for templates

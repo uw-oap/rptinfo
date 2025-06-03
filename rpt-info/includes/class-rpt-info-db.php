@@ -275,31 +275,76 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
     public function get_template_list($template_type_id, $unit_type ) : array
     {
         $result = [];
-/*        switch ( $unit_type ) {
+        switch ( $unit_type ) {
             case 'all':
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
-LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
+LevelOneID, LevelOneName, TemplateName, Description, InUse, RptTemplateTypeID, UnitType,
 TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
 order by TemplateName", $template_type_id);
                 break;
             case 'dep' :
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
-LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
+LevelOneID, LevelOneName, TemplateName, Description, InUse, RptTemplateTypeID, UnitType,
 TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
-and UnitType = 'dep' order by TemplateName", $template_type_id);
+and UnitType = 'dep' and TemplateName like '%%\_dep%%' order by TemplateName", $template_type_id);
                 break;
             case 'undep' :
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
-LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType, 
+LevelOneID, LevelOneName, TemplateName, Description, InUse, RptTemplateTypeID, UnitType,
 TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
-and UnitType = 'undep' order by TemplateName", $template_type_id);
+and UnitType = 'undep' and TemplateName like '%%\_undep%%' order by TemplateName", $template_type_id);
                 break;
         }
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
-            $result[$row->InterfolioTemplateID] = new Rpt_Info_Template($row);
-        } */
+            $result[] = new Rpt_Info_Template($row);
+        }
         return $result;
+    }
+
+    public function get_template_list_for_user($template_type_id, $user_obj ) : array
+    {
+        $result = [];
+        $query = "SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, LevelOneID, LevelOneName, 
+TemplateName, Description, InUse, RptTemplateTypeID, UnitType, TemplateTypeName, TemplateTypeInUse 
+FROM RptTemplateDetails where (RptTemplateTypeID = %s) and (TemplateName like '%\_dep%'
+or TemplateName like '%\_undep%') and (InterfolioUnitID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
+            . implode(',', array_keys($user_obj->Units)) . "))";
+        $query = $this->rpt_db->prepare($query, $template_type_id);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[] = new Rpt_Info_Template($row);
+        }
+        return $result;
+    }
+
+    public function get_template_details( $template_id ) : Rpt_Info_Template
+    {
+        $result = NULL;
+        $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, LevelOneID, LevelOneName, 
+TemplateName, Description, InUse, RptTemplateTypeID, UnitType, TemplateTypeName, TemplateTypeInUse 
+FROM RptTemplateDetails  where RptTemplateID = %s", $template_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Template($result_row);
+        }
+        return $result;
+    }
+
+    public function update_template_in_use( Rpt_Info_Template $template )
+    {
+        $query_result = $this->rpt_db->update('RptTemplate', $template->update_array(),
+            array('RptTemplateID' => $template->RptTemplateID));
+        $this->last_query = $this->rpt_db->last_error;
+        if ( $query_result === FALSE ) {
+            return 0;
+        }
+        return $query_result;
+
     }
 
     /** ******************* report functions ********************************** */
@@ -307,12 +352,26 @@ and UnitType = 'undep' order by TemplateName", $template_type_id);
     public function case_count_by_scc( $template_type_id, $academic_year ) : array
     {
         $result = [];
-        $query = $this->rpt_db->prepare("select LevelOneUnitName, Submitted, InProgress, Total
+        $query = $this->rpt_db->prepare("select LevelOneUnitName, CaseTotal
 from rpt.CasesByTypeYearSCC
 where RptTemplateTypeID = %s and AcademicYear = %s",  $template_type_id, $academic_year);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['LevelOneUnitName']] = $row;
+        }
+        return $result;
+    }
+
+    public function case_count_by_unit( $template_type_id, $academic_year, $level_1_id ) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select UnitName, CaseTotal
+from rpt.CasesByTypeYearUnit
+where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
+            $template_type_id, $academic_year, $level_1_id);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['UnitName']] = $row;
         }
         return $result;
     }
