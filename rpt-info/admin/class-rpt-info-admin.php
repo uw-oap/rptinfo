@@ -57,7 +57,7 @@ class Rpt_Info_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-        $db_name = get_option('rpt_info_database_name');
+        $db_name = get_option($this->option_name . '_database_name');
         if ( $db_name) {
 //            $this->rpt_db = new Rpt_Info_DB($db_name);
         }
