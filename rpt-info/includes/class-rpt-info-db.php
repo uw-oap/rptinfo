@@ -307,12 +307,26 @@ and UnitType = 'undep' order by TemplateName", $template_type_id);
     public function case_count_by_scc( $template_type_id, $academic_year ) : array
     {
         $result = [];
-        $query = $this->rpt_db->prepare("select LevelOneUnitName, Submitted, InProgress, Total
-from rpt.CasesByTypeYearSCC
+        $query = $this->rpt_db->prepare("select LevelOneUnitName, LevelOneID, CaseTotal
+from CasesByTypeYearSCC
 where RptTemplateTypeID = %s and AcademicYear = %s",  $template_type_id, $academic_year);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['LevelOneUnitName']] = $row;
+        }
+        return $result;
+    }
+
+    public function case_count_by_unit( $template_type_id, $academic_year, $level_1_id ) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select UnitName, CaseTotal
+from CasesByTypeYearUnit
+where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
+            $template_type_id, $academic_year, $level_1_id);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['UnitName']] = $row;
         }
         return $result;
     }

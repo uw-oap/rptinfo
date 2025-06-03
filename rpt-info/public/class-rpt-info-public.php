@@ -149,6 +149,7 @@ class Rpt_Info_Public
         $vars[] = 'candidate_id'; // candidate id
         $vars[] = 'track_id'; // appointment track id
         $vars[] = 'unit_type'; // dep/undep
+        $vars[] = 'unit_id'; // unit id
         $vars[] = 'template_id'; // template id
         $vars[] = 'report_type'; // report name/slug
         return $vars;
@@ -266,8 +267,8 @@ class Rpt_Info_Public
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
-        echo 'wtf?';
-/*        if ($status_message) {
+//        echo 'wtf?';
+        if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
         $this->rpt_user = $this->rpt_db->get_rpt_user_info($this->wordpress_user->user_login);
@@ -300,7 +301,7 @@ class Rpt_Info_Public
             default:
                 $this->home_page();
                 break;
-        } */
+        }
         $this->show_footer();
         $output = ob_get_contents();
         ob_end_clean();
@@ -893,16 +894,27 @@ class Rpt_Info_Public
             . '">Cases by SCC</a>';
         echo '</p>';
         $report_type = get_query_var('report_type', '');
-        if ( $report_type == 'cases-by-scc' ) {
-            $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type,
-                $this->current_cycle->AcademicYear);
-            $report_header = array('LevelOneUnitName' => 'S/C/C',
-                'Submitted' => 'Submitted',
-                'InProgress' => ' In progress',
-                'Total' => 'Total');
+        switch ( $report_type) {
+            case 'cases-by-scc':
+                $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type,
+                    $this->current_cycle->AcademicYear);
+                $report_header = array('LevelOneUnitName' => 'S/C/C',
+                    'CaseTotal' => 'Total');
+                $detail_report = 'cases-by-unit';
+                break;
+            case 'cases-by-unit':
+                $unit_id = get_query_var('unit_id', '');
+                $report_data = $this->rpt_db->case_count_by_unit($this->active_template_type,
+                    $this->current_cycle->AcademicYear, $unit_id);
+                $report_header = array('UnitName' => 'Unit',
+                    'CaseTotal' => 'Total');
+                $detail_report = '';
+                break;
         }
+//        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
         if ( count($report_data) > 0 ) {
-            echo report_table($report_header, $report_data);
+            echo report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
+                $detail_report, $this->active_template_type, $this->current_cycle->AcademicYear);
         }
     }
 

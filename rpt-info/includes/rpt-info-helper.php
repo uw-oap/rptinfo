@@ -210,23 +210,41 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     return $result;
 }
 
-function report_table( $header = [], $data = [] ) : string
+function report_table( $header = [], $data = [], $link_col = '', $link_val = '',
+        $detail_report = '', $template_type = '0', $ay = '' ) : string
 {
+    global $wp;
     $result = '<table class="table table-striped table-bordered">';
     $result .= '<thead>';
     $result .= '<tr>';
-    foreach ( $header as $key => $value ) {
-        $result .= '<th>' . $value . '</th>';
+    foreach ( $header as $hkey => $hvalue ) {
+        $result .= '<th>' . $hvalue . '</th>';
     }
     $result .= '</tr>';
     $result .= '</thead>';
     $result .= '<tbody>';
     foreach ( $data as $key => $value ) {
         $result .= '<tr>';
-        $result .= '<td>' . $key . '</td>';
-        foreach ($value as $key2 => $value2) {
-            if ( $value2 != $key ) {
-                $result .= '<td>' . $value2 . '</td>';
+        foreach ( $header as $hkey => $hvalue ) {
+            if ( $value[$hkey] == $key ) {
+                $result .= '<td>';
+                if ($hkey == $link_col) {
+                    $result .= '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                            'template_type' => $template_type,
+                            'ay' => $ay,
+                            'report_type' => $detail_report,
+                            'unit_id' => $value[$link_val]
+                            ),
+                            home_url($wp->request)))
+                        . '">' . $key . '</a>';
+                } else {
+                    $result .= $key;
+                }
+                $result .= '</td>';
+            }
+            else {
+              $result .= '<td>' . $value[$hkey] . '</td>';
+//                $result .= '<td>' . print_r($value, true) . '</td>';
             }
         }
         $result .= '</tr>';
