@@ -361,7 +361,7 @@ class Rpt_Info_Public
         echo 'Selected Academic Year: ' . $this->current_cycle->Display . '<br>';
         echo 'Template Type: ' . $this->active_template_type . '<br>';
         echo 'Page: ' . $this->active_page . '<br>';
-        echo 'Case ID: ' . $case_id . '<br>';
+//        echo 'Case ID: ' . $case_id . '<br>';
         echo '</p>';
 //        echo '<pre>' . print_r($this->rpt_user, TRUE) . '</pre>';
         echo '</div>'; // card body
