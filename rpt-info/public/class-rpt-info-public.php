@@ -267,40 +267,45 @@ class Rpt_Info_Public
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
-        echo 'wtf?'; exit;
+        echo 'wtf?';
         if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
-        $this->rpt_user = $this->rpt_db->get_rpt_user_info($this->wordpress_user->user_login);
-        $this->current_cycle = $this->rpt_db->get_cycle_info($ay);
-        $this->template_types = $this->rpt_db->get_template_type_list(TRUE);
-        echo '<div class="row">';
-        echo '<div class="col-12">';
-        $this->show_main_menu();
-        echo '</div>'; // col 12
-        echo '</div>'; // row
-        switch ( $this->active_template_type ) {
-            case '2' : // promotions
-            case '5': // sabbaticals
-                switch ( $this->active_page ) {
-                    case 'case':
-                        $this->case_page();
-                        break;
-                    case 'template':
-                        $this->template_page();
-                        break;
-                    case 'report':
-                        $this->report_page();
-                        break;
-                    default:
-                        $this->home_page();
-                        break;
-                }
-                break;
-            case '0':
-            default:
-                $this->home_page();
-                break;
+        if ( isset($this->rpt_db) ) {
+            $this->rpt_user = $this->rpt_db->get_rpt_user_info($this->wordpress_user->user_login);
+            $this->current_cycle = $this->rpt_db->get_cycle_info($ay);
+            $this->template_types = $this->rpt_db->get_template_type_list(TRUE);
+            echo '<div class="row">';
+            echo '<div class="col-12">';
+            $this->show_main_menu();
+            echo '</div>'; // col 12
+            echo '</div>'; // row
+            switch ($this->active_template_type) {
+                case '2' : // promotions
+                case '5': // sabbaticals
+                    switch ($this->active_page) {
+                        case 'case':
+                            $this->case_page();
+                            break;
+                        case 'template':
+                            $this->template_page();
+                            break;
+                        case 'report':
+                            $this->report_page();
+                            break;
+                        default:
+                            $this->home_page();
+                            break;
+                    }
+                    break;
+                case '0':
+                default:
+                    $this->home_page();
+                    break;
+            }
+        }
+        else {
+            echo '<p>Database not defined</p>';
         }
         $this->show_footer();
         $output = ob_get_contents();

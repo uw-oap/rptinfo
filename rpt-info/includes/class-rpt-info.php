@@ -126,7 +126,7 @@ class Rpt_Info {
         /**
          * The class responsible for custom database functions.
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-db.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-db.php';
 
         /**
          * The class for cycle (academic year) info
