@@ -131,32 +131,32 @@ class Rpt_Info {
         /**
          * The class for cycle (academic year) info
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-cycle.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-cycle.php';
 
         /**
          * The class for system user info
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-user.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-user.php';
 
         /**
          * The class for base cases
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-case.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-case.php';
 
         /**
          * Helper functions
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rpt-info-helper.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rpt-info-helper.php';
 
         /**
          * The class for promotion cases
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
 
         /**
          * The class for sabbatical cases
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
+//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
 
         /**
          * The class for templates
