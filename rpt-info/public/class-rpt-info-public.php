@@ -69,7 +69,7 @@ class Rpt_Info_Public
         $this->version = $version;
         $db_name = get_option('rpt_info_database_name');
         if ( $db_name) {
-            $this->rpt_db = new Rpt_Info_DB($db_name);
+//            $this->rpt_db = new Rpt_Info_DB($db_name);
         }
     }
 
