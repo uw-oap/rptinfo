@@ -267,7 +267,6 @@ class Rpt_Info_Public
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
-        echo 'wtf?';
         if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
