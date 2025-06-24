@@ -126,8 +126,42 @@ class Rpt_Info {
          * The class responsible for custom database functions.
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-db.php';
+        /**
+         * The class for cycle (academic year) info
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-cycle.php';
 
-		$this->loader = new Rpt_Info_Loader();
+        /**
+         * The class for system user info
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-user.php';
+
+        /**
+         * The class for base cases
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-case.php';
+
+        /**
+         * Helper functions
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rpt-info-helper.php';
+
+        /**
+         * The class for promotion cases
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
+
+        /**
+         * The class for sabbatical cases
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
+
+        /**
+         * The class for templates
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-template.php';
+
+        $this->loader = new Rpt_Info_Loader();
 
 	}
 
@@ -181,6 +215,11 @@ class Rpt_Info {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
         $this->loader->add_action( 'init', $plugin_public, 'register_shortcodes' );
+        $this->loader->add_filter('query_vars', $plugin_public, 'add_query_vars' );
+        $this->loader->add_action('wp_ajax_rpt_info_candidate_search', $plugin_public,
+            'rpt_info_candidate_search');
+        $this->loader->add_action('admin_post_process_rptinfo_case_edit', $plugin_public,
+            'process_rptinfo_case_edit');
 	}
 
 	/**
