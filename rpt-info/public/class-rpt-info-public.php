@@ -99,5 +99,29 @@ class Rpt_Info_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/rpt-info-public.js', array( 'jquery' ), $this->version, false );
 
 	}
+    /**
+     * Registers all shortcodes at once
+     *
+     * @return [type] [description]
+     */
+    public function register_shortcodes()
+    {
+        add_shortcode('rptinfo_home', array($this, 'rptinfo_home'));
+    }
 
+    /**
+     * rptinfo_home
+     *      display plugin home page
+     *      from shortcode rptinfo_home
+     *
+     * @return void
+     */
+    public function rptinfo_home()
+    {
+        ob_start();
+        echo 'this is the rptinfo_home page';
+        $output = ob_get_contents();
+        ob_end_clean();
+        return $output;
+    }
 }
