@@ -122,6 +122,11 @@ class Rpt_Info {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-rpt-info-public.php';
 
+        /**
+         * The class responsible for custom database functions.
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-db.php';
+
 		$this->loader = new Rpt_Info_Loader();
 
 	}

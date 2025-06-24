@@ -40,7 +40,15 @@ class Rpt_Info_Admin {
 	 */
 	private $version;
 
+    /**
+     * prefix for all option names
+     */
     private $option_name = 'rpt_info';
+
+    /**
+     * connection to database
+     */
+    private $rpt_db = NULL;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -53,7 +61,10 @@ class Rpt_Info_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+        $db_name = get_option($this->option_name . '_database_name');
+        if ( $db_name) {
+            $this->rpt_db = new Rpt_Info_DB($db_name);
+        }
 	}
 
 	/**
@@ -164,8 +175,23 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_admin_unit_id' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_admin_unit_id' );
+        // Database settings
+        add_settings_section(
+            $this->option_name . '_database_setup',
+            __( 'Database', 'rptinfo' ),
+            array( $this, $this->option_name . '_database_setup_cb' ),
+            $this->plugin_name
+        );
+        add_settings_field(
+            $this->option_name . '_database_name',
+            __( 'Database name', 'rptinfo' ),
+            array( $this, $this->option_name . '_database_name_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_database_setup',
+            array( 'label_for' => $this->option_name . '_database_name' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_database_name' );
     }
-
 
     /**
      * Render the text for the Interfolio section
@@ -222,6 +248,38 @@ class Rpt_Info_Admin {
             . '" value="' . $unit_id
             . '">';
         echo '<p><em>The ID of the unit where system admins are assigned.</em></p>';
+    }
+
+    /**
+     * Render the text for the database section
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_database_setup_cb() {
+        echo '<p>' . __( 'Settings dealing with the local database.', 'rptinfo' ) . '</p>';
+    }
+
+    /**
+     * Setting callback function - RPT site URL
+     *
+     * @since  1.0.0
+     */
+    public function rpt_info_database_name_cb()
+    {
+        $database_name = get_option( $this->option_name . '_database_name' );
+        echo '<input type="text" name="' . $this->option_name . '_database_name'
+            . '" id="' . $this->option_name . '_database_name'
+            . '" size="100'
+            . '" value="' . $database_name
+            . '">';
+        echo '<p><em>Name of database to use for RPT info';
+        if ( $this->rpt_db ) {
+            echo ' (connected)';
+        }
+        else {
+            echo ' (not connected)';
+        }
+        echo '.</em></p>';
     }
 
 }
