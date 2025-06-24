@@ -125,8 +125,6 @@ class Rpt_Info_Admin {
      */
     public function display_options_page()
     {
-        $this->template_types = $this->rpt_db->get_template_type_list();
-        $template_types = $this->template_types;
         include_once 'partials/rpt-info-admin-display.php';
     }
 
