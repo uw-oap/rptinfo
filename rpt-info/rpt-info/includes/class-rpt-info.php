@@ -66,12 +66,10 @@ class Rpt_Info {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct()
-    {
+	public function __construct() {
 		if ( defined( 'RPT_INFO_VERSION' ) ) {
 			$this->version = RPT_INFO_VERSION;
-		}
-        else {
+		} else {
 			$this->version = '1.0.0';
 		}
 		$this->plugin_name = 'rpt-info';
@@ -80,6 +78,7 @@ class Rpt_Info {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+
 	}
 
 	/**
@@ -123,47 +122,7 @@ class Rpt_Info {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-rpt-info-public.php';
 
-        /**
-         * The class responsible for custom database functions.
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-db.php';
-
-        /**
-         * The class for cycle (academic year) info
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-cycle.php';
-
-        /**
-         * The class for system user info
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-user.php';
-
-        /**
-         * The class for base cases
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-case.php';
-
-        /**
-         * Helper functions
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/rpt-info-helper.php';
-
-        /**
-         * The class for promotion cases
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-promotion.php';
-
-        /**
-         * The class for sabbatical cases
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-sabbatical.php';
-
-        /**
-         * The class for templates
-         */
-//        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-rpt-info-template.php';
-
-        $this->loader = new Rpt_Info_Loader();
+		$this->loader = new Rpt_Info_Loader();
 
 	}
 
@@ -191,17 +150,13 @@ class Rpt_Info {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks()
-    {
+	private function define_admin_hooks() {
 
 		$plugin_admin = new Rpt_Info_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-        $this->loader->add_action( 'admin_menu', $plugin_admin, 'add_options_page' );
-        $this->loader->add_action( 'admin_init', $plugin_admin, 'register_settings' );
-        $this->loader->add_action( 'admin_post_process_template_type_updates', $plugin_admin,
-            'process_template_type_updates' );
+
 	}
 
 	/**
@@ -215,14 +170,9 @@ class Rpt_Info {
 
 		$plugin_public = new Rpt_Info_Public( $this->get_plugin_name(), $this->get_version() );
 
-        $this->loader->add_action( 'init', $plugin_public, 'register_shortcodes' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-        $this->loader->add_filter('query_vars', $plugin_public, 'add_query_vars' );
-        $this->loader->add_action('wp_ajax_rpt_info_candidate_search', $plugin_public,
-            'rpt_info_candidate_search');
-        $this->loader->add_action('admin_post_process_rptinfo_case_edit', $plugin_public,
-            'process_rptinfo_case_edit');
+
 	}
 
 	/**

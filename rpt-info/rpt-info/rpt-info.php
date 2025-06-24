@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       RPTinfo
  * Plugin URI:        https://ap.washington.edu
- * Description:       Plugin to interface with Interfolio RPT functions
+ * Description:       Connect with Interfolio RPT module
  * Version:           1.0.0
  * Author:            Jon Davis
  * Author URI:        https://ap.washington.edu/
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'RPT_INFO_VERSION', '3.0.0' );
+define( 'RPT_INFO_VERSION', '1.0.0' );
 
 /**
  * The code that runs during plugin activation.
