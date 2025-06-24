@@ -40,6 +40,8 @@ class Rpt_Info_Admin {
 	 */
 	private $version;
 
+    private $option_name = 'rpt_info';
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
