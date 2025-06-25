@@ -210,8 +210,8 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     return $result;
 }
 
-function report_table( $header = [], $data = [], $link_col = '', $link_val = '',
-        $detail_report = '', $template_type = '0', $ay = '' ) : string
+function rpt_report_table($header = [], $data = [], $link_col = '', $link_val = '',
+                          $detail_report = '', $template_type = '0', $ay = '' ) : string
 {
     global $wp;
     $result = '<table class="table table-striped table-bordered">';

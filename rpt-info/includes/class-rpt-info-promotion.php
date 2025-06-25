@@ -63,7 +63,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $this->PromotionTypeID = intval($posted_values['PromotionTypeID']);
     }
 
-    public function insert_promotion_array()
+    public function insert_promotion_array() : array
     {
         return array(
             'CaseID' => $this->CaseID,
@@ -76,7 +76,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         );
     }
 
-    public function listing_table_row( $rpt_case_url )
+    public function listing_table_row( $rpt_case_url ) : string
     {
         global $wp;
         $result = '<tr class="border-bottom border-right">';

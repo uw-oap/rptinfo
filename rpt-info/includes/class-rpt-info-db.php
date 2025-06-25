@@ -275,7 +275,7 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
     public function get_template_list($template_type_id, $unit_type ) : array
     {
         $result = [];
-/*        switch ( $unit_type ) {
+        switch ( $unit_type ) {
             case 'all':
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
@@ -297,8 +297,8 @@ and UnitType = 'undep' order by TemplateName", $template_type_id);
         }
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
-            $result[$row->InterfolioTemplateID] = new Rpt_Info_Template($row);
-        } */
+            $result[$row->RptTemplateID] = new Rpt_Info_Template($row);
+        }
         return $result;
     }
 

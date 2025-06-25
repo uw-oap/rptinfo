@@ -267,6 +267,7 @@ class Rpt_Info_Public
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
+//        echo 'wtf?';
         if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
@@ -408,7 +409,8 @@ class Rpt_Info_Public
         global $wp;
         echo '<p>Case list page</p>';
         $this->rpt_case_review_url = '';
-        $rpt_case_url = get_option('rpt_info_rpt_site_url');
+        $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/cases';
 //        $this->rpt_case_review_url = get_option('ap_rptinfo_rpt_case_review_url');
         $case_list = [];
         switch ( $this->active_template_type) {
@@ -856,22 +858,42 @@ class Rpt_Info_Public
     private function template_page()
     {
         global $wp;
+        $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/templates';
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' Template maintenance page</p>';
         $template_list = [];
-        $unit_type = get_query_var('unit_type', '');
-        /*        if ( $this->rpt_user->SystemAdmin() ) {
-                    $template_id = get_query_var('template_id', '');
-                    $in_use = get_query_var('in_use', '');
-                    if ( ( $template_id != '' ) && ( $in_use != '' ) ) {
-                        // update template in use
-                    }
-                }
-                else {
-                    //
-                } */
-//        $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
-        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
+        $unit_type = get_query_var('unit_type', 'all');
+/*        if ( $this->rpt_user->SystemAdmin() ) {
+            $template_id = get_query_var('template_id', '');
+            $in_use = get_query_var('in_use', '');
+            if ( ( $template_id != '' ) && ( $in_use != '' ) ) {
+                // update template in use
+            }
+        }
+        else {
+            //
+        } */
+        $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
+//        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
+        if ( count($template_list) > 0 ) {
+            echo '<table class="table table-bordered table-striped">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>ID</th>';
+            echo '<th>Name</th>';
+            echo '<th>Unit</th>';
+            echo '<th>Enabled</th>';
+            echo '<th>Action</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ( $template_list as $template ) {
+                echo $template->listing_table_row($rpt_template_url);
+            }
+            echo '</tbody>';
+            echo '</table>';
+        }
     }
 
     /* ********************** functions dealing with reports ********************** */
@@ -917,7 +939,7 @@ class Rpt_Info_Public
         }
 //        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
         if ( count($report_data) > 0 ) {
-            echo report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
+            echo rpt_report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
                 $detail_report, $this->active_template_type, $this->current_cycle->AcademicYear);
         }
     }

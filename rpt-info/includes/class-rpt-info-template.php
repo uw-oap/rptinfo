@@ -20,7 +20,7 @@ class Rpt_Info_Template
     public function __construct( $template_row = NULL )
     {
         if ( is_object( $template_row) ) {
-            $this->InterfolioTemplateID = $template_row->InterfolioTemplateID;
+            $this->RptTemplateID = $template_row->RptTemplateID;
             $this->TemplateName = $template_row->TemplateName;
             $this->RptTemplateTypeID = $template_row->RptTemplateTypeID;
             $this->TemplateTypeName = $template_row->TemplateTypeName;
@@ -42,6 +42,25 @@ class Rpt_Info_Template
         return array(
             'InUse' => $this->InUse
         );
+    }
+
+    public function listing_table_row( $rpt_template_url )
+    {
+        global $wp;
+        $result = '<tr>';
+        $result .= '<td><a href="' . $rpt_template_url . '/' . $this->RptTemplateID . '">';
+        $result .= $this->RptTemplateID . '</a></td>';
+        $result .= '<td>' . $this->TemplateName . '</td>';
+        $result .= '<td>';
+        $result .= $this->UnitName;
+        if ( ( $this->UnitType == 'dep' ) && ( $this->UnitName != $this->LevelOneName ) ) {
+            $result .= '<br>' . $this->LevelOneName;
+        }
+        $result .= '</td>';
+        $result .= '<td>' . $this->InUse . '</td>';
+        $result .= '<td>[action]</td>';
+        $result .= '</tr>';
+        return $result;
     }
 
 }
