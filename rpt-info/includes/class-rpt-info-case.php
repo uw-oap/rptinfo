@@ -149,4 +149,45 @@ class Rpt_Info_Case
         );
     }
 
+    public function candidate_info_card( $show_instructions = FALSE )
+    {
+        $result = '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">Candidate info</h4>';
+        if ( $show_instructions) {
+            $result .= '<p class="card-subtitle mb-2 text-muted">';
+            $result .= "Please review the candidate's Workday information below. If any data is incorrect, make the "
+                . 'change in Workday. Once updated, return to this page to initiate the case. <em>Do not</em> '
+                . 'initiate a case with incorrect information.</p>';
+        }
+        $result .= '<dl class="ptinfo-list">';
+        $result .= '<dt>Employee ID</dt>';
+        $result .= '<dd>' . $this->EmployeeID . '</dd>';
+        $result .= '<dt>Name</dt>';
+        $result .= '<dd>' . $this->LegalName . '</dd>';
+        $result .= '<dt>Appointment type</dt>';
+        $result .= '<dd>' . $this->AppointmentType . '</dd>';
+        $result .= '<dt>S/C/C</dt>';
+        $result .= '<dd>' . $this->LevelOneName . '</dd>';
+        $result .= '<dt>Appointing unit</dt>';
+        $result .= '<dd>' . $this->UnitName . '</dd>';
+        $result .= '<dt>Current rank</dt>';
+        $result .= '<dd>' . $this->CurrentRankName . '</dd>';
+        $result .= '<dt>Track type</dt>';
+        $result .= '<dd>' . $this->TrackTypeName . '</dd>';
+        if (count($this->OtherAppointments)) {
+            $result .= '<dt>Other appointments</dt>';
+            $result .= '<dd><ul>';
+            foreach ($this->OtherAppointments as $appointment) {
+                $result .= '<li>' . $appointment->RankName . ' in ' . $appointment->UnitName . ' ('
+                    . $appointment->AppointmentType . ')</li>';
+            }
+            $result .= '</ul></dd>';
+        }
+        $result .= '</dl>';
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
+        return $result;
+    }
+
 }
