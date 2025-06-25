@@ -483,8 +483,8 @@ class Rpt_Info_Public
         $search_nonce = wp_create_nonce( 'rpt_info_search' );
         $ajax_object = array('ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => $search_nonce,
-            'user_id' => $this->rpt_user->UWNetID,
             'template_type' => $this->active_template_type,
+            'user_id' => $this->rpt_user->UWNetID,
             'init_url' => esc_url(add_query_arg(array('rpt_page' => 'case',
                 'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => $this->active_template_type,
@@ -496,7 +496,8 @@ class Rpt_Info_Public
         );
 //        echo print_r($ajax_object);
         add_action('wp_footer', function() use ($ajax_object){
-            printf('<script type="text/javascript">let my_ajax_obj = %s</script>', json_encode($ajax_object));
+            printf('<script type="text/javascript">let my_ajax_obj = %s</script>',
+                json_encode($ajax_object));
         });
         echo '<div class="row">';
         echo '<div class="col-sm-12">';
@@ -552,7 +553,27 @@ class Rpt_Info_Public
     private function case_display( $case_id )
     {
         global $wp;
+        $case_obj = NULL;
         echo '<p>Case details page</p>';
+        switch ( $this->active_template_type) {
+            case '2': // promotion
+                $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
+                break;
+            case '5': // sabbatical
+                //
+                break;
+        }
+        $this->rpt_db->get_other_appointments($case_obj);
+        $case_obj->set_calculated_values();
+        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+        echo '<div class="row">';
+        echo '<div class="col-6">';
+        include_once 'partials/rpt-case-info-card.php';
+        echo '</div>'; // col 6
+        // template type specific fields in another card
+        echo '<div class="col-6">';
+        echo '</div>'; // col 6
+        echo '</div>'; // row
 
     }
 
@@ -626,40 +647,7 @@ class Rpt_Info_Public
             // display main case fields in card
             echo '<div class="row">';
             echo '<div class="col-6">';
-            echo '<div class="card">';
-            echo '<div class="card-body">';
-            echo '<h4 class="card-title">Candidate info</h4>';
-            echo '<p class="card-subtitle mb-2 text-muted">';
-            echo "Please review the candidate's Workday information below. If any data is incorrect, make the "
-                . 'change in Workday. Once updated, return to this page to initiate the case. <em>Do not</em> '
-                . 'initiate a case with incorrect information.</p>';
-            echo '<dl class="ptinfo-list">';
-            echo '<dt>Employee ID</dt>';
-            echo '<dd>' . $case_obj->EmployeeID . '</dd>';
-            echo '<dt>Name</dt>';
-            echo '<dd>' . $case_obj->LegalName . '</dd>';
-            echo '<dt>Appointment type</dt>';
-            echo '<dd>' . $case_obj->AppointmentType . '</dd>';
-            echo '<dt>S/C/C</dt>';
-            echo '<dd>' . $case_obj->LevelOneName . '</dd>';
-            echo '<dt>Appointing unit</dt>';
-            echo '<dd>' . $case_obj->UnitName . '</dd>';
-            echo '<dt>Current rank</dt>';
-            echo '<dd>' . $case_obj->CurrentRankName . '</dd>';
-            echo '<dt>Track type</dt>';
-            echo '<dd>' . $case_obj->TrackTypeName . '</dd>';
-            if (count($case_obj->OtherAppointments)) {
-                echo '<dt>Other appointments</dt>';
-                echo '<dd><ul>';
-                foreach ($case_obj->OtherAppointments as $appointment) {
-                    echo '<li>' . $appointment->RankName . ' in ' . $appointment->UnitName . ' ('
-                        . $appointment->AppointmentType . ')</li>';
-                }
-                echo '</ul></dd>';
-            }
-            echo '</dl>';
-            echo '</div>'; // card body
-            echo '</div>'; // card
+            include_once 'partials/rpt-case-info-card.php';
             echo '</div>'; // col 6
             // template type specific fields in another card
             echo '<div class="col-6">';
