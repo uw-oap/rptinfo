@@ -286,13 +286,13 @@ order by TemplateName", $template_type_id);
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
 TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
-and UnitType = 'dep' order by TemplateName", $template_type_id);
+and UnitType = 'dep' and TemplateName like '%\_dep%' order by TemplateName", $template_type_id);
                 break;
             case 'undep' :
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType, 
 TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
-and UnitType = 'undep' order by TemplateName", $template_type_id);
+and UnitType = 'undep' and TemplateName like '%\_undep%' order by TemplateName", $template_type_id);
                 break;
         }
         $this->last_query = $query;

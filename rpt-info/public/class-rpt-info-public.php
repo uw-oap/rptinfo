@@ -876,6 +876,19 @@ class Rpt_Info_Public
         } */
         $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
 //        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
+        echo '<p>Enable and disable templates found in RPT.</p>';
+        echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type, 'unit_type' => 'dep'), home_url($wp->request)))
+            . '">DEP</a> | ';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type, 'unit_type' => 'undep'), home_url($wp->request)))
+            . '">UNDEP</a> | ';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type, 'unit_type' => 'all'), home_url($wp->request)))
+            . '">All</a></p>';
         if ( count($template_list) > 0 ) {
             echo '<table class="table table-bordered table-striped">';
             echo '<thead>';
