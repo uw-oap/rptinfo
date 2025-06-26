@@ -171,7 +171,7 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
     {
         $result = NULL;
         $query = $this->rpt_db->prepare("SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID,
-            CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName,
+            CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName,
             LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
             UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
             ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName, ServicePeriod,

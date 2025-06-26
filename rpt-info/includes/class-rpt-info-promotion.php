@@ -100,4 +100,45 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         return $result;
     }
 
+    public function promotion_info_card( $rpt_case_url ) : string
+    {
+        $result = '';
+        $result .= '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">Promotion information</h4>';
+        $result .= '<dl class="rptinfo-list">';
+        $result .= '<dt>Proposed rank</dt>';
+        $result .= '<dd>' . $this->TargetRankName . '</dd>';
+        $result .= '<dt>Effective date</dt>';
+        $result .= '<dd>' . rpt_format_date($this->EffectiveDate) . '</dd>';
+        $result .= '<dt>Promotion type</dt>';
+        $result .= '<dd>' . $this->PromotionTypeName . '</dd>';
+        $result .= '<dt>RPT template</dt>';
+        $result .= '<dd>' . $this->TemplateName . '</dd>';
+        $result .= '<dt>Current status</dt>';
+        $result .= '<dd>' . $this->CaseStatus . '</dd>';
+        $result .= '<dt>Workflow step</dt>';
+        $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
+        $result .= '</dl>';
+        $result .= '<p><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a></p>';
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
+        return $result;
+    }
+
+    public function data_sheet_card( $rpt_case_url ) : string
+    {
+        $result = '';
+        $result .= '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">Data sheet</h4>';
+        $result .= '<dl class="rptinfo-list">';
+        $result .= '<dt>Proposed rank</dt>';
+        $result .= '<dd>' . $this->TargetRankName . '</dd>';
+        $result .= '</dl>';
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
+        return $result;
+    }
+
 }

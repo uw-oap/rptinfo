@@ -385,11 +385,11 @@ class Rpt_Info_Public
         elseif ( $case_id == 'new' ) {
             $this->search_form();
         }
-        elseif ( $case_id != 'new' ) {
-            $this->case_display($case_id);
-        }
         elseif ( $track_id > '0' ) {
             $this->case_edit($case_id, $track_id);
+        }
+        elseif ( $case_id != 'new' ) {
+            $this->case_display($case_id);
         }
     }
 
@@ -554,7 +554,8 @@ class Rpt_Info_Public
     {
         global $wp;
         $case_obj = NULL;
-        echo '<p>Case details page</p>';
+        $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/cases';
         switch ( $this->active_template_type) {
             case '2': // promotion
                 $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
@@ -565,16 +566,33 @@ class Rpt_Info_Public
         }
         $this->rpt_db->get_other_appointments($case_obj);
         $case_obj->set_calculated_values();
-//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         echo '<div class="row">';
         echo '<div class="col-6">';
         echo $case_obj->candidate_info_card(FALSE);
         echo '</div>'; // col 6
         // template type specific fields in another card
         echo '<div class="col-6">';
+        switch ( $case_obj->RptTemplateTypeID ) {
+            case '2':
+                echo $case_obj->promotion_info_card($rpt_case_url);
+                break;
+            case '5':
+                break;
+        }
         echo '</div>'; // col 6
         echo '</div>'; // row
-
+        echo '<div class="row">';
+        echo '<div class="col-6">';
+        switch ( $case_obj->RptTemplateTypeID ) {
+            case '2':
+                echo $case_obj->data_sheet_card($rpt_case_url);
+                break;
+            case '5':
+                break;
+        }
+        echo '</div>'; // col 6
+        echo '</div>'; // row
     }
 
     /**

@@ -253,3 +253,21 @@ function rpt_report_table($header = [], $data = [], $link_col = '', $link_val = 
     $result .= '</table>';
     return $result;
 }
+
+/**
+ * rpt_format_date
+ *      format arbitrary date using m/d/y for display
+ *
+ * @param $the_date
+ * @return string
+ */
+function rpt_format_date($the_date) : string
+{
+    $d = DateTime::createFromFormat('Y-m-d', $the_date);
+    if ($d === false) {
+        return '';
+    }
+    else {
+        return wp_date('m/d/Y', $d->getTimestamp());
+    }
+}

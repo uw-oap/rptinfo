@@ -22,7 +22,7 @@ class Rpt_Info_Case
     public $ParentID = 0;
     public $ParentUnitName = '';
     public $LevelOneID = 0;
-    public $LevelOneName = '';
+    public $LevelOneUnitName = '';
     public $CurrentRankKey = 0;
     public $CurrentRankName = '';
     public $DueDate = NULL;
@@ -46,6 +46,8 @@ class Rpt_Info_Case
         if ( $case_row ) {
             $this->CaseID = $case_row->CaseID;
             $this->InterfolioCaseID = $case_row->InterfolioCaseID;
+            $this->RptTemplateID = $case_row->RptTemplateID;
+            $this->TemplateName = $case_row->TemplateName;
             $this->RptTemplateTypeID = $case_row->RptTemplateTypeID;
             if ( $case_row->CandidateID ) {
                 $this->CandidateID = $case_row->CandidateID;
@@ -68,7 +70,7 @@ class Rpt_Info_Case
             $this->ParentID = $case_row->ParentID;
             $this->ParentUnitName = $case_row->ParentUnitName;
             $this->LevelOneID = $case_row->LevelOneID;
-            $this->LevelOneName = $case_row->LevelOneName;
+            $this->LevelOneUnitName = $case_row->LevelOneUnitName;
             $this->UnitName = $case_row->UnitName;
             $this->CurrentRankKey = $case_row->CurrentRankKey;
             $this->CurrentRankName = $case_row->CurrentRankName;
@@ -153,14 +155,14 @@ class Rpt_Info_Case
     {
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
-        $result .= '<h4 class="card-title">Candidate info</h4>';
+        $result .= '<h4 class="card-title">Candidate information</h4>';
         if ( $show_instructions) {
             $result .= '<p class="card-subtitle mb-2 text-muted">';
             $result .= "Please review the candidate's Workday information below. If any data is incorrect, make the "
                 . 'change in Workday. Once updated, return to this page to initiate the case. <em>Do not</em> '
                 . 'initiate a case with incorrect information.</p>';
         }
-        $result .= '<dl class="ptinfo-list">';
+        $result .= '<dl class="rptinfo-list">';
         $result .= '<dt>Employee ID</dt>';
         $result .= '<dd>' . $this->EmployeeID . '</dd>';
         $result .= '<dt>Name</dt>';
@@ -168,13 +170,15 @@ class Rpt_Info_Case
         $result .= '<dt>Appointment type</dt>';
         $result .= '<dd>' . $this->AppointmentType . '</dd>';
         $result .= '<dt>S/C/C</dt>';
-        $result .= '<dd>' . $this->LevelOneName . '</dd>';
+        $result .= '<dd>' . $this->LevelOneUnitName . '</dd>';
         $result .= '<dt>Appointing unit</dt>';
         $result .= '<dd>' . $this->UnitName . '</dd>';
         $result .= '<dt>Current rank</dt>';
         $result .= '<dd>' . $this->CurrentRankName . '</dd>';
         $result .= '<dt>Track type</dt>';
         $result .= '<dd>' . $this->TrackTypeName . '</dd>';
+        $result .= '<dt>Service period</dt>';
+        $result .= '<dd>' . $this->ServicePeriod . '</dd>';
         if (count($this->OtherAppointments)) {
             $result .= '<dt>Other appointments</dt>';
             $result .= '<dd><ul>';
