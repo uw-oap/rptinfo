@@ -243,6 +243,11 @@ class Rpt_Info_Public
                     'rpt_page' => 'report'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
             echo '">Reports</a>';
+            echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'rpt_page' => 'admin'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary';
+            echo '">Admin</a>';
             echo '</div>'; // button group
             echo '</div>'; // toolbar
         }
@@ -292,6 +297,9 @@ class Rpt_Info_Public
                             break;
                         case 'report':
                             $this->report_page();
+                            break;
+                        case 'admin':
+                            $this->admin_page();
                             break;
                         default:
                             $this->home_page();
@@ -450,12 +458,7 @@ class Rpt_Info_Public
 //            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
             echo '<table class="table table-border sort-table">';
             echo '<thead>';
-            echo '<tr>';
-            echo '<th>Candidate Name</th>';
-            echo '<th>Type</th>';
-            echo '<th>Status</th>';
-            echo '<th>Action</th>';
-            echo '</tr>';
+            echo $this->case_list_header_row();
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
@@ -470,6 +473,28 @@ class Rpt_Info_Public
         echo '</div>'; // col 12
         echo '</div>'; // row
     }
+
+    private function case_list_header_row() : string
+    {
+        $result = '<tr>';
+        switch ( $this->active_template_type) {
+            case '2':
+                $result .= '<th>Candidate Name</th>';
+                $result .= '<th>Type</th>';
+                $result .= '<th>Status</th>';
+                $result .= '<th>Action</th>';
+                break;
+            case '5':
+                $result .= '<th>Candidate Name</th>';
+                $result .= '<th>Quarters</th>';
+                $result .= '<th>Status</th>';
+                $result .= '<th>Action</th>';
+                break;
+        }
+        $result .= '</tr>';
+        return $result;
+    }
+
 
     /**
      * search_form
@@ -918,7 +943,7 @@ class Rpt_Info_Public
     /* ********************** functions dealing with reports ********************** */
 
     /**
-     * template_page
+     * report_page
      *      main page to control report functions
      *
      * @return void
@@ -962,5 +987,20 @@ class Rpt_Info_Public
                 $detail_report, $this->active_template_type, $this->current_cycle->AcademicYear);
         }
     }
+
+    /* ********************** functions dealing with admin ********************** */
+
+    /**
+     * admin_page
+     *      home for administrative functions
+     *
+     * @return void
+     */
+    private function admin_page()
+    {
+        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
+            . ' RPT administrative functions</p>';
+        echo '<p>';
+   }
 
 }

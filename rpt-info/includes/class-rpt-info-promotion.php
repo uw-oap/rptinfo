@@ -6,7 +6,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public $TargetRankName = '';
     public $ActionType = '';
     public $PromotionTypeID = 0;
-    public $PromotionTypeName = '';
+    public $PromotionCategoryName = '';
 
     // fields for datasheet
     public $Postponed = 'No';
@@ -34,7 +34,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $this->TargetRankKey = $case_row->TargetRankKey;
             $this->TargetRankName = $case_row->TargetRankName;
             $this->PromotionTypeID = $case_row->PromotionTypeID;
-            $this->PromotionTypeName = $case_row->PromotionTypeName;
+            $this->PromotionCategoryName = $case_row->PromotionCategoryName;
             $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
             if ( isset($case_row->DatasheetID) ) {
                 $this->DataSheetID = $case_row->DataSheetID;
@@ -83,8 +83,9 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
-        $result .= '<td>' . $this->PromotionTypeName . '</td>';
-        $result .= '<td>' . $this->CaseStatus;
+        $result .= '<td>' . $this->PromotionCategoryName . '</td>';
+        $result .= '<td>' . $this->CaseStatus . '<br>' . $this->WorkflowStepName . ' (Step '
+            . $this->WorkflowStepNumber . ')';
         if ( $this->InterfolioCaseID ) {
             $result .= '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
         }

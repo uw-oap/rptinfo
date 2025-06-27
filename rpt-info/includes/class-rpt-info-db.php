@@ -94,11 +94,12 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
     public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
-        $query = "SELECT CaseID, InterfolioCaseID, InterfolioTemplateID, CandidateID, EmployeeID, CaseStatus,
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus,
             LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
             UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
-            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName, TrackTypeName,
-            EffectiveDate, HasJoint, HasSecondary FROM RptPromotionDetails where InterfolioUnitID in ("
+            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionCategoryName, TrackTypeName,
+            EffectiveDate, HasJoint, HasSecondary, WorkflowStepNumber, WorkflowStepName
+FROM RptPromotionDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
