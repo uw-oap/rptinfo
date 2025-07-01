@@ -62,9 +62,8 @@ class Rpt_Info_Public
      * @param string $version The version of this plugin.
      * @since    1.0.0
      */
-    public function __construct($plugin_name, $version)
+    public function __construct( $plugin_name, $version )
     {
-
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $db_name = get_option('rpt_info_database_name');
@@ -148,6 +147,7 @@ class Rpt_Info_Public
         $vars[] = 'case_id'; // case/packet id
         $vars[] = 'candidate_id'; // candidate id
         $vars[] = 'track_id'; // appointment track id
+        $vars[] = 'template_id'; // template id
         $vars[] = 'unit_type'; // dep/undep
         $vars[] = 'unit_id'; // unit id
         $vars[] = 'template_id'; // template id
@@ -266,13 +266,13 @@ class Rpt_Info_Public
     {
         $this->force_login();
         ob_start();
+//        echo 'wtf?';
         $ay = get_query_var('ay', '2026');
         $status_type = get_query_var('status', '');
         $status_message = get_query_var('msg', '');
         $this->active_page = get_query_var('rpt_page', 'home');
         $this->active_template_type = get_query_var('template_type', '0');
         $case_id = get_query_var('case_id', '0');
-//        echo 'wtf?';
         if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
@@ -889,6 +889,7 @@ class Rpt_Info_Public
     private function template_page()
     {
         global $wp;
+        $rpt_template_id = get_query_var('template_id', '0');
         $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/templates';
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
@@ -905,39 +906,54 @@ class Rpt_Info_Public
         else {
             //
         } */
-        $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
-//        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
-        echo '<p>Enable and disable templates found in RPT.</p>';
-        echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type, 'unit_type' => 'dep'), home_url($wp->request)))
-            . '">DEP</a> | ';
-        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type, 'unit_type' => 'undep'), home_url($wp->request)))
-            . '">UNDEP</a> | ';
-        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type, 'unit_type' => 'all'), home_url($wp->request)))
-            . '">All</a></p>';
-        if ( count($template_list) > 0 ) {
-            echo '<table class="table table-bordered table-striped">';
-            echo '<thead>';
-            echo '<tr>';
-            echo '<th>ID</th>';
-            echo '<th>Name</th>';
-            echo '<th>Unit</th>';
-            echo '<th>Enabled</th>';
-            echo '<th>Action</th>';
-            echo '</tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            foreach ( $template_list as $template ) {
-                echo $template->listing_table_row($rpt_template_url);
-            }
-            echo '</tbody>';
-            echo '</table>';
+        if ( $rpt_template_id > '0' ) {
+            $this->template_display($rpt_template_id);
         }
+        else {
+            $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
+//        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
+            echo '<p>Enable and disable templates found in RPT.</p>';
+            echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type, 'unit_type' => 'dep'), home_url($wp->request)))
+                . '">DEP</a> | ';
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type, 'unit_type' => 'undep'), home_url($wp->request)))
+                . '">UNDEP</a> | ';
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type, 'unit_type' => 'all'), home_url($wp->request)))
+                . '">All</a></p>';
+            if (count($template_list) > 0) {
+                echo '<table class="table table-bordered table-striped">';
+                echo '<thead>';
+                echo '<tr>';
+                echo '<th>ID</th>';
+                echo '<th>Name</th>';
+                echo '<th>Unit</th>';
+                echo '<th>Enabled</th>';
+                echo '<th>Action</th>';
+                echo '</tr>';
+                echo '</thead>';
+                echo '<tbody>';
+                foreach ($template_list as $template) {
+                    echo $template->listing_table_row($rpt_template_url);
+                }
+                echo '</tbody>';
+                echo '</table>';
+            }
+        }
+    }
+
+    private function template_display( $rpt_template_id )
+    {
+        global $wp;
+        $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/templates';
+        $template_obj = $this->rpt_db->get_template_by_id($rpt_template_id);
+//        echo '<pre>' . print_r($template_obj, true) . '</pre>';
+        echo $template_obj->template_info_card($rpt_template_url);
     }
 
     /* ********************** functions dealing with reports ********************** */

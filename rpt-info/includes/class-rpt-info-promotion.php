@@ -23,7 +23,6 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public $Vote2Negative = '0';
     public $Vote2Absent = '0';
     public $Vote2Abstaining = '0';
-    // datasheet fields
     public $DataSheetID = '0';
 
     public function __construct( $case_row = NULL )
@@ -103,8 +102,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function promotion_info_card( $rpt_case_url ) : string
     {
-        $result = '';
-        $result .= '<div class="card">';
+        $result = '<div class="card">';
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Promotion information</h4>';
         $result .= '<dl class="rptinfo-list">';
@@ -121,7 +119,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dt>Workflow step</dt>';
         $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '</dl>';
-        $result .= '<p><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a></p>';
+        $result .= '<p><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID
+            . '">Go to case</a></p>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;

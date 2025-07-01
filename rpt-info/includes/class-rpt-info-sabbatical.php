@@ -54,6 +54,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     {
         return array();
     }
+
     public function listing_table_row( $rpt_case_url ) : string
     {
         global $wp;

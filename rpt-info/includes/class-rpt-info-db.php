@@ -98,7 +98,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
             LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
             UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
             ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionCategoryName, TrackTypeName,
-            EffectiveDate, HasJoint, HasSecondary, WorkflowStepNumber, WorkflowStepName
+            EffectiveDate, HasJoint, HasSecondary, WorkflowStepNumber, WorkflowStepName, TargetTrackTypeName
 FROM RptPromotionDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -299,6 +299,22 @@ and UnitType = 'undep' and TemplateName like '%\_undep%' order by TemplateName",
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->RptTemplateID] = new Rpt_Info_Template($row);
+        }
+        return $result;
+    }
+
+    public function get_template_by_id($template_id) : Rpt_Info_Template
+    {
+        $result = null;
+        $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, 
+ParentID, ParentName, LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, 
+RptTemplateTypeID, UnitType, TemplateTypeName, TemplateTypeInUse 
+FROM RptTemplateDetails where RptTemplateID = %s",
+            $template_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Template($result_row);
         }
         return $result;
     }
