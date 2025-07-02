@@ -889,29 +889,18 @@ class Rpt_Info_Public
     private function template_page()
     {
         global $wp;
-        $rpt_template_id = get_query_var('template_id', '0');
-        $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
-            . get_option('rpt_info_tenant_id') . '/templates';
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' Template maintenance page</p>';
         $template_list = [];
+        $allow_update = FALSE;
+        $rpt_template_id = get_query_var('template_id', '0');
         $unit_type = get_query_var('unit_type', 'all');
-/*        if ( $this->rpt_user->SystemAdmin() ) {
-            $template_id = get_query_var('template_id', '');
+        if ( $this->rpt_user->SystemAdmin() ) {
+            $allow_update = TRUE;
             $in_use = get_query_var('in_use', '');
-            if ( ( $template_id != '' ) && ( $in_use != '' ) ) {
-                // update template in use
+            if ( ( $rpt_template_id > '0' ) && ( $in_use != '' ) ) {
+                $this->update_template_in_use($rpt_template_id, $in_use);
             }
-        }
-        else {
-            //
-        } */
-        if ( $rpt_template_id > '0' ) {
-            $this->template_display($rpt_template_id);
-        }
-        else {
-            $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
-//        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
             echo '<p>Enable and disable templates found in RPT.</p>';
             echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
                     'ay' => $this->current_cycle->AcademicYear,
@@ -925,6 +914,20 @@ class Rpt_Info_Public
                     'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type, 'unit_type' => 'all'), home_url($wp->request)))
                 . '">All</a></p>';
+        }
+        if ( ( $rpt_template_id > '0' ) && ( $in_use == '' ) ) {
+            $this->template_display($rpt_template_id, $allow_update);
+        }
+        else {
+            $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
+                . get_option('rpt_info_tenant_id') . '/templates';
+            if ( $allow_update ) {
+                $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
+            }
+            else {
+                $template_list = $this->rpt_db->get_templates_for_user( $this->rpt_user );
+            }
+//        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
             if (count($template_list) > 0) {
                 echo '<table class="table table-bordered table-striped">';
                 echo '<thead>';
@@ -938,7 +941,8 @@ class Rpt_Info_Public
                 echo '</thead>';
                 echo '<tbody>';
                 foreach ($template_list as $template) {
-                    echo $template->listing_table_row($rpt_template_url);
+                    $template->AcademicYear = $this->current_cycle->AcademicYear;
+                    echo $template->listing_table_row($rpt_template_url, $allow_update);
                 }
                 echo '</tbody>';
                 echo '</table>';
@@ -946,16 +950,32 @@ class Rpt_Info_Public
         }
     }
 
-    private function template_display( $rpt_template_id )
+    private function template_display( $rpt_template_id, $allow_update = FALSE )
     {
         global $wp;
         $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/templates';
         $template_obj = $this->rpt_db->get_template_by_id($rpt_template_id);
+        $template_obj->AcademicYear = $this->current_cycle->AcademicYear;
 //        echo '<pre>' . print_r($template_obj, true) . '</pre>';
-        echo $template_obj->template_info_card($rpt_template_url);
+        echo $template_obj->template_info_card($rpt_template_url, $allow_update);
     }
 
+    private function update_template_in_use( $rpt_template_id, $in_use )
+    {
+        $template_obj = $this->rpt_db->get_template_by_id($rpt_template_id);
+        if ( $template_obj->InUse != $in_use ) {
+            $template_obj->InUse = $in_use;
+            $update_result = $this->rpt_db->update_template_in_use($template_obj);
+            if ( $update_result == 1 ) {
+                $this->show_status_message('success', 'Template In-Use updated successfully.');
+            }
+            else {
+                $this->show_status_message('danger', 'Template In-Use update failed. Please try again. '
+                    . $this->rpt_db->get_last_error());
+            }
+        }
+    }
     /* ********************** functions dealing with reports ********************** */
 
     /**

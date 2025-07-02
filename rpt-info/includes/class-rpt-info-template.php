@@ -17,6 +17,7 @@ class Rpt_Info_Template
     public $InUse = 'No';
     public $IsPublished = 'No';
     public $TemplateTypeInUse = 'No';
+    public $AcademicYear = '';
 
     public function __construct( $template_row = NULL )
     {
@@ -46,8 +47,9 @@ class Rpt_Info_Template
         );
     }
 
-    public function template_info_card( $rpt_template_url ) : string
+    public function template_info_card( $rpt_template_url, $allow_update = FALSE ) : string
     {
+        global $wp;
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Template information</h4>';
@@ -72,13 +74,24 @@ class Rpt_Info_Template
         $result .= '<dd>' . $this->InUse . '</dd>';
         $result .= '</dl>';
         $result .= '<p><a href="' . $rpt_template_url . '/' . $this->RptTemplateID
-            . '">Go to template</a></p>';
+            . '" class="btn btn-outline-secondary">Go to template in RPT</a>';
+        if ( $allow_update ) {
+            $update_value = ($this->InUse == 'Yes') ? 'No' : 'Yes';
+            $update_action = ($this->InUse == 'Yes') ? 'Disable' : 'Enable';
+            $result .= '&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                    'ay' => $this->AcademicYear,
+                    'template_id' => $this->RptTemplateID,
+                    'in_use' => $update_value,
+                    'template_type' => $this->RptTemplateTypeID), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">' . $update_action . '</a>';
+        }
+        $result .= '</p>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
     }
 
-    public function listing_table_row( $rpt_template_url )
+    public function listing_table_row( $rpt_template_url, $allow_update = FALSE ) : string
     {
         global $wp;
         $result = '<tr>';
@@ -98,6 +111,16 @@ class Rpt_Info_Template
                 'ay' => $this->AcademicYear,
                 'rpt_page' => 'template'), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Details</a>';
+        if ( $allow_update ) {
+            $update_value = ($this->InUse == 'Yes') ? 'No' : 'Yes';
+            $update_action = ($this->InUse == 'Yes') ? 'Disable' : 'Enable';
+            $result .= '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
+                            'ay' => $this->AcademicYear,
+                            'template_id' => $this->RptTemplateID,
+                            'in_use' => $update_value,
+                            'template_type' => $this->RptTemplateTypeID), home_url($wp->request)))
+                        . '" class="btn btn-outline-secondary">' . $update_action . '</a>';
+        }
         $result .= '</td>';
         $result .= '</tr>';
         return $result;

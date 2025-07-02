@@ -104,7 +104,6 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
             . implode(',', array_keys($user_obj->Units)) . ")";
-        ;
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->CaseID] = new Rpt_Info_Promotion($row);
@@ -303,6 +302,23 @@ and UnitType = 'undep' and TemplateName like '%\_undep%' order by TemplateName",
         return $result;
     }
 
+    public function get_templates_for_user( Rpt_Info_User $user_obj )
+    {
+        $result = [];
+        $query = "SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
+LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where InterfolioUnitID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
+            . implode(',', array_keys($user_obj->Units)) . ")";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->RptTemplateID] = new Rpt_Info_Template($row);
+        }
+        return $result;
+    }
+
     public function get_template_by_id($template_id) : Rpt_Info_Template
     {
         $result = null;
@@ -317,6 +333,17 @@ FROM RptTemplateDetails where RptTemplateID = %s",
             $result = new Rpt_Info_Template($result_row);
         }
         return $result;
+    }
+
+    public function update_template_in_use( Rpt_Info_Template $template )
+    {
+        $query_result = $this->rpt_db->update('RptTemplate', $template->update_array(),
+            array('RptTemplateID' => $template->RptTemplateID));
+        $this->last_query = $this->rpt_db->last_error;
+        if ( $query_result === FALSE ) {
+            return 0;
+        }
+        return $query_result;
     }
 
     /** ******************* report functions ********************************** */
