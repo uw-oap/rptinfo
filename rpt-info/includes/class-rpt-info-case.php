@@ -126,7 +126,7 @@ class Rpt_Info_Case
     public function update_from_post( $posted_values )
     {
         $this->CaseID = intval($posted_values['CaseID']);
-        $this->InterfolioCaseID = intval($posted_values['InterfolioCaseID']);
+        $this->RptCaseID = intval($posted_values['RptCaseID']);
         $this->CandidateID = intval($posted_values['CandidateID']);
         $this->CandidateKey = intval($posted_values['CandidateKey']);
         $this->InitiatorID = intval($posted_values['InitiatorID']);
@@ -141,7 +141,7 @@ class Rpt_Info_Case
     public function insert_case_array()
     {
         return array(
-            'InterfolioCaseID' => $this->InterfolioCaseID,
+            'RptCaseID' => $this->InterfolioCaseID,
             'RptTemplateID' => $this->RptTemplateID,
             'CandidateID' => $this->CandidateID,
             'InitiatorID' => $this->InitiatorID,

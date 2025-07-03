@@ -563,6 +563,9 @@ class Rpt_Info_Public
             case '2':
                 $search_result = $this->rpt_db->promotion_candidate_search($user_obj, $search_string);
                 break;
+            case '5':
+                $search_result = $this->rpt_db->sabbatical_candidate_search($user_obj, $search_string);
+                break;
         }
         $sql = '';
         $sql = $this->rpt_db->get_last_query();
@@ -591,7 +594,7 @@ class Rpt_Info_Public
         }
         $this->rpt_db->get_other_appointments($case_obj);
         $case_obj->set_calculated_values();
-        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         echo '<div class="row">';
         echo '<div class="col-6">';
         echo $case_obj->candidate_info_card(FALSE);
@@ -726,7 +729,7 @@ class Rpt_Info_Public
             . esc_url(admin_url('admin-post.php'))
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
-        echo rpt_form_hidden_field('InterfolioCaseID', $case_obj->InterfolioCaseID);
+        echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
@@ -747,7 +750,7 @@ class Rpt_Info_Public
             'form-control', FALSE, FALSE);
         echo rpt_form_dropdown_list('PromotionTypeID', $case_obj->PromotionTypeID, 'Promotion type',
             $promotion_type_list, '', FALSE, 'form-control', '', '');
-        echo rpt_template_select('InterfolioTemplateID', $case_obj->InterfolioTemplateID, 'RPT Template',
+        echo rpt_template_select('RptTemplateID', $case_obj->RptTemplateID, 'RPT Template',
             $template_list, FALSE, 'form-control', ( count($template_list) > 1) ? 'Select...' : '',
             'Choose which template to use', TRUE);
         echo '<div class="form-goup row">';
@@ -831,7 +834,7 @@ class Rpt_Info_Public
         $redirect_url = '';
         if ( ! empty($_POST) ) {
             $template_type_id = intval($_POST['RptTemplateTypeID']);
-            $case_id = intval($_POST['InterfolioCaseID']);
+            $case_id = intval($_POST['RptCaseID']);
             $candidate_id = intval($_POST['CandidateID']);
             $redirect_url = sanitize_text_field($_POST['RedirectURL']);
             $ay = intval($_POST['ay']);

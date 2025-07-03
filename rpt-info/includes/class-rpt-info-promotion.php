@@ -5,7 +5,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public $TargetRankKey = 0;
     public $TargetRankName = '';
     public $ActionType = '';
-    public $PromotionTypeID = 0;
+    public $PromotionCategoryID = 0;
     public $PromotionCategoryName = '';
 
     // fields for datasheet
@@ -32,7 +32,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         if ( $case_row ) {
             $this->TargetRankKey = $case_row->TargetRankKey;
             $this->TargetRankName = $case_row->TargetRankName;
-            $this->PromotionTypeID = $case_row->PromotionTypeID;
+            $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
             $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
             if ( isset($case_row->DatasheetID) ) {
@@ -58,20 +58,21 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         parent::update_from_post( $posted_values );
         $this->TargetRankKey = intval($posted_values['TargetRankKey']);
         $this->EffectiveDate = sanitize_text_field($posted_values['EffectiveDate']);
-        $this->InterfolioTemplateID = intval($posted_values['InterfolioTemplateID']);
-        $this->PromotionTypeID = intval($posted_values['PromotionTypeID']);
+        $this->RptTemplateID = intval($posted_values['RptTemplateID']);
+        $this->PromotionCategoryID = intval($posted_values['PromotionCategoryID']);
     }
 
     public function insert_promotion_array() : array
     {
         return array(
             'CaseID' => $this->CaseID,
-            'PromotionTypeID' => $this->PromotionTypeID,
+            'PromotionCategoryID' => $this->PromotionCategoryID,
             'CurrentRankKey' => $this->CurrentRankKey,
             'TargetRankKey' => $this->TargetRankKey,
             'NewTermLength' => $this->NewTermLength,
             'EffectiveDate' => $this->EffectiveDate,
-            'HasJoint'
+            'DataSheetID' => '0',
+            'SubcommitteeMembers' => ''
         );
     }
 
@@ -111,7 +112,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dt>Effective date</dt>';
         $result .= '<dd>' . rpt_format_date($this->EffectiveDate) . '</dd>';
         $result .= '<dt>Promotion type</dt>';
-        $result .= '<dd>' . $this->PromotionTypeName . '</dd>';
+        $result .= '<dd>' . $this->PromotionCategoryName . '</dd>';
         $result .= '<dt>RPT template</dt>';
         $result .= '<dd>' . $this->TemplateName . '</dd>';
         $result .= '<dt>Current status</dt>';
