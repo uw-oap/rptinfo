@@ -614,11 +614,14 @@ class Rpt_Info_Public
         echo '<div class="col-6">';
         switch ( $case_obj->RptTemplateTypeID ) {
             case '2':
-                echo $case_obj->data_sheet_card($rpt_case_url);
+                echo $case_obj->data_sheet_card();
                 break;
             case '5':
                 break;
         }
+        echo '</div>'; // col 6
+        echo '<div class="col-6">';
+        echo $case_obj->rpt_info_card();
         echo '</div>'; // col 6
         echo '</div>'; // row
     }
@@ -748,7 +751,7 @@ class Rpt_Info_Public
             $case_obj->propose_effective_date($this->current_cycle),
             'Effective date', FALSE,
             'form-control', FALSE, FALSE);
-        echo rpt_form_dropdown_list('PromotionTypeID', $case_obj->PromotionTypeID, 'Promotion type',
+        echo rpt_form_dropdown_list('PromotionCategoryID', $case_obj->PromotionCategoryID, 'Promotion type',
             $promotion_type_list, '', FALSE, 'form-control', '', '');
         echo rpt_template_select('RptTemplateID', $case_obj->RptTemplateID, 'RPT Template',
             $template_list, FALSE, 'form-control', ( count($template_list) > 1) ? 'Select...' : '',
@@ -847,6 +850,7 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_post($_POST);
+//            echo '<pre>' . print_r($case_obj, TRUE) . '</pre>'; exit;
             $save_action = 'submit';
             $case_obj->CaseStatus = 'Submitted';
             // anything else?

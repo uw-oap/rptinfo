@@ -45,7 +45,7 @@ class Rpt_Info_Case
     {
         if ( $case_row ) {
             $this->CaseID = $case_row->CaseID;
-            $this->InterfolioCaseID = $case_row->InterfolioCaseID;
+            $this->RptCaseID = $case_row->RptCaseID;
             $this->RptTemplateID = $case_row->RptTemplateID;
             $this->TemplateName = $case_row->TemplateName;
             $this->RptTemplateTypeID = $case_row->RptTemplateTypeID;
@@ -136,17 +136,20 @@ class Rpt_Info_Case
         $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
         $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
         $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
+        $this->AcademicYear = intval($posted_values['ay']);
     }
 
     public function insert_case_array()
     {
         return array(
-            'RptCaseID' => $this->InterfolioCaseID,
+            'RptCaseID' => $this->RptCaseID,
             'RptTemplateID' => $this->RptTemplateID,
+            'AcademicYear' => $this->AcademicYear,
             'CandidateID' => $this->CandidateID,
             'InitiatorID' => $this->InitiatorID,
             'CandidateKey' => $this->CandidateKey,
             'UWODSAppointmentTrackKey' => $this->UWODSAppointmentTrackKey,
+            'CurrentRankKey' => $this->CurrentRankKey,
             'CaseStatus' => $this->CaseStatus,
         );
     }

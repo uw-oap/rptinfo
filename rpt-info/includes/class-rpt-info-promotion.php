@@ -67,7 +67,6 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         return array(
             'CaseID' => $this->CaseID,
             'PromotionCategoryID' => $this->PromotionCategoryID,
-            'CurrentRankKey' => $this->CurrentRankKey,
             'TargetRankKey' => $this->TargetRankKey,
             'NewTermLength' => $this->NewTermLength,
             'EffectiveDate' => $this->EffectiveDate,
@@ -117,20 +116,19 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dd>' . $this->TemplateName . '</dd>';
         $result .= '<dt>Current status</dt>';
         $result .= '<dd>' . $this->CaseStatus . '</dd>';
-        $result .= '<dt>Workflow step</dt>';
-        $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '</dl>';
-        $result .= '<p><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID
-            . '">Go to case</a></p>';
+        if ( $this->RptCaseID ) {
+            $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
+                . '">Go to case</a></p>';
+        }
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
     }
 
-    public function data_sheet_card( $rpt_case_url ) : string
+    public function data_sheet_card() : string
     {
-        $result = '';
-        $result .= '<div class="card">';
+        $result = '<div class="card">';
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Data sheet</h4>';
         $result .= '<dl class="rptinfo-list">';
@@ -140,6 +138,27 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
+    }
+
+    public function rpt_info_card() : string
+    {
+        $result = '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">RPT details</h4>';
+        $result .= '<dl class="rptinfo-list">';
+        $result .= '<dt>Interfolio Case ID</dt>';
+        $result .= '<dd>' . $this->RptCaseID . '</dd>';
+        $result .= '<dt>Workflow step</dt>';
+        $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
+        $result .= '<dt>Cover sheet</dt>';
+        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dt>Data sheet</dt>';
+        $result .= '<dd>' . (($this->DataSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '</dl>';
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
+        return $result;
+
     }
 
 }

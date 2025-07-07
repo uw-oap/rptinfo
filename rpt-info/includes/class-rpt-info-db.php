@@ -209,13 +209,13 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
     {
         $result = NULL;
         $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID,
-CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName,
+CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID,
 LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
 UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
 ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
-Vote2Negative, Vote2Absent, Vote2Abstaining FROM RptPromotionDetails where CaseID = %s", $case_id);
+Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -247,11 +247,12 @@ Vote2Negative, Vote2Absent, Vote2Abstaining FROM RptPromotionDetails where CaseI
     {
         // insert base case record
         $query_result = $this->rpt_db->insert('RptCase', $case_obj->insert_case_array());
-        $case_obj->CaseID = $this->rpt_db->insert_id();
-        $this->last_query = $this->rpt_db->last_error;
+        $case_obj->CaseID = $this->rpt_db->insert_id;
+        $this->last_query = $this->rpt_db->last_query;
         switch ( $case_obj->RptTemplateTypeID ) {
             case '2' :
                 $query_result = $this->rpt_db->insert('RptPromotion', $case_obj->insert_promotion_array());
+//                echo $this->rpt_db->last_query; exit;
                 break;
             case '5' :
                 break;
