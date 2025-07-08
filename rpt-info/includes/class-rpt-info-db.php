@@ -351,19 +351,19 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
             case 'all':
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
-TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where IsPublished = 'Yes' and RptTemplateTypeID = %s
 order by TemplateName", $template_type_id);
                 break;
             case 'dep' :
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
-TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where IsPublished = 'Yes' and RptTemplateTypeID = %s
 and UnitType = 'dep' and TemplateName like '%\_dep%' order by TemplateName", $template_type_id);
                 break;
             case 'undep' :
                 $query = $this->rpt_db->prepare("SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType, 
-TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where RptTemplateTypeID = %s
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where IsPublished = 'Yes' and RptTemplateTypeID = %s
 and UnitType = 'undep' and TemplateName like '%\_undep%' order by TemplateName", $template_type_id);
                 break;
         }
