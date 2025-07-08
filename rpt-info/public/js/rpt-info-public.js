@@ -56,6 +56,24 @@
 			let link = $('#UnitSelect option:selected').data('link');
 			window.open(link, "_self");
 		});
+		$('#rpt-quarter-select-group').change(function() {
+			let ccount = $('.QtrYes:checked').length;
+			$('#QtrCount').text(ccount);
+			switch (ccount) {
+				case 1:
+					$('#SalarySupport').text('100%');
+					break;
+				case 2:
+					$('#SalarySupport').text('75%');
+					break;
+				case 3:
+					$('#SalarySupport').text('67%');
+					break;
+				default:
+					$('#SalarySupport').text('');
+					break;
+			}
+		});
 		$('#rptinfo_case_form').submit(function(e){
 			if( !confirm('Are you sure you want to submit the case?') ){
 				e.preventDefault();

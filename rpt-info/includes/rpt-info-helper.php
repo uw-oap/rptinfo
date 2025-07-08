@@ -35,7 +35,7 @@ function rpt_form_target_rank_list($field_name, $field_value, $label_text, $valu
                                   $hide_group = FALSE, $control_class = '', $zero_text = '', $help_text = '',
                                   $required = FALSE) : string
 {
-    $result = '<div class="form-group" id="' . $field_name . '-group"';
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
         $result .= ' style="display:none;"';
     }
@@ -87,7 +87,7 @@ function rpt_template_select($field_name, $field_value, $label_text, $value_list
                             $hide_group = FALSE, $control_class = '', $zero_text = '', $help_text = '',
                             $required = FALSE) : string
 {
-    $result = '<div class="form-group" id="' . $field_name . '-group"';
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
         $result .= ' style="display:none;"';
     }
@@ -133,7 +133,7 @@ function rpt_template_select($field_name, $field_value, $label_text, $value_list
 function rpt_form_date_select($field_name, $field_value, $label_text, $hide_group = FALSE,
                              $control_class = '', $init_disabled = FALSE, $init_required = FALSE, $help_text = '')
 {
-    $result = '<div class="form-group" id="' . $field_name . '-group"';
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
         $result .= ' style="display:none;"';
     }
@@ -176,7 +176,7 @@ function rpt_form_date_select($field_name, $field_value, $label_text, $hide_grou
 function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_list, $display_key = '',
                                $hide_group = FALSE, $control_class = '', $zero_text = '', $help_text = '') : string
 {
-    $result = '<div class="form-group" id="' . $field_name . '-group"';
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
         $result .= ' style="display:none;"';
     }
@@ -209,6 +209,155 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     $result .= '  </div>'; // <!-- form group -->
     return $result;
 }
+
+function rpt_form_quarter_select($summer_value, $fall_value, $winter_value, $spring_value, $show_summer = FALSE)
+{
+    $result = '<div class="form-group rpt-select-group" id="rpt-quarter-select-group">';
+    $result .= '<table>';
+    $result .= '<thead>';
+    $result .= '<tr>';
+    $result .= '<th>Quarter</th>';
+    $result .= '<th>Requested</th>';
+    $result .= '</tr>';
+    $result .= '</thead>';
+    $result .= '<tbody>';
+    if ( $show_summer ) {
+        $result .= '<tr>';
+        $result .= '<td>Summer</td>';
+        $result .= '<td>';
+        $result .= '<input type="radio" id="SummerQtrYes" name="SummerQtr" class="QtrYes" value="Yes"';
+        if ( $summer_value == 'Yes' ) {
+            $result .= ' checked="checked"';
+        }
+        $result .= '>&nbsp;';
+        $result .= '<label for="SummerQtrYes">Yes</label>&nbsp;';
+        $result .= '<input type="radio" id="SummerQtrNo" name="SummerQtr" value="No"';
+        if ( $summer_value == 'No' ) {
+            $result .= ' checked="checked"';
+        }
+        $result .= '>&nbsp;';
+        $result .= '<label for="SummerQtrNo">No</label>';
+        $result .= '</td>';
+        $result .= '</tr>';
+    }
+    $result .= '<tr>';
+    $result .= '<td>Fall</td>';
+    $result .= '<td>';
+    $result .= '<input type="radio" id="FallQtrYes" name="FallQtr" class="QtrYes" value="Yes"';
+    if ( $fall_value == 'Yes' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="FallQtrYes">Yes</label>&nbsp;';
+    $result .= '<input type="radio" id="FallQtrNo" name="FallQtr" value="No"';
+    if ( $fall_value == 'No' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="FallQtrNo">No</label>';
+    $result .= '</td>';
+    $result .= '</tr>';
+    $result .= '<tr>';
+    $result .= '<td>Winter</td>';
+    $result .= '<td>';
+    $result .= '<input type="radio" id="WinterQtrYes" name="WinterQtr" class="QtrYes" value="Yes"';
+    if ( $winter_value == 'Yes' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="WinterQtrYes">Yes</label>&nbsp;';
+    $result .= '<input type="radio" id="WinterQtrNo" name="WinterQtr" value="No"';
+    if ( $winter_value == 'No' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="WinterQtrNo">No</label>';
+    $result .= '</td>';
+    $result .= '</tr>';
+    $result .= '<tr>';
+    $result .= '<td>Spring</td>';
+    $result .= '<td>';
+    $result .= '<input type="radio" id="SpringQtrYes" name="SpringQtr" class="QtrYes" value="Yes"';
+    if ( $spring_value == 'Yes' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="SpringQtrYes">Yes</label>&nbsp;';
+    $result .= '<input type="radio" id="SpringQtrNo" name="SpringQtr" value="No"';
+    if ( $spring_value == 'No' ) {
+        $result .= ' checked="checked"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="SpringQtrNo">No</label>';
+    $result .= '</td>';
+    $result .= '</tr>';
+    $result .= '</tbody>';
+    $result .= '</table>';
+    $result .= '</div>'; // <!-- form group -->
+    return $result;
+}
+
+function rpt_yes_no_radio($field_name, $field_value, $label_text, $hide_group, $init_required ) : string
+{
+    $result = '<div class="form-group row rpt-select-group" id="' . $field_name . '-group"';
+    if ( $hide_group ) {
+        $result .= ' style="display:none;"';
+    }
+    $result .= '>';
+    $result .= '<div class="col-md-6">' . $label_text . '</div>';
+    $result .= '<div class="col-md-6">';
+    $result .= '<input type="radio" id="' . $field_name . 'Yes" name="' . $field_name
+        . '" value="Yes"';
+    if ( $field_value == 'Yes' ) {
+        $result .= ' checked="checked"';
+    }
+    if ( $init_required ) {
+        $result .= ' required="required"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="' . $field_name . 'Yes">Yes</label>&nbsp;';
+    $result .= '<input type="radio" id="' . $field_name . 'No" name="' . $field_name
+        . '" value="No"';
+    if ( $field_value == 'No' ) {
+        $result .= ' checked="checked"';
+    }
+    if ( $init_required ) {
+        $result .= ' required="required"';
+    }
+    $result .= '>&nbsp;';
+    $result .= '<label for="' . $field_name . 'No">No</label>';
+    $result .= '</div>'; // col
+    $result .= '</div>'; // <!-- form group -->
+    return $result;
+}
+
+function rpt_form_textarea($field_name, $field_value, $label_text, $width, $height, $hide_group = FALSE,
+                       $init_disabled = FALSE, $help_text = array(), $maxlength = 0)
+{
+    $result = '  <div class="form-group row rpt-select-group" id="' . $field_name . '-group"';
+    if ( $hide_group ) {
+        $result .= ' style="display:none;"';
+    }
+    $result .= '>';
+    $result .= '<div class="col-md-12"><label class="control-label" for="' . $field_name . '">' . $label_text . '</label>';
+    $result .= '      <textarea type="text" name="' . $field_name . '" id="' . $field_name . '" cols="'
+        . $width . '" rows="' . $height . '"';
+    if ( $init_disabled ) {
+        $result .= ' readonly';
+    }
+    if ( $maxlength ) {
+        $result .= ' maxlength="' . $maxlength . '"';
+    }
+    $result .= '>'
+        . stripslashes($field_value) . '</textarea>';
+    if ( array_key_exists($field_name, $help_text) ) {
+        $result .= '<br><em class="help-block">' . $help_text[$field_name] . '</em>';
+    }
+    $result .= '  </div>'; // <!-- col -->
+    $result .= '</div>'; // <!-- row -->
+    return $result;
+}
+
 
 function rpt_report_table($header = [], $data = [], $link_col = '', $link_val = '',
                           $detail_report = '', $template_type = '0', $ay = '' ) : string

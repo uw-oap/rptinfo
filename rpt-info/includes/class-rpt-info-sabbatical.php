@@ -52,7 +52,25 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
 
     public function insert_sabbatical_array() : array
     {
-        return array();
+        return array(
+            'CaseID' => $this->CaseID,
+            'SummerQtr' => $this->SummerQtr,
+            'FallQtr' => $this->FallQtr,
+            'WinterQtr' => $this->WinterQtr,
+            'SpringQtr' => $this->SpringQtr,
+            'SalarySupportPct' => $this->SalarySupportPct,
+            'RosterPct' => $this->RosterPct,
+            'MonthlySalary' => $this->MonthlySalary,
+            'TenureAmount' => $this->TenureAmount,
+            'HireDate' => $this->HireDate,
+            'TrackStartDate' => $this->TrackStartDate,
+            'AppointmentStartDate' => $this->AppointmentStartDate,
+            'LastSabbaticalDate' => $this->LastSabbaticalDate,
+            'UpForPromotion' => $this->UpForPromotion,
+            'MultiYear' => $this->MultiYear,
+            'EligibilityReport' => $this->EligibilityReport,
+            'EligibilityNote' => $this->EligibilityNote
+        );
     }
 
     public function listing_table_row( $rpt_case_url ) : string
@@ -62,10 +80,38 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         return $result;
     }
 
-    public function sabbatical_info_card() : string
+    public function sabbatical_info_card($rpt_case_url) : string
     {
         global $wp;
-        $result = '';
+        $result = '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">Sabbatical information</h4>';
+        $result .= '<dl class="rptinfo-list">';
+        $result .= '</dl>';
+        if ( $this->RptCaseID ) {
+            $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
+                . '">Go to case</a></p>';
+        }
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
+        return $result;
+    }
+
+    public function rpt_info_card() : string
+    {
+        $result = '<div class="card">';
+        $result .= '<div class="card-body">';
+        $result .= '<h4 class="card-title">RPT details</h4>';
+        $result .= '<dl class="rptinfo-list">';
+        $result .= '<dt>Interfolio Case ID</dt>';
+        $result .= '<dd>' . $this->RptCaseID . '</dd>';
+        $result .= '<dt>Workflow step</dt>';
+        $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
+        $result .= '<dt>Cover sheet</dt>';
+        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '</dl>';
+        $result .= '</div>'; // card body
+        $result .= '</div>'; // card
         return $result;
     }
 

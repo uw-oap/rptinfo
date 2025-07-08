@@ -173,16 +173,21 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
     public function get_sabbatical_case_for_candidate(int $track_id)
     {
         $result = NULL;
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus,
-            LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
-            UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, 
-            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionTypeID, PromotionTypeName,
-            EffectiveDate, HasJoint, HasSecondary FROM RptPromotionDetails where UWODSAppointmentTrackKey = '"
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
+RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, FirstName, 
+LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
+UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
+ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
+TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, CaseStatus, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, SummerQtr, FallQtr, 
+WinterQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, 
+AppointmentStartDate, LastSabbaticalDate, UpForPromotion, MultiYear, EligibilityReport, 
+EligibilityNote FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = '"
             . $track_id . "'";
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
-            $result = new Rpt_Info_Promotion($result_row);
+            $result = new Rpt_Info_Sabbatical($result_row);
         }
         return $result;
     }
@@ -201,6 +206,27 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
             $result = new Rpt_Info_Promotion($result_row);
+        }
+        return $result;
+    }
+
+    public function get_sabbatical_from_track(int $track_id)
+    {
+        $result = NULL;
+        $query = $this->rpt_db->prepare("SELECT '0' CaseID, '0' RptCaseID, '0' RptTemplateID, '' AcademicYear, '' TemplateName, 
+'5' RptTemplateTypeID, 'Sabbatical' TemplateTypeName, InterfolioUserID CandidateID, 
+'0' CaseDataSectionID, LegalName, UWNetID, EmployeeID, '0' InitiatorID, '' InitiatorName,
+UWODSPersonKey CandidateKey,UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, 
+InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, 
+UWODSRankKey CurrentRankKey, RankName CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
+'N/A' CaseStatus, 'No' SummerQtr, 'No' FallQtr, 'No' WinterQtr, 'No' SpringQtr, '' SalarySupportPct,
+'' RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear
+from CurrentSabbaticalEligible
+where UWODSAppointmentTrackKey = %s", $track_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Sabbatical($result_row);
         }
         return $result;
     }

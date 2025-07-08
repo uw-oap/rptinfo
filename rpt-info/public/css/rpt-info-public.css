@@ -2,3 +2,10 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+.rpt-select-group label {
+    font-size: 17px;
+    font-weight: 400;
+}
+.rptinfo-list dd {
+   margin-left: 2em;
+}

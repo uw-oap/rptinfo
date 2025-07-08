@@ -158,7 +158,6 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
-
     }
 
 }
