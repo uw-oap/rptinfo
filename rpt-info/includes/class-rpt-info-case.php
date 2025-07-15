@@ -191,6 +191,9 @@ class Rpt_Info_Case
             }
             $result .= '</ul></dd>';
         }
+        else {
+            $result .= '<dd>None</dd>';
+        }
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card

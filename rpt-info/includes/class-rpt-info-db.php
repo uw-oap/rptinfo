@@ -216,11 +216,12 @@ FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $query = $this->rpt_db->prepare("SELECT '0' CaseID, '0' RptCaseID, '0' RptTemplateID, '' AcademicYear, '' TemplateName, 
 '5' RptTemplateTypeID, 'Sabbatical' TemplateTypeName, InterfolioUserID CandidateID, 
 '0' CaseDataSectionID, LegalName, UWNetID, EmployeeID, '0' InitiatorID, '' InitiatorName,
-UWODSPersonKey CandidateKey,UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, 
-InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, 
+UWODSPersonKey CandidateKey,UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, TenureAmount,
+InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, IsTenured,
 UWODSRankKey CurrentRankKey, RankName CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
 'N/A' CaseStatus, 'No' SummerQtr, 'No' FallQtr, 'No' WinterQtr, 'No' SpringQtr, '' SalarySupportPct,
-'' RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear
+RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear,
+AppointmentStartDate, AppointmentEndDate
 from CurrentSabbaticalEligible
 where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
