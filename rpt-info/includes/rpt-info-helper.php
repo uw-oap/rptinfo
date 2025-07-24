@@ -410,13 +410,18 @@ function rpt_report_table($header = [], $data = [], $link_col = '', $link_val = 
  * @param $the_date
  * @return string
  */
-function rpt_format_date($the_date) : string
+function rpt_format_date($the_date, $null_display = 'N/A') : string
 {
-    $d = DateTime::createFromFormat('Y-m-d', $the_date);
-    if ($d === false) {
-        return '';
+    if ( $the_date != '0000-00-00' ) {
+        $d = DateTime::createFromFormat('Y-m-d', $the_date);
+        if ($d === false) {
+            return $null_display;
+        }
+        else {
+            return wp_date('m/d/Y', $d->getTimestamp());
+        }
     }
     else {
-        return wp_date('m/d/Y', $d->getTimestamp());
+        return $null_display;
     }
 }

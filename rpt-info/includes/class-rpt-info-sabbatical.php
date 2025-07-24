@@ -51,7 +51,49 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public function update_from_post( $posted_values )
     {
         parent::update_from_post( $posted_values );
-        // any other fields
+        $qtr_count = 0;
+        if (isset($posted_values['SummerQtr'])) {
+            $this->SummerQtr = $posted_values['SummerQtr'];
+            if ($posted_values['SummerQtr'] == 'Yes') {
+                $qtr_count++;
+            }
+        }
+        $this->FallQtr = $posted_values['FallQtr'];
+        if ($posted_values['FallQtr'] == 'Yes') {
+            $qtr_count++;
+        }
+        $this->WinterQtr = $posted_values['WinterQtr'];
+        if ($posted_values['WinterQtr'] == 'Yes') {
+            $qtr_count++;
+        }
+        $this->SpringQtr = $posted_values['SpringQtr'];
+        if ($posted_values['SpringQtr'] == 'Yes') {
+            $qtr_count++;
+        }
+        switch ($qtr_count) {
+            case 1:
+                $this->SalarySupportPct = '100%';
+                break;
+            case 2:
+                $this->SalarySupportPct = '75%';
+                break;
+            case 3:
+                $this->SalarySupportPct = '67%';
+                break;
+            default:
+                $this->SalarySupportPct = NULL;
+                break;
+        }
+        $this->RosterPct = $posted_values['RosterPct'];
+        $this->MonthlySalary = $posted_values['MonthlySalary'];
+        $this->TenureAmount = $posted_values['TenureAmount'];
+        $this->UpForPromotion = $posted_values['UpForPromotion'];
+        $this->MultiYear = $posted_values['MultiYear'];
+        $this->EligibilityReport = $posted_values['EligibilityReport'];
+        $this->EligibilityNote = $posted_values['EligibilityNote'];
+        $this->LastSabbaticalDate = $posted_values['LastSabbaticalDate'];
+        $this->AppointmentStartDate = $posted_values['AppointmentStartDate'];
+        // also hire date, track start date
     }
 
     public function insert_sabbatical_array() : array
@@ -77,10 +119,69 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         );
     }
 
+    private function quarter_list( $include_academic_year = TRUE ) : string
+    {
+        $quarter_list = array();
+        if ($this->SummerQtr == 'Yes') {
+            $quarter_list[] = 'Summer';
+        }
+        if ($this->FallQtr == 'Yes') {
+            $quarter_list[] = 'Fall';
+        }
+        if ($this->WinterQtr == 'Yes') {
+            $quarter_list[] = 'Winter';
+        }
+        if ($this->SpringQtr == 'Yes') {
+            $quarter_list[] = 'Spring';
+        }
+        if ( $include_academic_year ) {
+            return 'AY' . $this->AcademicYear . ' ' . implode(', ', $quarter_list);
+        }
+        else {
+            return implode(', ', $quarter_list);
+        }
+    }
+
+    private function quarter_count() : int
+    {
+        $result = 0;
+        if ($this->SummerQtr == 'Yes') {
+            $result++;
+        }
+        if ($this->FallQtr == 'Yes') {
+            $result++;
+        }
+        if ($this->WinterQtr == 'Yes') {
+            $result++;
+        }
+        if ($this->SpringQtr == 'Yes') {
+            $result++;
+        }
+        return $result;
+    }
+
     public function listing_table_row( $rpt_case_url ) : string
     {
         global $wp;
-        $result = '';
+        $result = '<tr class="border-bottom border-right">';
+        $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
+        $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
+            . $this->AppointmentType . ')</td>';
+        $result .= '<td>' . $this->quarter_list() . '</td>';
+        $result .= '<td>' . $this->CaseStatus . '<br>' . $this->WorkflowStepName . ' (Step '
+            . $this->WorkflowStepNumber . ')';
+        if ( $this->InterfolioCaseID ) {
+            $result .= '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
+        }
+        $result .= '</td>';
+        $result .= '<td>';
+        $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                'template_type' => $this->RptTemplateTypeID,
+                'ay' => $this->AcademicYear,
+                'rpt_page' => 'case'), home_url($wp->request)))
+            . '" class="btn btn-outline-secondary">Details</a>';
+        $result .= '</td>';
+        $result .= '</tr>';
         return $result;
     }
 
@@ -138,6 +239,19 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         else {
             $result .= '<dd>None</dd>';
         }
+        $result .= '<dt>Previous leaves</dt>';
+        if (count($this->PreviousLeaves)) {
+            $result .= '<dd><ul>';
+            foreach ($this->PreviousLeaves as $leave) {
+                $result .= '<li>' . $leave->LeaveTypeName . ': '
+                    . rpt_format_date($leave->StartDate) . ' - '
+                    . rpt_format_date($leave->EndDate) . '</li>';
+            }
+            $result .= '</ul></dd>';
+        }
+        else {
+            $result .= '<dd>None</dd>';
+        }
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
@@ -151,6 +265,18 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Sabbatical information</h4>';
         $result .= '<dl class="rptinfo-list">';
+        $result .= '<dt>Academic Year</dt>';
+        $result .= '<dd>' . $this->AcademicYear . '</dd>';
+        $result .= '<dt>Quarters requested (' . $this->quarter_count() . ')</dt>';
+        $result .= '<dd>' . $this->quarter_list(FALSE) . '</dd>';
+        $result .= '<dt>Salary support pct</dt>';
+        $result .= '<dd>' . $this->SalarySupportPct . '</dd>';
+        $result .= '<dt>Eligibility report</dt>';
+        $result .= '<dd>' . $this->EligibilityReport . '</dd>';
+        $result .= '<dt>Eligibility note</dt>';
+        $result .= '<dd>' . $this->EligibilityNote . '</dd>';
+        $result .= '<dt>Last sabbatical date</dt>';
+        $result .= '<dd>' . rpt_format_date($this->LastSabbaticalDate) . '</dd>';
         $result .= '</dl>';
         if ( $this->RptCaseID ) {
             $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID

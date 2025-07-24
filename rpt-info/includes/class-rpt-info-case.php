@@ -40,6 +40,7 @@ class Rpt_Info_Case
     public $AcademicYear = '';
     public $WorkflowStepNumber = '';
     public $WorkflowStepName = '';
+    public $PreviousLeaves = [];
 
     public function __construct( $case_row = NULL )
     {
@@ -126,6 +127,7 @@ class Rpt_Info_Case
     public function update_from_post( $posted_values )
     {
         $this->CaseID = intval($posted_values['CaseID']);
+        $this->RptTemplateID = intval($posted_values['RptTemplateID']);
         $this->RptCaseID = intval($posted_values['RptCaseID']);
         $this->CandidateID = intval($posted_values['CandidateID']);
         $this->CandidateKey = intval($posted_values['CandidateKey']);
@@ -142,7 +144,7 @@ class Rpt_Info_Case
     public function insert_case_array()
     {
         return array(
-            'RptCaseID' => $this->RptCaseID,
+//            'RptCaseID' => $this->RptCaseID,
             'RptTemplateID' => $this->RptTemplateID,
             'AcademicYear' => $this->AcademicYear,
             'CandidateID' => $this->CandidateID,

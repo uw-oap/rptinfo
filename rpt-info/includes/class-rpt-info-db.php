@@ -111,6 +111,31 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
         return $result;
     }
 
+    public function get_sabbatical_cases_for_user( Rpt_Info_User $user_obj ) : array
+    {
+        $result = [];
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
+RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, FirstName, 
+LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
+UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
+ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
+TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, CaseStatus, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, SummerQtr, FallQtr, 
+WinterQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, 
+AppointmentStartDate, LastSabbaticalDate, UpForPromotion, MultiYear, EligibilityReport, 
+EligibilityNote, SpringQtr
+FROM RptSabbaticalDetails where InterfolioUnitID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
+            . implode(',', array_keys($user_obj->Units)) . ")";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->CaseID] = new Rpt_Info_Sabbatical($row);
+        }
+        return $result;
+    }
+
     public function promotion_candidate_search( Rpt_Info_User $user_obj, $search_string) : array
     {
         $result = [];
@@ -254,6 +279,22 @@ Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID FROM RptPromotionDetail
     public function get_sabbatical_by_id(int $case_id)
     {
         $result = NULL;
+        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
+RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, FirstName, 
+LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
+UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
+ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
+TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, CaseStatus, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, SummerQtr, FallQtr, 
+WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, 
+AppointmentStartDate, LastSabbaticalDate, UpForPromotion, MultiYear, EligibilityReport, 
+EligibilityNote
+FROM RptSabbaticalDetails where CaseID = %s", $case_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = new Rpt_Info_Sabbatical($result_row);
+        }
         return $result;
     }
 
@@ -282,6 +323,7 @@ Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID FROM RptPromotionDetail
 //                echo $this->rpt_db->last_query; exit;
                 break;
             case '5' :
+                $query_result = $this->rpt_db->insert('RptSabbatical', $case_obj->insert_sabbatical_array());
                 break;
         }
         if ( $query_result === FALSE ) {
@@ -444,6 +486,20 @@ where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['UnitName']] = $row;
+        }
+        return $result;
+    }
+
+    /** ******************* person (candidate) functions ********************************** */
+
+    public function get_candidate_leaves( Rpt_Info_Case $case_obj ) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select StartDate, EndDate, LeaveTypeName from PersonLeaveDetails
+where UWODSPersonKey = %s", $case_obj->CandidateKey);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $case_obj->PreviousLeaves[] = $row;
         }
         return $result;
     }

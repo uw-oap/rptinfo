@@ -426,9 +426,10 @@ class Rpt_Info_Public
                 $case_list = $this->rpt_db->get_promotion_cases_for_user($this->rpt_user);
                 break;
             case '5': // sabbatical
-                // $case_list = $this->rpt_db->get_cycle_info($this->rpt_user);
+                $case_list = $this->rpt_db->get_sabbatical_cases_for_user($this->rpt_user);
                 break;
         }
+//        echo '<pre>' . print_r($case_list, true) . '</pre>'; exit;
         echo '<div class="row">';
         echo '<div class="col-12">';
         echo '<p>This page is where RPT ' . $this->template_types[$this->active_template_type]->TemplateTypeName
@@ -589,7 +590,7 @@ class Rpt_Info_Public
                 $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
                 break;
             case '5': // sabbatical
-                //
+                $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                 break;
         }
         $this->rpt_db->get_other_appointments($case_obj);
@@ -606,11 +607,15 @@ class Rpt_Info_Public
                 echo $case_obj->promotion_info_card($rpt_case_url);
                 break;
             case '5':
+                echo $case_obj->sabbatical_info_card($rpt_case_url);
                 break;
         }
         echo '</div>'; // col 6
         echo '</div>'; // row
         echo '<div class="row">';
+        echo '<div class="col-6">';
+        echo $case_obj->rpt_info_card();
+        echo '</div>'; // col 6
         echo '<div class="col-6">';
         switch ( $case_obj->RptTemplateTypeID ) {
             case '2':
@@ -619,9 +624,6 @@ class Rpt_Info_Public
             case '5':
                 break;
         }
-        echo '</div>'; // col 6
-        echo '<div class="col-6">';
-        echo $case_obj->rpt_info_card();
         echo '</div>'; // col 6
         echo '</div>'; // row
     }
@@ -675,6 +677,7 @@ class Rpt_Info_Public
         }
 //        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         $this->rpt_db->get_other_appointments($case_obj);
+        $this->rpt_db->get_candidate_leaves($case_obj);
         $case_obj->set_calculated_values();
         $this->case_form($case_obj);
     }
@@ -701,7 +704,7 @@ class Rpt_Info_Public
             echo '</div>'; // col 6
             // template type specific fields in another card
             echo '<div class="col-6">';
-            switch ( $this->active_template_type ) {
+            switch ( $case_obj->RptTemplateTypeID ) {
                 case '2':
                     $this->promotion_form( $case_obj );
                     break;
@@ -802,7 +805,12 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('RosterPct', $case_obj->RosterPct);
+        echo rpt_form_hidden_field('MonthlySalary', $case_obj->MonthlySalary);
+        echo rpt_form_hidden_field('TenureAmount', $case_obj->TenureAmount);
+        echo rpt_form_hidden_field('AppointmentStartDate', $case_obj->AppointmentStartDate);
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo '<div class="form-goup row">';
         echo '<div class="col-12">';
         echo '<p>Quarter(s) requested: <span id="QtrCount"></span></p>';
@@ -813,7 +821,7 @@ class Rpt_Info_Public
         echo '</div>'; // form group row
         echo rpt_yes_no_radio('MultiYear', $case_obj->MultiYear,
             'Multi-year distribution?', FALSE, TRUE);
-        echo rpt_yes_no_radio('ElgibilityReport', $case_obj->EligibilityReport,
+        echo rpt_yes_no_radio('EligibilityReport', $case_obj->EligibilityReport,
             'Eligibility report?', FALSE, TRUE);
         echo rpt_yes_no_radio('UpForPromotion', $case_obj->UpForPromotion,
             'Up for promotion?', FALSE, TRUE);
@@ -874,7 +882,7 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_post($_POST);
-//            echo '<pre>' . print_r($case_obj, TRUE) . '</pre>'; exit;
+//            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
             $save_action = 'submit';
             $case_obj->CaseStatus = 'Submitted';
             // anything else?
@@ -890,8 +898,7 @@ class Rpt_Info_Public
                     break;
                 case 'submit' :
                     $update_result = $this->rpt_db->insert_case($case_obj);
-                    $result_message = 'Case submitted to RPT queue. When it is available in RPT, a <strong>Go '
-                        .'to case</strong> link will appear.';
+                    $result_message = 'Case added to RPT queue.';
                     break;
                 default :
                     break;
@@ -904,8 +911,9 @@ class Rpt_Info_Public
                 $result_message = 'Error: ' . $this->rpt_db->get_last_error() . '|' . $this->rpt_db->get_last_query();
             }
         }
-        wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message, 'status' => $result_status,
-            'ay' => $ay), home_url('rptinfo')));
+        wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message,
+            'status' => $result_status, 'template_type' => $case_obj->RptTemplateTypeID,
+            'ay' => $ay), home_url($redirect_url)));
         exit;
     }
 
