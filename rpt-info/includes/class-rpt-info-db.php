@@ -246,7 +246,7 @@ InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitNa
 UWODSRankKey CurrentRankKey, RankName CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
 'N/A' CaseStatus, 'No' SummerQtr, 'No' FallQtr, 'No' WinterQtr, 'No' SpringQtr, '' SalarySupportPct,
 RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear,
-AppointmentStartDate, AppointmentEndDate
+AppointmentStartDate, AppointmentEndDate, TotalBasePayAmt MonthlySalary
 from CurrentSabbaticalEligible
 where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;

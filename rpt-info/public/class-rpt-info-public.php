@@ -662,6 +662,8 @@ class Rpt_Info_Public
                         break;
                 }
                 $case_obj->InitiatorID = $this->rpt_user->InterfolioUserID;
+                $case_obj->AcademicYear = $this->current_cycle->AcademicYear;
+                $case_obj->AcademicYearDisplay = $this->current_cycle->Display;
             }
 //            echo '<pre>' . print_r( $case_obj, true ) . '</pre>'; exit;
         }
@@ -813,7 +815,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo '<div class="form-goup row">';
         echo '<div class="col-12">';
-        echo '<p>Quarter(s) requested: <span id="QtrCount"></span></p>';
+        echo '<p>' . $case_obj->AcademicYearDisplay . ' Quarter(s) requested: <span id="QtrCount"></span></p>';
         echo rpt_form_quarter_select($case_obj->SummerQtr, $case_obj->FallQtr, $case_obj->WinterQtr,
                 $case_obj->SpringQtr, ($case_obj->ServicePeriod == 12));
         echo '<p>Salary support: <span id="SalarySupport"></span></p>';
@@ -821,12 +823,11 @@ class Rpt_Info_Public
         echo '</div>'; // form group row
         echo rpt_yes_no_radio('MultiYear', $case_obj->MultiYear,
             'Multi-year distribution?', FALSE, TRUE);
-        echo rpt_yes_no_radio('EligibilityReport', $case_obj->EligibilityReport,
-            'Eligibility report?', FALSE, TRUE);
+        echo rpt_form_dropdown_list('EligibilityReport', $case_obj->EligibilityReport,
+            'Eligibility report status?', $case_obj->eligibility_report_values());
         echo rpt_yes_no_radio('UpForPromotion', $case_obj->UpForPromotion,
             'Up for promotion?', FALSE, TRUE);
-        echo rpt_form_date_select('LastSabbaticalDate', $case_obj->LastSabbaticalDate,
-            'Last sabbatical date');
+        // selector for AY of last sabbatical
         echo rpt_form_textarea('EligibilityNote', $case_obj->EligibilityNote,
         'Eligibility note', 40, 5);
         echo rpt_template_select('RptTemplateID', $case_obj->RptTemplateID, 'RPT Template',

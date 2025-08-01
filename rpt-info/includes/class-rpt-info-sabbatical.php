@@ -15,10 +15,10 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public $TrackStartDate = null;
     public $AppointmentStartDate = null;
     public $AppointmentEndDate = null;
-    public $LastSabbaticalDate = null;
-    public $UpForPromotion = 'No';
+    public $LastSabbaticalAcademicYear = null;
+    public $ContingentOnExtension = 'No';
     public $MultiYear = 'No';
-    public $EligibilityReport = 'Yes';
+    public $EligibilityReport = '';
     public $EligibilityNote = '';
 
     public function __construct( $case_row = NULL )
@@ -40,8 +40,8 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             $this->TrackStartDate = $case_row->TrackStartDate;
             $this->AppointmentStartDate = $case_row->AppointmentStartDate;
             $this->AppointmentEndDate = $case_row->AppointmentEndDate;
-            $this->LastSabbaticalDate = $case_row->LastSabbaticalDate;
-            $this->UpForPromotion = $case_row->UpForPromotion;
+            $this->LastSabbaticalAcademicYear = $case_row->LastSabbaticalAcademicYear;
+            $this->ContingentOnExtension = $case_row->ContingentOnExtension;
             $this->MultiYear = $case_row->MultiYear;
             $this->EligibilityReport = $case_row->EligibilityReport;
             $this->EligibilityNote = $case_row->EligibilityNote;
@@ -219,12 +219,12 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '</dd>';
         if ( $this->IsTenured == 'Yes' ) {
             $result .= '<dt>Tenure amount</dt>';
-            $result .= '<dd>' . $this->TenureAmount . '</dd>';
+            $result .= '<dd>' . $this->TenureAmount . '%</dd>';
         }
         $result .= '<dt>Roster %</dt>';
-        $result .= '<dd>' . $this->RosterPct . '</dd>';
+        $result .= '<dd>' . ($this->RosterPct * 100) . '</dd>';
         $result .= '<dt>Monthly salary</dt>';
-        $result .= '<dd>' . $this->MonthlySalary . '</dd>';
+        $result .= '<dd>$' . $this->MonthlySalary . '</dd>';
         $result .= '<dt>Service period</dt>';
         $result .= '<dd>' . $this->ServicePeriod . '</dd>';
         $result .= '<dt>Other appointments</dt>';
@@ -275,8 +275,10 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<dd>' . $this->EligibilityReport . '</dd>';
         $result .= '<dt>Eligibility note</dt>';
         $result .= '<dd>' . $this->EligibilityNote . '</dd>';
-        $result .= '<dt>Last sabbatical date</dt>';
-        $result .= '<dd>' . rpt_format_date($this->LastSabbaticalDate) . '</dd>';
+        $result .= '<dt>Contingent upon reappointment / promotion?</dt>';
+        $result .= '<dd>' . $this->ContingentOnExtension . '</dd>';
+        $result .= '<dt>Last sabbatical Academic Year</dt>';
+        $result .= '<dd>' . $this->LastSabbaticalAcademicYear . '</dd>';
         $result .= '</dl>';
         if ( $this->RptCaseID ) {
             $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
@@ -303,6 +305,16 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
+    }
+
+    public function eligibility_report_values() : array
+    {
+        return array(
+            'Likely Eligible' => 'Likely Eligible',
+            'Not Yet Eligible' => 'Not Yet Eligible',
+            'Review-Adjustment' => 'Review Required - Leave or FTE Adjustment ',
+            'Review-Multiyear' => 'Review Required - Previous Multiyear Sabbatical'
+        );
     }
 
 }

@@ -38,6 +38,7 @@ class Rpt_Info_Case
     public $OtherAppointments = [];
     public $CoverSheetID = '0';
     public $AcademicYear = '';
+    public $AcademicYearDisplay = '';
     public $WorkflowStepNumber = '';
     public $WorkflowStepName = '';
     public $PreviousLeaves = [];
