@@ -23,6 +23,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public $Vote2Negative = '0';
     public $Vote2Absent = '0';
     public $Vote2Abstaining = '0';
+    public $Leaves = '';
+    public $Waivers = '';
     public $DataSheetID = '0';
 
     public function __construct( $case_row = NULL )
@@ -70,8 +72,22 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             'TargetRankKey' => $this->TargetRankKey,
             'NewTermLength' => $this->NewTermLength,
             'EffectiveDate' => $this->EffectiveDate,
-            'DataSheetID' => '0',
-            'SubcommitteeMembers' => ''
+            'AppointmentType' => $this->AppointmentType,
+            'Postponed' => $this->Postponed,
+            'TenureAward' => $this->TenureAward,
+            'Vote1Eligible' => $this->Vote1Eligible,
+            'Vote1Affirmative' => $this->Vote1Affirmative,
+            'Vote1Negative' => $this->Vote1Negative,
+            'Vote1Absent' => $this->Vote1Absent,
+            'Vote1Abstaining' => $this->Vote1Abstaining,
+            'Vote2Eligible' => $this->Vote2Eligible,
+            'Vote2Affirmative' => $this->Vote2Affirmative,
+            'Vote2Negative' => $this->Vote2Negative,
+            'Vote2Absent' => $this->Vote2Absent,
+            'Vote2Abstaining' => $this->Vote2Abstaining,
+            'Leaves' => $this->Leaves,
+            'Waivers' => $this->Waivers,
+            'OtherAppointments' => ''
         );
     }
 
@@ -79,15 +95,22 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     {
         global $wp;
         $result = '<tr class="border-bottom border-right">';
+        $result .= '<td>';
+        if ( $this->RptCaseID > '0' ) {
+            $result .= '<a href="' . $rpt_case_url . '/' . $this->RptCaseID . '">'
+                . $this->RptCaseID . '</a>';
+        }
+        else {
+            $result .= 'N/A';
+        }
+        $result .= '</td>';
         $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
         $result .= '<td>' . $this->PromotionCategoryName . '</td>';
-        $result .= '<td>' . $this->CaseStatus . '<br>' . $this->WorkflowStepName . ' (Step '
+        $result .= '<td>' . $this->CaseStatus . '<br>'  . $this->RptStatus . '</td>';
+        $result .= '<td>' . $this->WorkflowStepName . '<br>(Step '
             . $this->WorkflowStepNumber . ')';
-        if ( $this->InterfolioCaseID ) {
-            $result .= '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
-        }
         $result .= '</td>';
         $result .= '<td>';
         $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,

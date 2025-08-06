@@ -61,16 +61,16 @@
 			$('#QtrCount').text(ccount);
 			switch (ccount) {
 				case 1:
-					$('#SalarySupport').text('100%');
+					$('#SalarySupportPct').val('100%');
 					break;
 				case 2:
-					$('#SalarySupport').text('75%');
+					$('#SalarySupportPct').val('75%');
 					break;
 				case 3:
-					$('#SalarySupport').text('67%');
+					$('#SalarySupportPct').val('67%');
 					break;
 				default:
-					$('#SalarySupport').text('');
+					$('#SalarySupportPct').val('');
 					break;
 			}
 		});

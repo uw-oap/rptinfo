@@ -87,11 +87,11 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $this->RosterPct = $posted_values['RosterPct'];
         $this->MonthlySalary = $posted_values['MonthlySalary'];
         $this->TenureAmount = $posted_values['TenureAmount'];
-        $this->UpForPromotion = $posted_values['UpForPromotion'];
         $this->MultiYear = $posted_values['MultiYear'];
         $this->EligibilityReport = $posted_values['EligibilityReport'];
         $this->EligibilityNote = $posted_values['EligibilityNote'];
-        $this->LastSabbaticalDate = $posted_values['LastSabbaticalDate'];
+        $this->LastSabbaticalAcademicYear = $posted_values['LastSabbaticalAcademicYear'];
+        $this->ContingentOnExtension = $posted_values['ContingentOnExtension'];
         $this->AppointmentStartDate = $posted_values['AppointmentStartDate'];
         // also hire date, track start date
     }
@@ -111,8 +111,8 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             'HireDate' => $this->HireDate,
             'TrackStartDate' => $this->TrackStartDate,
             'AppointmentStartDate' => $this->AppointmentStartDate,
-            'LastSabbaticalDate' => $this->LastSabbaticalDate,
-            'UpForPromotion' => $this->UpForPromotion,
+            'LastSabbaticalAcademicYear' => $this->LastSabbaticalAcademicYear,
+            'ContingentOnExtension' => $this->ContingentOnExtension,
             'MultiYear' => $this->MultiYear,
             'EligibilityReport' => $this->EligibilityReport,
             'EligibilityNote' => $this->EligibilityNote
@@ -164,15 +164,22 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     {
         global $wp;
         $result = '<tr class="border-bottom border-right">';
+        $result = '<tr>';
+        $result .= '<td>';
+        if ( $this->InterfolioCaseID ) {
+            $result .= '<a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID
+                . '">$this->InterfolioCaseID</a>';
+        }
+        else {
+            $result .= 'N/A';
+        }
+        $result .= '</td>';
         $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
         $result .= '<td>' . $this->quarter_list() . '</td>';
         $result .= '<td>' . $this->CaseStatus . '<br>' . $this->WorkflowStepName . ' (Step '
             . $this->WorkflowStepNumber . ')';
-        if ( $this->InterfolioCaseID ) {
-            $result .= '<br><a href="' . $rpt_case_url . '/' . $this->InterfolioCaseID . '">Go to case</a>';
-        }
         $result .= '</td>';
         $result .= '<td>';
         $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
@@ -312,8 +319,17 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         return array(
             'Likely Eligible' => 'Likely Eligible',
             'Not Yet Eligible' => 'Not Yet Eligible',
-            'Review-Adjustment' => 'Review Required - Leave or FTE Adjustment ',
+            'Review-Adjustment' => 'Review Required - Leave or FTE Adjustment',
             'Review-Multiyear' => 'Review Required - Previous Multiyear Sabbatical'
+        );
+    }
+
+    public function salary_support_values() : array
+    {
+        return array(
+            '100%' => '100%',
+            '75%' => '75%',
+            '67%' => '67%'
         );
     }
 

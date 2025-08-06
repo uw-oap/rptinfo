@@ -30,6 +30,7 @@ class Rpt_Info_Case
     public $HasJoint = 'No';
     public $HasSecondary = 'No';
     public $CaseStatus = 'Draft';
+    public $RptStatus = '';
     public $ServicePeriod = 0;
     public $StartDate = '';
     public $EndDate = '';
@@ -97,6 +98,9 @@ class Rpt_Info_Case
             if ( isset($case_row->EndDate) ) {
                 $this->EndDate = $case_row->EndDate;
             }
+            if ( isset($case_row->RptStatus) ) {
+                $this->RptStatus = $case_row->RptStatus;
+            }
             $this->CoverSheetID = $case_row->CoverSheetID;
         }
     }
@@ -145,7 +149,7 @@ class Rpt_Info_Case
     public function insert_case_array()
     {
         return array(
-//            'RptCaseID' => $this->RptCaseID,
+            'RptCaseID' => $this->RptCaseID,
             'RptTemplateID' => $this->RptTemplateID,
             'AcademicYear' => $this->AcademicYear,
             'CandidateID' => $this->CandidateID,

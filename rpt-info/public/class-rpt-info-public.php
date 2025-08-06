@@ -479,13 +479,16 @@ class Rpt_Info_Public
     {
         $result = '<tr>';
         switch ( $this->active_template_type) {
-            case '2':
+            case '2': // promotion
+                $result .= '<th>ID</th>';
                 $result .= '<th>Candidate Name</th>';
                 $result .= '<th>Type</th>';
                 $result .= '<th>Status</th>';
+                $result .= '<th>Workflow Step</th>';
                 $result .= '<th>Action</th>';
                 break;
-            case '5':
+            case '5': // sabbatical
+                $result .= '<th>ID</th>';
                 $result .= '<th>Candidate Name</th>';
                 $result .= '<th>Quarters</th>';
                 $result .= '<th>Status</th>';
@@ -495,7 +498,6 @@ class Rpt_Info_Public
         $result .= '</tr>';
         return $result;
     }
-
 
     /**
      * search_form
@@ -593,9 +595,9 @@ class Rpt_Info_Public
                 $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                 break;
         }
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         $this->rpt_db->get_other_appointments($case_obj);
         $case_obj->set_calculated_values();
-//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         echo '<div class="row">';
         echo '<div class="col-6">';
         echo $case_obj->candidate_info_card(FALSE);
@@ -818,15 +820,23 @@ class Rpt_Info_Public
         echo '<p>' . $case_obj->AcademicYearDisplay . ' Quarter(s) requested: <span id="QtrCount"></span></p>';
         echo rpt_form_quarter_select($case_obj->SummerQtr, $case_obj->FallQtr, $case_obj->WinterQtr,
                 $case_obj->SpringQtr, ($case_obj->ServicePeriod == 12));
-        echo '<p>Salary support: <span id="SalarySupport"></span></p>';
+        echo rpt_form_dropdown_list('SalarySupportPct', $case_obj->SalarySupportPct,
+            'Salary support:', $case_obj->salary_support_values());
         echo '</div>'; // col 12
         echo '</div>'; // form group row
         echo rpt_yes_no_radio('MultiYear', $case_obj->MultiYear,
             'Multi-year distribution?', FALSE, TRUE);
+        echo rpt_form_dropdown_list('LastSabbaticalAcademicYear', $case_obj->LastSabbaticalAcademicYear,
+            'Last sabbatical academic year', $this->rpt_db->get_academic_year_list());
         echo rpt_form_dropdown_list('EligibilityReport', $case_obj->EligibilityReport,
             'Eligibility report status?', $case_obj->eligibility_report_values());
-        echo rpt_yes_no_radio('UpForPromotion', $case_obj->UpForPromotion,
-            'Up for promotion?', FALSE, TRUE);
+        if ( $case_obj->AppointmentEndDate ) {
+            echo rpt_yes_no_radio('ContingentOnExtension', $case_obj->ContingentOnExtension,
+                'Sabbatical contingent upon reappointment/promotion?', FALSE, TRUE);
+        }
+        else {
+            echo rpt_form_hidden_field('ContingentOnExtension', 'No');
+        }
         // selector for AY of last sabbatical
         echo rpt_form_textarea('EligibilityNote', $case_obj->EligibilityNote,
         'Eligibility note', 40, 5);
@@ -883,9 +893,9 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_post($_POST);
-//            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
             $save_action = 'submit';
             $case_obj->CaseStatus = 'Submitted';
+//            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
             // anything else?
             switch ( $save_action ) {
                 case 'save_draft':

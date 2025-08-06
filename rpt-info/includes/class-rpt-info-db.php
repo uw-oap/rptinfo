@@ -22,7 +22,7 @@ class Rpt_Info_DB
         return $this->rpt_db->last_error;
     }
 
-    /** ******************* promotion cycle functions ******************************** */
+    /** ******************* cycle & academic year functions ******************************** */
 
     public function get_cycle_info( $academic_year = '' )
     {
@@ -39,6 +39,25 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
             $result = new Rpt_Info_Cycle($result_row);
+        }
+        return $result;
+    }
+
+    public function get_academic_year_list( $add_zero = TRUE ) : array
+    {
+        if ( $add_zero ) {
+            $result = array(
+                '0' => 'N/A'
+            );
+        }
+        else {
+            $result = [];
+        }
+        $query = $this->rpt_db->prepare("SELECT ID, Display 
+FROM AcademicYear where YearStatus = 'Past'");
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->ID] = $row->Display;
         }
         return $result;
     }
@@ -94,7 +113,7 @@ EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where IsCurrent =
     public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus,
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus, RptStatus,
             LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
             UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
             ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, TrackTypeName,
@@ -118,12 +137,9 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
 RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, FirstName, 
 LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
 UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
-ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
-TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, CaseStatus, 
+ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, CaseStatus, 
 WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, SummerQtr, FallQtr, 
-WinterQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, 
-AppointmentStartDate, LastSabbaticalDate, UpForPromotion, MultiYear, EligibilityReport, 
-EligibilityNote, SpringQtr
+WinterQtr, SpringQtr, RptStatus
 FROM RptSabbaticalDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -279,16 +295,17 @@ Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID FROM RptPromotionDetail
     public function get_sabbatical_by_id(int $case_id)
     {
         $result = NULL;
-        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
-RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, FirstName, 
-LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
-UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
-ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
-TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, CaseStatus, 
-WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, SummerQtr, FallQtr, 
-WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, 
-AppointmentStartDate, LastSabbaticalDate, UpForPromotion, MultiYear, EligibilityReport, 
-EligibilityNote
+        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, 
+TemplateName, RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, 
+ConcurrenceLetterSection, ConcurrenceLetterCount, SubcommitteeReviewStep, SubcommitteeMembers, 
+LegalName, FirstName, LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, 
+CandidateKey, UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, 
+ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, 
+RankCategory, TrackTypeName, ServicePeriod, DueDate, StartDate, EndDate, HasJoint, HasSecondary, 
+CaseStatus, RptStatus, WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, 
+DataSheetID, DataSheetSubmitted, SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, 
+RosterPct, MonthlySalary, TenureAmout, HireDate, TrackStartDate, AppointmentStartDate, 
+LastSabbaticalAcademicYear, ContingentOnExtension, MultiYear, EligibilityReport, EligibilityNote 
 FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
