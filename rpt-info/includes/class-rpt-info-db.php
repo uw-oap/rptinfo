@@ -318,8 +318,9 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
     public function get_other_appointments( Rpt_Info_Case $case_obj )
     {
         $query = $this->rpt_db->prepare("select distinct UWODSAppointmentTrackKey, UWODSAppointmentKey, UWODSUnitKey, 
-    UnitName, UWODSRankKey, RankName, AppointmentType from CurrentPromotable 
-    where UWODSPersonKey = %s and UWODSAppointmentTrackKey != %s",
+    UnitName, UWODSRankKey, RankName, AppointmentType from PersonAppointmentDetails 
+    where UWODSPersonKey = %s and UWODSAppointmentTrackKey != %s and IsActive = 'Yes'
+    and AppointmentType in ('Primary','Joint','Secondary')",
             $case_obj->CandidateKey, $case_obj->UWODSAppointmentTrackKey);
         $this->last_query = $query;
 //        echo $query; exit;

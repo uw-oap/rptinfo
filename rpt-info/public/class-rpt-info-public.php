@@ -595,9 +595,9 @@ class Rpt_Info_Public
                 $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                 break;
         }
-//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         $this->rpt_db->get_other_appointments($case_obj);
         $case_obj->set_calculated_values();
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         echo '<div class="row">';
         echo '<div class="col-6">';
         echo $case_obj->candidate_info_card(FALSE);
@@ -751,8 +751,11 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
+        echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
             'Proposed rank', $target_rank_list, '', FALSE,
             'form-control', '','', TRUE);
@@ -809,6 +812,8 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
+        echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
         echo rpt_form_hidden_field('RosterPct', $case_obj->RosterPct);
         echo rpt_form_hidden_field('MonthlySalary', $case_obj->MonthlySalary);
         echo rpt_form_hidden_field('TenureAmount', $case_obj->TenureAmount);

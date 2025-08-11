@@ -171,6 +171,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dl class="rptinfo-list">';
         $result .= '<dt>Interfolio Case ID</dt>';
         $result .= '<dd>' . $this->RptCaseID . '</dd>';
+        $result .= '<dt>Status in RPT</dt>';
+        $result .= '<dd>' . $this->RptStatus . '</dd>';
         $result .= '<dt>Workflow step</dt>';
         $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '<dt>Cover sheet</dt>';

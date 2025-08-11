@@ -107,6 +107,8 @@ class Rpt_Info_Case
 
     public function set_calculated_values()
     {
+        $this->HasJoint = 'No';
+        $this->HasSecondary = 'No';
         if ( count($this->OtherAppointments) ) {
             foreach ($this->OtherAppointments as $otherAppointment) {
                 if ( $otherAppointment->AppointmentType == 'Joint' ) {
@@ -144,6 +146,8 @@ class Rpt_Info_Case
         $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
         $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
         $this->AcademicYear = intval($posted_values['ay']);
+        $this->HasJoint = sanitize_text_field($posted_values['HasJoint']);
+        $this->HasSecondary = sanitize_text_field($posted_values['HasSecondary']);
     }
 
     public function insert_case_array()
@@ -158,6 +162,8 @@ class Rpt_Info_Case
             'UWODSAppointmentTrackKey' => $this->UWODSAppointmentTrackKey,
             'CurrentRankKey' => $this->CurrentRankKey,
             'CaseStatus' => $this->CaseStatus,
+            'HasJoint' => $this->HasJoint,
+            'HasSecondary' => $this->HasSecondary
         );
     }
 
@@ -189,8 +195,8 @@ class Rpt_Info_Case
         $result .= '<dd>' . $this->TrackTypeName . '</dd>';
         $result .= '<dt>Service period</dt>';
         $result .= '<dd>' . $this->ServicePeriod . '</dd>';
+        $result .= '<dt>Other appointments</dt>';
         if (count($this->OtherAppointments)) {
-            $result .= '<dt>Other appointments</dt>';
             $result .= '<dd><ul>';
             foreach ($this->OtherAppointments as $appointment) {
                 $result .= '<li>' . $appointment->RankName . ' in ' . $appointment->UnitName . ' ('
