@@ -4,6 +4,9 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 {
     public $TargetRankKey = 0;
     public $TargetRankName = '';
+    public $TargetTrackTypeName = '';
+    public $TargetRankDefaultTerm = '0';
+    public $TargetRankTenured = 'No';
     public $ActionType = '';
     public $PromotionCategoryID = 0;
     public $PromotionCategoryName = '';
@@ -34,6 +37,11 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         if ( $case_row ) {
             $this->TargetRankKey = $case_row->TargetRankKey;
             $this->TargetRankName = $case_row->TargetRankName;
+            if ( isset($case_row->TargetTrackTypeName) ) {
+                $this->TargetTrackTypeName = $case_row->TargetTrackTypeName;
+                $this->TargetRankDefaultTerm = $case_row->TargetRankDefaultTerm;
+                $this->TargetRankTenured = $case_row->TargetRankTenured;
+            }
             $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
             $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
@@ -51,6 +59,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                 $this->Vote2Negative = $case_row->Vote2Negative;
                 $this->Vote2Absent = $case_row->Vote2Absent;
                 $this->Vote2Abstaining = $case_row->Vote2Abstaining;
+                $this->Postponed = $case_row->Postponed;
             }
         }
     }
@@ -118,6 +127,13 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'case'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Details</a>';
+        if ( $this->RptCaseID > '0' ) {
+            $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                    'template_type' => $this->RptTemplateTypeID,
+                    'ay' => $this->AcademicYear,
+                    'rpt_page' => 'datasheet'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Data sheet</a>';
+        }
         $result .= '</td>';
         $result .= '</tr>';
         return $result;
@@ -185,4 +201,13 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         return $result;
     }
 
+    public function propose_new_term() : string
+    {
+        if ( $this->NewTermLength ) {
+            return $this->NewTermLength;
+        }
+        else {
+            return $this->TargetRankDefaultTerm;
+        }
+    }
 }

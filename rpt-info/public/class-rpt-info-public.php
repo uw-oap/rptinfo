@@ -77,7 +77,7 @@ class Rpt_Info_Public
      *
      * @since    1.0.0
      */
-    public function enqueue_styles()
+    public function enqueue_styles() : void
     {
 
         /**
@@ -101,7 +101,7 @@ class Rpt_Info_Public
      *
      * @since    1.0.0
      */
-    public function enqueue_scripts()
+    public function enqueue_scripts() : void
     {
 
         /**
@@ -125,7 +125,7 @@ class Rpt_Info_Public
      *
      * @return [type] [description]
      */
-    public function register_shortcodes()
+    public function register_shortcodes() : void
     {
         add_shortcode('rptinfo_home', array($this, 'rptinfo_home'));
     }
@@ -137,7 +137,7 @@ class Rpt_Info_Public
      * @param $vars
      * @return mixed
      */
-    public function add_query_vars($vars)
+    public function add_query_vars($vars) : array
     {
         $vars[] = 'ay'; // academic year
         $vars[] = 'template_type'; // sub-page within main
@@ -162,7 +162,7 @@ class Rpt_Info_Public
      *
      * @return void
      */
-    private function force_login()
+    private function force_login() : void
     {
         if ( ! is_user_logged_in() ) {
             auth_redirect();
@@ -178,7 +178,7 @@ class Rpt_Info_Public
      * @param $status_message
      * @return void
      */
-    private function show_status_message( $status_type, $status_message )
+    private function show_status_message( $status_type, $status_message ) : void
     {
         echo '<div class="alert alert-' . $status_type . '" role="alert">';
         echo $status_message;
@@ -192,7 +192,7 @@ class Rpt_Info_Public
      * @param $active_page
      * @return void
      */
-    private function show_main_menu()
+    private function show_main_menu() : void
     {
         global $wp;
         echo '<div class="row pt-2 pb-2">';
@@ -243,11 +243,13 @@ class Rpt_Info_Public
                     'rpt_page' => 'report'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary';
             echo '">Reports</a>';
-            echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
-                    'ay' => $this->current_cycle->AcademicYear,
-                    'rpt_page' => 'admin'), home_url($wp->request)))
-                . '" class="btn btn-outline-secondary';
-            echo '">Admin</a>';
+            if ( $this->rpt_user->SystemAdmin() ) {
+                echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
+                        'ay' => $this->current_cycle->AcademicYear,
+                        'rpt_page' => 'admin'), home_url($wp->request)))
+                    . '" class="btn btn-outline-secondary';
+                echo '">Admin</a>';
+            }
             echo '</div>'; // button group
             echo '</div>'; // toolbar
         }
@@ -262,7 +264,7 @@ class Rpt_Info_Public
      *
      * @return void
      */
-    public function rptinfo_home()
+    public function rptinfo_home() : string
     {
         $this->force_login();
         ob_start();
@@ -291,6 +293,9 @@ class Rpt_Info_Public
                     switch ($this->active_page) {
                         case 'case':
                             $this->case_page();
+                            break;
+                        case 'datasheet':
+                            $this->case_page('datasheet');
                             break;
                         case 'template':
                             $this->template_page();
@@ -321,7 +326,7 @@ class Rpt_Info_Public
         return $output;
     }
 
-    private function home_page()
+    private function home_page() : void
     {
         echo '<div class="row">';
         echo '<div class="col-12">';
@@ -352,7 +357,7 @@ class Rpt_Info_Public
      *
      * @return void
      */
-    private function show_footer()
+    private function show_footer() : void
     {
         echo '<div class="row">';
         echo '<div class="col-8">';
@@ -380,7 +385,7 @@ class Rpt_Info_Public
 
     /* ********************** functions dealing with cases ********************** */
 
-    private function case_page()
+    private function case_page( $selector = 'case' ) : void
     {
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' Case maintenance page</p>';
@@ -393,15 +398,15 @@ class Rpt_Info_Public
         elseif ( $case_id == 'new' ) {
             $this->search_form();
         }
-        elseif ( $track_id > '0' ) {
-            $this->case_edit($case_id, $track_id);
+        elseif ( ( $track_id > '0' ) || ( $selector == 'datasheet' ) ) {
+            $this->case_edit($case_id, $track_id, $selector);
         }
         elseif ( $case_id != 'new' ) {
             $this->case_display($case_id);
         }
     }
 
-    private function case_home()
+    private function case_home() : void
     {
         echo '<div class="row">';
         echo '<div class="col-12">';
@@ -412,7 +417,7 @@ class Rpt_Info_Public
         echo '</div>'; // row
     }
 
-    private function case_list()
+    private function case_list() : void
     {
         global $wp;
         echo '<p>Case list page</p>';
@@ -638,7 +643,7 @@ class Rpt_Info_Public
      * @param $candidate_id
      * @return void
      */
-    private function case_edit( int $case_id = 0, int $track_id = 0)
+    private function case_edit( int $case_id = 0, int $track_id = 0, $selector = 'case' ) : void
     {
         global $wp;
         $case_obj = NULL;
@@ -675,63 +680,63 @@ class Rpt_Info_Public
                     $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
                     break;
                 case '5': // sabbatical
-                    //
+                    $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                     break;
             }
         }
-//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
-        $this->rpt_db->get_other_appointments($case_obj);
-        $this->rpt_db->get_candidate_leaves($case_obj);
-        $case_obj->set_calculated_values();
-        $this->case_form($case_obj);
-    }
-
-    private function case_form( Rpt_Info_Case $case_obj )
-    {
-        global $wp;
-        echo'<div class="row">';
-        echo '<div class="col-12">';
         if ( $case_obj ) {
-            if ( $case_obj->InterfolioCaseID == '0')
-            {
-                echo '<p><strong>Initiating new case</strong></p>';
-                echo '<p>Please complete this page and <strong>Submit</strong> the information to initiate '
-                    . 'the creation of an RPT case for a candidate. The information from this page will '
-                    . 'be added to the case for reference. For an overview of the RPT '
-                    . 'case review process, see <a href="' . $this->rpt_case_review_url
-                    . '" alt="RPT case review instructions">this guide</a></p>';
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+            $this->rpt_db->get_other_appointments($case_obj);
+            $this->rpt_db->get_candidate_leaves($case_obj);
+            $case_obj->set_calculated_values();
+            echo '<div class="row">';
+            echo '<div class="col-12">';
+            if ($case_obj->RptCaseID == '0') {
+                echo $case_obj->init_case_help_text($this->rpt_case_review_url);
             }
-            // display main case fields in card
             echo '<div class="row">';
             echo '<div class="col-6">';
             echo $case_obj->candidate_info_card(TRUE);
             echo '</div>'; // col 6
             // template type specific fields in another card
             echo '<div class="col-6">';
-            switch ( $case_obj->RptTemplateTypeID ) {
-                case '2':
-                    $this->promotion_form( $case_obj );
+            switch ($selector) {
+                case 'case':
+                    $this->case_form($case_obj);
                     break;
-                case '5':
-                    $this->sabbatical_form( $case_obj );
-                    break;
+                case 'datasheet':
+                    $this->datasheet_form($case_obj);
             }
             echo '</div>'; // col 6
+            echo '</div>'; // row
+            echo '</div>'; // col 12
             echo '</div>'; // row
         }
         else {
             echo '<p><em>Error loading case info</em></p>';
         }
-        echo '</div>'; // col 12
-        echo '</div>'; // row
     }
 
-    private function promotion_form( Rpt_Info_Promotion $case_obj )
+    private function case_form( Rpt_Info_Case $case_obj ) : void
+    {
+        switch ( $case_obj->RptTemplateTypeID ) {
+            case '2':
+                $this->promotion_form( $case_obj );
+                break;
+            case '5':
+                $this->sabbatical_form( $case_obj );
+                break;
+        }
+    }
+
+    private function promotion_form( Rpt_Info_Promotion $case_obj ) : void
     {
         global $wp;
+        // get lists for dropdowns
         $target_rank_list = $this->rpt_db->get_valid_promotion_target_ranks($case_obj->CurrentRankKey);
         $promotion_type_list = $this->rpt_db->get_promotion_type_list($case_obj->RankCategory);
         $template_list = $this->rpt_db->get_valid_templates_for_case($case_obj);
+        // display card
         echo '<div class="card">';
         echo '<div class="card-body">';
         echo '<h4 class="card-title">Promotion information</h4>';
@@ -743,6 +748,9 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
         echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
+        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
         echo rpt_form_hidden_field('InitiatorID', $case_obj->InitiatorID);
@@ -753,9 +761,6 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
-        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
-        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
             'Proposed rank', $target_rank_list, '', FALSE,
             'form-control', '','', TRUE);
@@ -791,7 +796,9 @@ class Rpt_Info_Public
     private function sabbatical_form( Rpt_Info_Sabbatical $case_obj )
     {
         global $wp;
+        // get lists for dropdowns
         $template_list = $this->rpt_db->get_valid_templates_for_case($case_obj);
+        // display card
         echo '<div class="card">';
         echo '<div class="card-body">';
         echo '<h4 class="card-title">Sabbatical information</h4>';
@@ -803,6 +810,9 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
         echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
+        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
         echo rpt_form_hidden_field('InitiatorID', $case_obj->InitiatorID);
@@ -818,8 +828,6 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('MonthlySalary', $case_obj->MonthlySalary);
         echo rpt_form_hidden_field('TenureAmount', $case_obj->TenureAmount);
         echo rpt_form_hidden_field('AppointmentStartDate', $case_obj->AppointmentStartDate);
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
-        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo '<div class="form-goup row">';
         echo '<div class="col-12">';
         echo '<p>' . $case_obj->AcademicYearDisplay . ' Quarter(s) requested: <span id="QtrCount"></span></p>';
@@ -874,7 +882,7 @@ class Rpt_Info_Public
      *
      * @return void
      */
-    public function process_rptinfo_case_edit()
+    public function process_rptinfo_case_edit() : void
     {
         global $wp;
         $update_values = [];
@@ -931,6 +939,73 @@ class Rpt_Info_Public
             'status' => $result_status, 'template_type' => $case_obj->RptTemplateTypeID,
             'ay' => $ay), home_url($redirect_url)));
         exit;
+    }
+
+    private function datasheet_form( Rpt_Info_Case $case_obj ) : void
+    {
+        switch ( $case_obj->RptTemplateTypeID ) {
+            case '2':
+                $this->promotion_datasheet_form( $case_obj );
+                break;
+            case '5':
+                $this->sabbatical_datasheet_form( $case_obj );
+                break;
+        }
+    }
+
+    private function promotion_datasheet_form( Rpt_Info_Promotion $case_obj ) : void
+    {
+        global $wp;
+        // get lists for dropdowns, etc
+        $this->rpt_db->check_for_postponement($case_obj);
+        // display card
+        echo '<div class="card">';
+        echo '<div class="card-body">';
+        echo '<h4 class="card-title">Data sheet information</h4>';
+        echo '<p class="card-subtitle mb-2 text-muted">Please review these '
+            . 'selections and update as needed.</p>';
+        echo '<form id="rptinfo_datasheet_form" name="rptinfo_datasheet_form" action="'
+            . esc_url(admin_url('admin-post.php'))
+            . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
+        echo rpt_form_hidden_field('action', 'process_rptinfo_datasheet_edit');
+        echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
+        echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
+        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
+        echo rpt_form_text_box('TargetRankName', $case_obj->TargetRankName,
+            'Proposed rank', FALSE, 'form-control', TRUE, FALSE);
+        echo rpt_form_text_box('TargetTrackTypeName', $case_obj->TargetTrackTypeName,
+            'Track', FALSE, 'form-control', TRUE, FALSE);
+        echo rpt_form_text_box('EffectiveDate', rpt_format_date($case_obj->EffectiveDate),
+            'Start date', FALSE, 'form-control', TRUE, FALSE);
+        if ( $case_obj->TargetRankTenured == 'Yes' ) {
+            echo rpt_form_number_box('TenureAward', $case_obj->TenureAward,
+                'Tenure %', FALSE, 'form-control', FALSE, FALSE);
+        }
+        if ( $case_obj->TargetRankDefaultTerm > '0' ) {
+            echo rpt_form_number_box('NewTermLength', $case_obj->propose_new_term(),
+                'New term length', FALSE, 'form-control', FALSE, FALSE);
+        }
+        echo '</form>';
+        echo '</div>'; // card body
+        echo '</div>'; // card
+    }
+
+    private function sabbatical_datasheet_form( Rpt_Info_Sabbatical $case_obj ) : void
+    {
+        // placeholder
+    }
+
+    /**
+     * process_rptinfo_datasheet_edit
+     *      callback for submit button on datasheet edit form
+     *
+     * @return void
+     */
+    public function process_rptinfo_datasheet_edit() : void
+    {
+        // placeholder
     }
 
     /* ********************** functions dealing with templates ********************** */

@@ -117,6 +117,92 @@ function rpt_template_select($field_name, $field_value, $label_text, $value_list
 }
 
 /**
+ * rpt_form_text_box
+ *      generate a text box with associated elements
+ *
+ * @param $field_name
+ * @param $field_value
+ * @param $label_text
+ * @param $hide_group
+ * @param $control_class
+ * @param $init_disabled
+ * @param $init_required
+ * @param $help_text
+ * @return string
+ */
+function rpt_form_text_box($field_name, $field_value, $label_text, $hide_group = FALSE,
+                             $control_class = '', $init_disabled = FALSE, $init_required = FALSE,
+                              $help_text = '') : string
+{
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
+    if ( $hide_group ) {
+        $result .= ' style="display:none;"';
+    }
+    $result .= '>';
+    $result .= '<label for="' . $field_name . '">' . $label_text . '</label>';
+    $result .= '      <input type="text" name="' . $field_name . '" value="' . $field_value
+        . '" id="' . $field_name . '"';
+    if ( $control_class != '' ) {
+        $result .= ' class="' . $control_class . '"';
+    }
+    if ( $init_disabled ) {
+        $result .= ' readonly';
+    }
+    if ( $init_required ) {
+        $result .= ' required';
+    }
+    $result .= ' />';
+    if ( $help_text != '' ) {
+        $result .= '<br><em class="help-block">' . $help_text . '</em>';
+    }
+    $result .= '  </div>'; // <!-- form group -->
+    return $result;
+}
+
+/**
+ * rpt_form_number_box
+ *      generate a text box with associated elements
+ *
+ * @param $field_name
+ * @param $field_value
+ * @param $label_text
+ * @param $hide_group
+ * @param $control_class
+ * @param $init_disabled
+ * @param $init_required
+ * @param $help_text
+ * @return string
+ */
+function rpt_form_number_box($field_name, $field_value, $label_text, $hide_group = FALSE,
+                           $control_class = '', $init_disabled = FALSE, $init_required = FALSE,
+                           $help_text = '') : string
+{
+    $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
+    if ( $hide_group ) {
+        $result .= ' style="display:none;"';
+    }
+    $result .= '>';
+    $result .= '<label for="' . $field_name . '">' . $label_text . '</label>';
+    $result .= '      <input type="number" name="' . $field_name . '" value="' . $field_value
+        . '" id="' . $field_name . '"';
+    if ( $control_class != '' ) {
+        $result .= ' class="' . $control_class . '"';
+    }
+    if ( $init_disabled ) {
+        $result .= ' readonly';
+    }
+    if ( $init_required ) {
+        $result .= ' required';
+    }
+    $result .= ' />';
+    if ( $help_text != '' ) {
+        $result .= '<br><em class="help-block">' . $help_text . '</em>';
+    }
+    $result .= '  </div>'; // <!-- form group -->
+    return $result;
+}
+
+/**
  * rpt_form_date_select
  *      generate a date select input
  *
@@ -131,7 +217,8 @@ function rpt_template_select($field_name, $field_value, $label_text, $value_list
  * @return string
  */
 function rpt_form_date_select($field_name, $field_value, $label_text, $hide_group = FALSE,
-                             $control_class = '', $init_disabled = FALSE, $init_required = FALSE, $help_text = '')
+                              $control_class = '', $init_disabled = FALSE, $init_required = FALSE,
+                              $help_text = '') : string
 {
     $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
@@ -174,7 +261,8 @@ function rpt_form_date_select($field_name, $field_value, $label_text, $hide_grou
  * @return string
  */
 function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_list, $display_key = '',
-                               $hide_group = FALSE, $control_class = '', $zero_text = '', $help_text = '') : string
+                               $hide_group = FALSE, $control_class = '', $zero_text = '',
+                                $help_text = '') : string
 {
     $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
@@ -210,7 +298,8 @@ function rpt_form_dropdown_list($field_name, $field_value, $label_text, $value_l
     return $result;
 }
 
-function rpt_form_quarter_select($summer_value, $fall_value, $winter_value, $spring_value, $show_summer = FALSE)
+function rpt_form_quarter_select($summer_value, $fall_value, $winter_value, $spring_value,
+                                 $show_summer = FALSE) : string
 {
     $result = '<div class="form-group rpt-select-group" id="rpt-quarter-select-group">';
     $result .= '<table>';
@@ -332,7 +421,7 @@ function rpt_yes_no_radio($field_name, $field_value, $label_text, $hide_group, $
 }
 
 function rpt_form_textarea($field_name, $field_value, $label_text, $width, $height, $hide_group = FALSE,
-                       $init_disabled = FALSE, $help_text = array(), $maxlength = 0)
+                       $init_disabled = FALSE, $help_text = array(), $maxlength = 0) : string
 {
     $result = '  <div class="form-group row rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {

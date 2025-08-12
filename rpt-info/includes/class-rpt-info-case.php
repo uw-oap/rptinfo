@@ -213,4 +213,24 @@ class Rpt_Info_Case
         return $result;
     }
 
+    public function init_case_help_text( $help_url = '' ) : string
+    {
+        $result = '<p><strong>Initiating new case</strong></p>';
+        $result .= '<p>Please complete this page and <strong>Submit</strong> the information to initiate '
+            . 'the creation of an RPT case for a candidate. The information from this page will '
+            . 'be added to the case for reference.';
+        if ( $help_url ) {
+            $result .= ' For an overview of the RPT '
+                . 'case review process, see <a href="' . $help_url
+                . '" alt="RPT case review instructions">this guide</a>';
+        }
+        $result .= '</p>';
+        return $result;
+    }
+
+    public function edit_case_help_text( $help_url = '' ) : string
+    {
+
+    }
+
 }
