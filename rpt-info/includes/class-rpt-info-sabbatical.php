@@ -6,23 +6,24 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public $FallQtr = 'No';
     public $WinterQtr = 'No';
     public $SpringQtr = 'No';
-    public $SalarySupportPct = '0';
-    public $RosterPct = '0.0';
-    public $MonthlySalary = '0.0';
-    public $IsTenured = 'No';
+    public $SalarySupportPct = '100%';
+    public string|float $RosterPct = 0.0000;
+    public string $MonthlySalary = '0.0';
+    public string $IsTenured = 'No';
     public $TenureAmount = '0';
     public $HireDate = null;
     public $TrackStartDate = null;
-    public $AppointmentStartDate = null;
-    public $AppointmentEndDate = null;
-    public $LastSabbaticalAcademicYear = null;
-    public $ContingentOnExtension = 'No';
-    public $MultiYear = 'No';
-    public $EligibilityReport = '';
-    public $EligibilityNote = '';
+    public string $AppointmentStartDate = '';
+    public string $AppointmentEndDate = '';
+    public int $LastSabbaticalAcademicYear = 0;
+    public string $ContingentOnExtension = 'No';
+    public string $MultiYear = 'No';
+    public string $EligibilityReport = '';
+    public string $EligibilityNote = '';
 
     public function __construct( $case_row = NULL )
     {
+//        echo '<pre>' . number_format($case_row->RosterPct * 100) . '</pre>'; exit;
         parent::__construct($case_row);
         $this->RptTemplateTypeID = '5';
         if ( $case_row ) {
@@ -31,24 +32,34 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             $this->FallQtr = $case_row->FallQtr;
             $this->WinterQtr = $case_row->WinterQtr;
             $this->SpringQtr = $case_row->SpringQtr;
-            $this->SalarySupportPct = $case_row->SalarySupportPct;
             $this->RosterPct = $case_row->RosterPct;
+            $this->SalarySupportPct = $case_row->SalarySupportPct;
+/*            if ( isset($case_row->RosterPct) ) {
+                $roster_pct = $case_row->RosterPct * 100;
+                $this->RosterPct = number_format($roster_pct);
+            } */
+//            $this->RosterPct = number_format($case_row->RosterPct * 100);
             $this->MonthlySalary = $case_row->MonthlySalary;
-            $this->IsTenured = $case_row->IsTenured;
+            $this->IsTenured ??= $case_row->IsTenured;
             $this->TenureAmount = $case_row->TenureAmount;
             $this->HireDate = $case_row->HireDate;
-            $this->TrackStartDate = $case_row->TrackStartDate;
             $this->AppointmentStartDate = $case_row->AppointmentStartDate;
-            $this->AppointmentEndDate = $case_row->AppointmentEndDate;
-            $this->LastSabbaticalAcademicYear = $case_row->LastSabbaticalAcademicYear;
-            $this->ContingentOnExtension = $case_row->ContingentOnExtension;
-            $this->MultiYear = $case_row->MultiYear;
-            $this->EligibilityReport = $case_row->EligibilityReport;
-            $this->EligibilityNote = $case_row->EligibilityNote;
+            if ( isset( $case_row->AppointmentEndDate) ) {
+                $this->AppointmentEndDate = $case_row->AppointmentEndDate;
+            }
+            if ( isset( $case_row->ContingentOnExtension ) ) {
+                $this->TrackStartDate = $case_row->TrackStartDate;
+                $this->LastSabbaticalAcademicYear = $case_row->LastSabbaticalAcademicYear;
+                $this->ContingentOnExtension = $case_row->ContingentOnExtension;
+                $this->MultiYear = $case_row->MultiYear;
+                $this->EligibilityReport = $case_row->EligibilityReport;
+                $this->EligibilityNote = $case_row->EligibilityNote;
+            }
         }
+//        echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
     }
 
-    public function update_from_post( $posted_values )
+    public function update_from_post( $posted_values ) : void
     {
         parent::update_from_post( $posted_values );
         $qtr_count = 0;
@@ -192,7 +203,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         return $result;
     }
 
-    public function candidate_info_card( $show_instructions = FALSE )
+    public function candidate_info_card( $show_instructions = FALSE ) : string
     {
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
@@ -218,6 +229,8 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<dd>' . $this->CurrentRankName . '</dd>';
         $result .= '<dt>Track type</dt>';
         $result .= '<dd>' . $this->TrackTypeName . '</dd>';
+        $result .= '<dt>Hire date</dt>';
+        $result .= '<dd>' . rpt_format_date($this->HireDate);
         $result .= '<dt>Appointment dates</dt>';
         $result .= '<dd>' . rpt_format_date($this->AppointmentStartDate) . ' &mdash; ';
         if ( $this->AppointmentEndDate ) {

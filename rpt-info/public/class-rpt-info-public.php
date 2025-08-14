@@ -39,21 +39,21 @@ class Rpt_Info_Public
      * @access   private
      * @var      string $version The current version of this plugin.
      */
-    private $version;
+    private string $version;
 
     private Rpt_Info_DB $rpt_db;
 
     private $wordpress_user;
     private Rpt_Info_User $rpt_user;
 
-    private $template_types = [];
+    private array $template_types = [];
 
-    private $active_page = 'home';
+    private string $active_page = 'home';
 
-    private $active_template_type = '';
+    private int $active_template_type = 0;
     private Rpt_Info_Cycle $current_cycle;
 
-    private $rpt_case_review_url = '';
+    private string $rpt_case_review_url = '';
 
     /**
      * Initialize the class and set its properties.
@@ -268,7 +268,7 @@ class Rpt_Info_Public
     {
         $this->force_login();
         ob_start();
-//        echo 'wtf?';
+        echo 'wtf?';
         $ay = get_query_var('ay', '2026');
         $status_type = get_query_var('status', '');
         $status_message = get_query_var('msg', '');
@@ -590,9 +590,10 @@ class Rpt_Info_Public
     {
         global $wp;
         $case_obj = NULL;
+        echo 'case id ' . $case_id . ', type ' . $this->active_template_type;
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/cases';
-        switch ( $this->active_template_type) {
+        switch ( $this->active_template_type ) {
             case '2': // promotion
                 $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
                 break;
@@ -600,9 +601,9 @@ class Rpt_Info_Public
                 $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                 break;
         }
+//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         $this->rpt_db->get_other_appointments($case_obj);
         $case_obj->set_calculated_values();
-//        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         echo '<div class="row">';
         echo '<div class="col-6">';
         echo $case_obj->candidate_info_card(FALSE);
@@ -646,6 +647,7 @@ class Rpt_Info_Public
     private function case_edit( int $case_id = 0, int $track_id = 0, $selector = 'case' ) : void
     {
         global $wp;
+        echo 'track id ' . $track_id . ', case id ' . $case_id;
         $case_obj = NULL;
         if ( ( $track_id ) && ( ! $case_id ) ) { // candidate but no case - see if there is one
             switch ( $this->active_template_type) {
@@ -672,7 +674,7 @@ class Rpt_Info_Public
                 $case_obj->AcademicYear = $this->current_cycle->AcademicYear;
                 $case_obj->AcademicYearDisplay = $this->current_cycle->Display;
             }
-//            echo '<pre>' . print_r( $case_obj, true ) . '</pre>'; exit;
+//            echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         }
         elseif ( $case_id ) { // incoming case id - just get it
             switch ( $this->active_template_type) {
@@ -684,8 +686,8 @@ class Rpt_Info_Public
                     break;
             }
         }
-        if ( $case_obj ) {
 //        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
+        if ( $case_obj ) {
             $this->rpt_db->get_other_appointments($case_obj);
             $this->rpt_db->get_candidate_leaves($case_obj);
             $case_obj->set_calculated_values();
@@ -755,6 +757,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
         echo rpt_form_hidden_field('InitiatorID', $case_obj->InitiatorID);
         echo rpt_form_hidden_field('UWODSAppointmentTrackKey', $case_obj->UWODSAppointmentTrackKey);
+        echo rpt_form_hidden_field('AppointmentType', $case_obj->AppointmentType);
         echo rpt_form_hidden_field('UWODSUnitKey', $case_obj->UWODSUnitKey);
         echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
@@ -820,7 +823,6 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('UWODSUnitKey', $case_obj->UWODSUnitKey);
         echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
-        echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
@@ -907,7 +909,7 @@ class Rpt_Info_Public
             }
             $case_obj->update_from_post($_POST);
             $save_action = 'submit';
-            $case_obj->CaseStatus = 'Submitted';
+            $case_obj->CaseStatusID = '1';
 //            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
             // anything else?
             switch ( $save_action ) {

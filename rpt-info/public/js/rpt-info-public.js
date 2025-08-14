@@ -9,7 +9,7 @@
 			result += '<div class="col-md-6"><strong>' + item.LegalName + ' (' + item.EmployeeID + ')</strong><br>';
 			result += item.RankName + ' in ' + item.UnitName + ' (' + item.AppointmentType + ')</div>';
 			result += '<div class="col-md-2">';
-			if (item.CaseStatus == 'None' ) {
+			if (item.CaseStatus == 'N/A' ) {
 				result += '<a href="' + my_ajax_obj.init_url + '=' + item.UWODSAppointmentTrackKey + '" class="btn btn-outline-primary">Initiate case</a>';
 			}
 			else {

@@ -79,4 +79,5 @@ function run_rpt_info() {
 	$plugin->run();
 
 }
+
 run_rpt_info();

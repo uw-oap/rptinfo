@@ -2,47 +2,61 @@
 
 class Rpt_Info_Case
 {
-    public $CaseID = 0;
-    public $RptCaseID = 0;
-    public $RptTemplateID = 0;
-    public $TemplateName = 0;
-    public $RptTemplateTypeID = 0;
-    public $RptTemplateTypeName = '';
-    public $CandidateID = 0;
-    public $LegalName = '';
-    public $EmployeeID = '';
-    public $InitiatorID = 0;
-    public $InitiatorName = '';
-    public $CandidateKey = 0;
-    public $UWODSAppointmentTrackKey = 0;
-    public $AppointmentType = '';
-    public $UWODSUnitKey = 0;
-    public $UnitName = '';
-    public $InterfolioUnitID = 0;
-    public $ParentID = 0;
-    public $ParentUnitName = '';
-    public $LevelOneID = 0;
-    public $LevelOneUnitName = '';
-    public $CurrentRankKey = 0;
-    public $CurrentRankName = '';
-    public $DueDate = NULL;
-    public $EffectiveDate = NULL;
-    public $HasJoint = 'No';
-    public $HasSecondary = 'No';
-    public $CaseStatus = 'Draft';
-    public $RptStatus = '';
-    public $ServicePeriod = 0;
-    public $StartDate = '';
-    public $EndDate = '';
-    public $TrackTypeName = '';
-    public $RankCategory = '';
-    public $OtherAppointments = [];
-    public $CoverSheetID = '0';
-    public $AcademicYear = '';
-    public $AcademicYearDisplay = '';
-    public $WorkflowStepNumber = '';
-    public $WorkflowStepName = '';
-    public $PreviousLeaves = [];
+    public int $CaseID = 0;
+    public int $RptCaseID = 0;
+    public int $RptTemplateID = 0;
+    public int $AcademicYear = 0;
+    public string $AcademicYearDisplay = '';
+    public int $CandidateID = 0;
+    public int $CandidateKey = 0;
+    public string $EmployeeID = '';
+    public string $LegalName = '';
+    public string $FirstName = '';
+    public string $LastName = '';
+    public string $UWNetID = '';
+    public string $CandidateEmail = '';
+    public int $UWODSAppointmentTrackKey = 0;
+    public string $AppointmentType = '';
+    public int $UWODSUnitKey = 0;
+    public int $InterfolioUnitID = 0;
+    public string $UnitName = '';
+    public int $ParentID = 0;
+    public string $ParentUnitName = '';
+    public int $LevelOneID = 0;
+    public string $LevelOneUnitName = '';
+    public int $CurrentRankKey = 0;
+    public string $CurrentRankName = '';
+    public string $RankCategory = '';
+    public string $TrackTypeName = '';
+    public string $IsPromotable = '';
+    public string $ServicePeriod = '';
+    public string $HasJoint = 'No';
+    public string $HasSecondary = 'No';
+    public string $AppointmentStartDate = '';
+    public string $AppointmentEndDate = '';
+    public int $InitiatorID = 0;
+    public string $InitiatorName = '';
+    public int $CaseDataSectionID = 0;
+    public int $ConcurrenceLetterSecion = 0;
+    public int $ConcurrenceLetterCount = 0;
+    public int $CoverSheetID = 0;
+    public string $CoverSheetSubmitted = 'No';
+    public string $CoverSheet = '';
+    public int $DataSheetID = 0;
+    public string $DataSheetSubmitted = 'No';
+    public string $WorkflowStepNumber = '';
+    public string $WorkflowStepName = '';
+    public int $SubcommitteeReviewStep = 0;
+    public string $SubcommitteeMembers = '';
+    public string $RptStatus = '';
+    public int $CaseStatusID = 0;
+    public string $CaseStatus = 'Draft';
+    public string $APFInternal = 'No';
+    public string $StatusActive = 'No';
+    public string $TemplateName = '';
+    public int $RptTemplateTypeID = 0;
+    public array $OtherAppointments = [];
+    public array $PreviousLeaves = [];
 
     public function __construct( $case_row = NULL )
     {
@@ -60,12 +74,16 @@ class Rpt_Info_Case
             }
             $this->LegalName = $case_row->LegalName;
             $this->EmployeeID = $case_row->EmployeeID;
-            $this->InitiatorID = $case_row->InitiatorID;
+            $this->InitiatorID ??= $case_row->InitiatorID;
             $this->InitiatorName = $case_row->InitiatorName;
             $this->CandidateKey = $case_row->CandidateKey;
-            $this->AcademicYear = $case_row->AcademicYear;
-            $this->WorkflowStepNumber = $case_row->WorkflowStepNumber;
-            $this->WorkflowStepName = $case_row->WorkflowStepName;
+            if ( isset($case_row->AcademicYear) ) {
+                $this->AcademicYear = $case_row->AcademicYear;
+            }
+            if ( isset($case_row->WorkflowStepName) ) {
+                $this->WorkflowStepNumber = $case_row->WorkflowStepNumber;
+                $this->WorkflowStepName = $case_row->WorkflowStepName;
+            }
             $this->UWODSAppointmentTrackKey = $case_row->UWODSAppointmentTrackKey;
             $this->AppointmentType = $case_row->AppointmentType;
             $this->UWODSUnitKey = $case_row->UWODSUnitKey;
@@ -77,35 +95,41 @@ class Rpt_Info_Case
             $this->UnitName = $case_row->UnitName;
             $this->CurrentRankKey = $case_row->CurrentRankKey;
             $this->CurrentRankName = $case_row->CurrentRankName;
-//            $this->DueDate = $case_row->DueDate;
-            $this->EffectiveDate = $case_row->EffectiveDate;
             if ( $this->AppointmentType == 'Joint' ) {
                 $this->HasJoint = 'Yes';
             }
             else {
-                $this->HasJoint = $case_row->HasJoint;
+                $this->HasJoint ??= $case_row->HasJoint;
             }
-            $this->HasSecondary = $case_row->HasSecondary;
-            $this->CaseStatus = $case_row->CaseStatus;
+            $this->HasSecondary ??= $case_row->HasSecondary;
+            if ( isset($case_row->CaseStatusID) ) {
+                $this->CaseStatus = $case_row->CaseStatus;
+                $this->CaseStatusID = $case_row->CaseStatusID;
+            }
             $this->TrackTypeName = $case_row->TrackTypeName;
             $this->RankCategory = $case_row->RankCategory;
-            if ( isset($case_row->ServicePeriod) ) {
-                $this->ServicePeriod = $case_row->ServicePeriod;
+            if ( isset( $case_row->ServicePeriod ) ) {
+                if ( $case_row->ServicePeriod == '12' ) {
+                    $this->ServicePeriod = '12';
+                }
+                else {
+                    $this->ServicePeriod = '9';
+                }
             }
-            if ( isset($case_row->StartDate) ) {
-                $this->StartDate = $case_row->StartDate;
+//            $this->ServicePeriod ??= $case_row->ServicePeriod;
+            if ( isset($case_row->AppointmentStartDate) ) {
+                $this->AppointmentStartDate = $case_row->AppointmentStartDate;
             }
-            if ( isset($case_row->EndDate) ) {
-                $this->EndDate = $case_row->EndDate;
+            if ( isset($case_row->AppointmentEndDate) ) {
+                $this->AppointmentEndDate = $case_row->AppointmentEndDate;
             }
-            if ( isset($case_row->RptStatus) ) {
-                $this->RptStatus = $case_row->RptStatus;
-            }
-            $this->CoverSheetID = $case_row->CoverSheetID;
+            $this->RptStatus ??= $case_row->RptStatus;
+            $this->CoverSheetID ??= $case_row->CoverSheetID;
+//            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
         }
     }
 
-    public function set_calculated_values()
+    public function set_calculated_values() : void
     {
         $this->HasJoint = 'No';
         $this->HasSecondary = 'No';
@@ -121,17 +145,7 @@ class Rpt_Info_Case
         }
     }
 
-    public function propose_effective_date( Rpt_Info_Cycle $cycle_obj )
-    {
-        if ( $this->EffectiveDate ) {
-            return $this->EffectiveDate;
-        }
-        else {
-            return $cycle_obj->EffectiveDate[$this->ServicePeriod];
-        }
-    }
-
-    public function update_from_post( $posted_values )
+    public function update_from_post( $posted_values ) : void
     {
         $this->CaseID = intval($posted_values['CaseID']);
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
@@ -144,13 +158,13 @@ class Rpt_Info_Case
         $this->CurrentRankKey = intval($posted_values['CurrentRankKey']);
         $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
         $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
-        $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
+//        $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
         $this->AcademicYear = intval($posted_values['ay']);
         $this->HasJoint = sanitize_text_field($posted_values['HasJoint']);
         $this->HasSecondary = sanitize_text_field($posted_values['HasSecondary']);
     }
 
-    public function insert_case_array()
+    public function insert_case_array() : array
     {
         return array(
             'RptCaseID' => $this->RptCaseID,
@@ -161,13 +175,13 @@ class Rpt_Info_Case
             'CandidateKey' => $this->CandidateKey,
             'UWODSAppointmentTrackKey' => $this->UWODSAppointmentTrackKey,
             'CurrentRankKey' => $this->CurrentRankKey,
-            'CaseStatus' => $this->CaseStatus,
+            'CaseStatusID' => $this->CaseStatusID,
             'HasJoint' => $this->HasJoint,
             'HasSecondary' => $this->HasSecondary
         );
     }
 
-    public function candidate_info_card( $show_instructions = FALSE )
+    public function candidate_info_card( $show_instructions = FALSE ) : string
     {
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
@@ -230,7 +244,7 @@ class Rpt_Info_Case
 
     public function edit_case_help_text( $help_url = '' ) : string
     {
-
+        return '';
     }
 
 }

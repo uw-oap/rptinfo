@@ -2,33 +2,31 @@
 
 class Rpt_Info_Promotion extends Rpt_Info_Case
 {
-    public $TargetRankKey = 0;
-    public $TargetRankName = '';
-    public $TargetTrackTypeName = '';
-    public $TargetRankDefaultTerm = '0';
-    public $TargetRankTenured = 'No';
-    public $ActionType = '';
-    public $PromotionCategoryID = 0;
-    public $PromotionCategoryName = '';
+    public int $TargetRankKey = 0;
+    public string $TargetRankName = '';
+    public string $TargetTrackTypeName = '';
+    public int $TargetRankDefaultTerm = 0;
+    public string $TargetRankTenured = 'No';
+    public string $ActionType = '';
+    public int $PromotionCategoryID = 0;
+    public string $PromotionCategoryName = '';
 
     // fields for datasheet
-    public $Postponed = 'No';
-    public $TenureAward = '';
-    public $NewTermLength = '';
-    public $SubcommitteeMembers = '';
-    public $Vote1Eligible = '0';
-    public $Vote1Affirmative = '0';
-    public $Vote1Negative = '0';
-    public $Vote1Absent = '0';
-    public $Vote1Abstaining = '0';
-    public $Vote2Eligible = '0';
-    public $Vote2Affirmative = '0';
-    public $Vote2Negative = '0';
-    public $Vote2Absent = '0';
-    public $Vote2Abstaining = '0';
-    public $Leaves = '';
-    public $Waivers = '';
-    public $DataSheetID = '0';
+    public string $Postponed = 'No';
+    public int $TenureAward = 0;
+    public int $NewTermLength = 0;
+    public int $Vote1Eligible = 0;
+    public int $Vote1Affirmative = 0;
+    public int $Vote1Negative = 0;
+    public int $Vote1Absent = 0;
+    public int $Vote1Abstaining = 0;
+    public int $Vote2Eligible = 0;
+    public int $Vote2Affirmative = 0;
+    public int $Vote2Negative = 0;
+    public int $Vote2Absent = 0;
+    public int $Vote2Abstaining = 0;
+    public string $Leaves = ''; // string representation to submit
+    public string $Waivers = '';
 
     public function __construct( $case_row = NULL )
     {
@@ -64,13 +62,22 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         }
     }
 
-    public function update_from_post( $posted_values )
+    public function update_from_post( $posted_values ) : void
     {
         parent::update_from_post( $posted_values );
         $this->TargetRankKey = intval($posted_values['TargetRankKey']);
         $this->EffectiveDate = sanitize_text_field($posted_values['EffectiveDate']);
-        $this->RptTemplateID = intval($posted_values['RptTemplateID']);
         $this->PromotionCategoryID = intval($posted_values['PromotionCategoryID']);
+    }
+
+    public function propose_effective_date( Rpt_Info_Cycle $cycle_obj )
+    {
+        if ( $this->EffectiveDate ) {
+            return $this->EffectiveDate;
+        }
+        else {
+            return $cycle_obj->EffectiveDate[$this->ServicePeriod];
+        }
     }
 
     public function insert_promotion_array() : array
@@ -127,13 +134,13 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'case'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Details</a>';
-        if ( $this->RptCaseID > '0' ) {
+/*        if ( $this->RptCaseID > '0' ) {
             $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                     'template_type' => $this->RptTemplateTypeID,
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'datasheet'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Data sheet</a>';
-        }
+        } */
         $result .= '</td>';
         $result .= '</tr>';
         return $result;
@@ -173,6 +180,30 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dl class="rptinfo-list">';
         $result .= '<dt>Proposed rank</dt>';
         $result .= '<dd>' . $this->TargetRankName . '</dd>';
+        $result .= '<dt>Proposed track</dt>';
+        $result .= '<dd>' . $this->TargetTrackTypeName . '</dd>';
+        $result .= '<dt>Start date</dt>';
+        $result .= '<dd>' . rpt_format_date($this->EffectiveDate) . '</dd>';
+        $result .= '<dt>Tenure award</dt>';
+        if ( $this->TargetRankTenured == 'Yes' ) {
+            $result .= '<dd>' . $this->TenureAward . '%</dd>';
+        }
+        else {
+            $result .= '<dd>N/A</dd>';
+        }
+        $result .= '<dt>New term length</dt>';
+        if ( $this->TargetRankDefaultTerm > '0' ) {
+            $result .= '<dd>' . $this->NewTermLength . '</dd>';
+        }
+        else {
+            $result .= '<dd>N/A</dd>';
+        }
+        $result .= '<dt>Previously postponed?</dt>';
+        $result .= '<dd>' . $this->Postponed . '</dd>';
+        $result .= '<dt>Subcommittee members</dt>';
+        $result .= '<dd>' . $this->SubcommitteeMembers . '</dd>';
+        $result .= '<dt>Previous leaves</dt>';
+        $result .= '<dd>' . $this->Leaves . '</dd>';
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
