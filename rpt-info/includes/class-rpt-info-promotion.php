@@ -42,7 +42,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             }
             $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
-            $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
+            $this->SubcommitteeMembers ??= $case_row->SubcommitteeMembers;
             if ( isset($case_row->DatasheetID) ) {
                 $this->DataSheetID = $case_row->DataSheetID;
                 $this->TenureAward = $case_row->TenureAward;

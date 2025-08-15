@@ -113,17 +113,22 @@ FROM AcademicYear where YearStatus = 'Past'");
     public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus, RptStatus,
-            LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
-            UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
-            ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, TrackTypeName,
-            EffectiveDate, HasJoint, HasSecondary, WorkflowStepNumber, WorkflowStepName, TargetTrackTypeName
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, RptTemplateTypeID,
+CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID,
+LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
+UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
+ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
+EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
+Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
+Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID, TargetTrackTypeName, TargetRankDefaultTerm,
+TargetRankTenured, Postponed 
 FROM RptPromotionDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
             . implode(',', array_keys($user_obj->Units)) . ")";
         $this->last_query = $query;
+//        echo $this->last_query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->CaseID] = new Rpt_Info_Promotion($row);
         }
@@ -294,10 +299,10 @@ ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, Pro
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID, TargetTrackTypeName, TargetRankDefaultTerm,
-TargetRankTenured, Postponed FROM RptPromotionDetails where CaseID = %s", $case_id);
+TargetRankTenured, Postponed, RptTemplateTypeID FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
-        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
+//        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
         if ( $result_row ) {
             $result = new Rpt_Info_Promotion($result_row);
         }

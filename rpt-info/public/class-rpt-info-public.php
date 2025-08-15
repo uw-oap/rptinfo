@@ -268,7 +268,7 @@ class Rpt_Info_Public
     {
         $this->force_login();
         ob_start();
-        echo 'wtf?';
+//        echo 'wtf?';
         $ay = get_query_var('ay', '2026');
         $status_type = get_query_var('status', '');
         $status_message = get_query_var('msg', '');
@@ -590,7 +590,7 @@ class Rpt_Info_Public
     {
         global $wp;
         $case_obj = NULL;
-        echo 'case id ' . $case_id . ', type ' . $this->active_template_type;
+//        echo 'case id ' . $case_id . ', type ' . $this->active_template_type;
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/cases';
         switch ( $this->active_template_type ) {
