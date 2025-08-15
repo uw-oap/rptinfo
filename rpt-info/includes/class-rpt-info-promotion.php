@@ -43,10 +43,10 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
             $this->SubcommitteeMembers ??= $case_row->SubcommitteeMembers;
-            if ( isset($case_row->DatasheetID) ) {
-                $this->DataSheetID = $case_row->DataSheetID;
-                $this->TenureAward = $case_row->TenureAward;
-                $this->NewTermLength = $case_row->NewTermLength;
+            if ( isset($case_row->Vote1Eligible) ) {
+                $this->DataSheetID ??= $case_row->DataSheetID;
+                $this->TenureAward ??= $case_row->TenureAward;
+                $this->NewTermLength ??= $case_row->NewTermLength;
                 $this->Vote1Eligible = $case_row->Vote1Eligible;
                 $this->Vote1Affirmative = $case_row->Vote1Affirmative;
                 $this->Vote1Negative = $case_row->Vote1Negative;
@@ -107,6 +107,15 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         );
     }
 
+    public function update_case_array() : array
+    {
+        return array(
+            'PromotionCategoryID' => $this->PromotionCategoryID,
+            'TargetRankKey' => $this->TargetRankKey,
+            'EffectiveDate' => $this->EffectiveDate,
+        );
+    }
+
     public function listing_table_row( $rpt_case_url ) : string
     {
         global $wp;
@@ -148,6 +157,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function promotion_info_card( $rpt_case_url ) : string
     {
+        global $wp;
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Promotion information</h4>';
@@ -166,6 +176,13 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         if ( $this->RptCaseID ) {
             $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
                 . '">Go to case</a></p>';
+        }
+        if ( $this->case_edit_allowed() ) {
+            $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                    'template_type' => $this->RptTemplateTypeID,
+                    'ay' => $this->AcademicYear,
+                    'rpt_page' => 'edit'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Edit</a>';
         }
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
@@ -241,4 +258,47 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             return $this->TargetRankDefaultTerm;
         }
     }
+
+    public function case_edit_allowed() : bool
+    {
+        return false;
+        if ( ( $this->CaseStatusID == '0' ) || ( $this->CaseStatusID == '1' ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    public function data_sheet_edit_allowed() : bool
+    {
+        // what conditions should be here?
+        return true;
+    }
+
+    /**
+     * ok_to_submit
+     *      check to see if it's ok to submit
+     *
+     * @return bool
+     */
+    public function ok_to_submit() : bool
+    {
+        // not already in RPT
+        if ( $this->RptCaseID > 0 ) {
+            return false;
+        }
+        if ( ( $this->CaseStatusID !== 0 ) && ( $this->CaseStatusID !== 1 ) ){
+            return FALSE;
+        }
+        if ( ! $this->TargetRankKey ) {
+            return FALSE;
+        }
+        if ( ! $this->EffectiveDate ) {
+            return FALSE;
+        }
+        if ( ! $this->RptTemplateID ) {
+            return FALSE;
+        }
+        return TRUE;
+    }
+
 }

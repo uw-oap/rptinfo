@@ -304,6 +304,13 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
                 . '">Go to case</a></p>';
         }
+        if ( $this->case_edit_allowed() ) {
+            $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                    'template_type' => $this->RptTemplateTypeID,
+                    'ay' => $this->AcademicYear,
+                    'rpt_page' => 'edit'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Edit</a>';
+        }
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
@@ -344,6 +351,30 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             '75%' => '75%',
             '67%' => '67%'
         );
+    }
+
+    public function case_edit_allowed() : bool
+    {
+        return false;
+        if ( ( $this->CaseStatusID == '0' ) || ( $this->CaseStatusID == '1' ) ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * ok_to_submit
+     *      check to see if it's ok to submit
+     *
+     * @return bool
+     */
+    public function ok_to_submit() : bool
+    {
+        // not already in RPT
+        if ( $this->RptCaseID > 0 ) {
+            return false;
+        }
+        return true;
     }
 
 }

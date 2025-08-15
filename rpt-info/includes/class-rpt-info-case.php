@@ -156,7 +156,9 @@ class Rpt_Info_Case
         $this->UWODSAppointmentTrackKey = intval($posted_values['UWODSAppointmentTrackKey']);
         $this->UWODSUnitKey = intval($posted_values['UWODSUnitKey']);
         $this->CurrentRankKey = intval($posted_values['CurrentRankKey']);
-        $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
+        if ( array_key_exists('AppointmentType', $posted_values) ) {
+            $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
+        }
         $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
 //        $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
         $this->AcademicYear = intval($posted_values['ay']);

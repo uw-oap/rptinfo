@@ -297,6 +297,9 @@ class Rpt_Info_Public
                         case 'datasheet':
                             $this->case_page('datasheet');
                             break;
+                        case 'edit':
+                            $this->case_page('edit');
+                            break;
                         case 'template':
                             $this->template_page();
                             break;
@@ -398,7 +401,7 @@ class Rpt_Info_Public
         elseif ( $case_id == 'new' ) {
             $this->search_form();
         }
-        elseif ( ( $track_id > '0' ) || ( $selector == 'datasheet' ) ) {
+        elseif ( ( $track_id > '0' ) || ( $selector != 'case' ) ) {
             $this->case_edit($case_id, $track_id, $selector);
         }
         elseif ( $case_id != 'new' ) {
@@ -589,6 +592,7 @@ class Rpt_Info_Public
     private function case_display( $case_id )
     {
         global $wp;
+        echo '<p>Case display page</p>';
         $case_obj = NULL;
 //        echo 'case id ' . $case_id . ', type ' . $this->active_template_type;
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
@@ -647,6 +651,7 @@ class Rpt_Info_Public
     private function case_edit( int $case_id = 0, int $track_id = 0, $selector = 'case' ) : void
     {
         global $wp;
+        echo '<p>Case edit page</p>';
         echo 'track id ' . $track_id . ', case id ' . $case_id;
         $case_obj = NULL;
         if ( ( $track_id ) && ( ! $case_id ) ) { // candidate but no case - see if there is one
@@ -704,6 +709,7 @@ class Rpt_Info_Public
             echo '<div class="col-6">';
             switch ($selector) {
                 case 'case':
+                case 'edit':
                     $this->case_form($case_obj);
                     break;
                 case 'datasheet':
@@ -908,27 +914,18 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_post($_POST);
-            $save_action = 'submit';
-            $case_obj->CaseStatusID = '1';
+            if ( $case_obj->ok_to_submit() ) {
+                $case_obj->CaseStatusID = '1';
+            }
 //            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
             // anything else?
-            switch ( $save_action ) {
-                case 'save_draft':
-                    if ( $case_obj->CaseID == 0 ) {
-                        $update_result = $this->rpt_db->insert_case($case_obj);
-                    }
-                    else {
-                        $update_result = $this->rpt_db->update_case($case_obj);
-                    }
-                    $result_message = 'Saved draft';
-                    break;
-                case 'submit' :
-                    $update_result = $this->rpt_db->insert_case($case_obj);
-                    $result_message = 'Case added to RPT queue.';
-                    break;
-                default :
-                    break;
+            if ( $case_obj->CaseID == 0 ) {
+                $update_result = $this->rpt_db->insert_case($case_obj);
             }
+            else {
+                $update_result = $this->rpt_db->update_case($case_obj);
+            }
+            $result_message = 'Your changes have been saved';
             if ( $update_result == 1 ) {
                 $result_status = 'success';
             }
