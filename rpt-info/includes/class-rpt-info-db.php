@@ -62,6 +62,41 @@ FROM AcademicYear where YearStatus = 'Past'");
         return $result;
     }
 
+    public function get_rpt_cycle_list() : array
+    {
+        $result = [];
+        $query = "SELECT AcademicYear, Display, YearStatus, EffectiveDate09Month, EffectiveDate12Month, 
+MandatoryDueDate, NonMandatoryDueDate, LibrarianDueDate, PromotionSubmissionStartDate, 
+PromotionSubmissionEndDate, SabbaticalCompLimit, SabbaticalSubmissionStartDate, 
+SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAllowed FROM RptCycleDetails;";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->AcademicYear] = new Rpt_Info_Cycle($row);
+        }
+        return $result;
+    }
+
+    public function get_active_cycle( int $template_type ) : ?Rpt_Info_Cycle
+    {
+        $result = NULL;
+        switch ($template_type) {
+            case 2 :
+                $query = "";
+        }
+        return $result;
+    }
+
+    public function update_cycle_settings(int $AcademicYear, array $update_values) : int
+    {
+        $query_result = $this->rpt_db->update('RptCycle', $update_values,
+            array('AcademicYear' => $AcademicYear));
+        $this->last_query = $this->rpt_db->last_error;
+        if ( $query_result === FALSE ) {
+            return 0;
+        }
+        return $query_result;
+    }
+
     /** ******************* template type functions ********************************** */
 
     public function get_template_type_list( $active_only = FALSE )
@@ -379,7 +414,8 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
                     . $case_obj->CaseID . "'";
                 $this->last_query = $query;
                 $query_result = $this->rpt_db->query($query); */
-        $query_result = $this->rpt_db->update('RptCase', $case_obj->insert_array(), array('ID' => $case_obj->CaseID));
+        $query_result = $this->rpt_db->update('RptCase', $case_obj->insert_array(),
+            array('ID' => $case_obj->CaseID));
         $this->last_query = $this->rpt_db->last_error;
         if ( $query_result === FALSE ) {
             return 0;

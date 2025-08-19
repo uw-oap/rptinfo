@@ -74,6 +74,13 @@
 					break;
 			}
 		});
+        $('#CycleAcademicYear').change(function(){
+            $('#PromotionSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionstartdate'));
+            $('#PromotionSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionenddate'));
+            $('#SabbaticalCompLimit').val($('#CycleAcademicYear option:selected').data('sabbaticalcomplimit'));
+            $('#SabbaticalSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionstartdate'));
+            $('#SabbaticalSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionenddate'));
+        });
 		$('#rptinfo_case_form').submit(function(e){
 			if( !confirm('Are you sure you want to submit the case?') ){
 				e.preventDefault();
