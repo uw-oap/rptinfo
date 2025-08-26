@@ -76,6 +76,26 @@ SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAll
         return $result;
     }
 
+    public function get_cycle_allowances() : array
+    {
+        $result = [];
+        $query = "select sa.AcademicYear, ay.Display, sa.UWODSUnitKey, sa.QuartersAllowed 
+from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear order by sa.AcademicYear";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            if ( array_key_exists($row->AcademicYear, $result) ) {
+                $result[$row->AcademicYear][$row->UWODSUnitKey] = $row->QuartersAllowed;
+            }
+            else {
+                $result[$row->AcademicYear] = array(
+                    'Display' => $row->Display,
+                    $row->UWODSUnitKey => $row->QuartersAllowed
+                );
+            }
+        }
+        return $result;
+    }
+
     public function get_active_cycle( int $template_type ) : ?Rpt_Info_Cycle
     {
         $result = NULL;
@@ -91,10 +111,28 @@ SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAll
         $query_result = $this->rpt_db->update('RptCycle', $update_values,
             array('AcademicYear' => $AcademicYear));
         $this->last_query = $this->rpt_db->last_error;
+//        echo $this->last_query; exit;
         if ( $query_result === FALSE ) {
             return 0;
         }
         return $query_result;
+    }
+
+    public function update_sabbatical_allowances(int $AcademicYear, array $update_values) : int
+    {
+        $result = 0;
+        foreach ($update_values as $unit => $allowance) {
+            $query_result = $this->rpt_db->update('SabbaticalAllowances',
+                array('QuartersAllowed' => $allowance),
+                array('AcademicYear' => $AcademicYear, 'UWODSUnitKey' => $unit));
+            if ( $query_result === FALSE ) {
+                return 0;
+            }
+            else {
+                $result += $query_result;
+            }
+        }
+        return $result;
     }
 
     /** ******************* template type functions ********************************** */
@@ -450,18 +488,6 @@ where TargetActive = 'Yes' and SourceUWODSRankKey = %s", $source_rank_key);
         return $result;
     }
 
-    public function get_promotion_type_list( $rank_category)
-    {
-        $result = [];
-        $query = $this->rpt_db->prepare("select ID, PromotionCategoryName from PromotionCategory 
-        where RankCategory = %s", $rank_category);
-        $this->last_query = $query;
-        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
-            $result[$row['ID']] = $row['PromotionCategoryName'];
-        }
-        return $result;
-    }
-
     /** ******************* template functions ********************************** */
 
     public function get_template_list($template_type_id, $unit_type ) : array
@@ -593,6 +619,31 @@ where UWODSAppointmentTrackKey = %s", $case_obj->UWODSAppointmentTrackKey);
             }
         }
         $case_obj->Postponed = 'No';
+    }
+
+    /** ******************* miscellaneous functions ********************************** */
+
+    public function get_promotion_type_list( $rank_category)
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select ID, PromotionCategoryName from PromotionCategory 
+        where RankCategory = %s", $rank_category);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['ID']] = $row['PromotionCategoryName'];
+        }
+        return $result;
+    }
+
+    public function get_level_1_unit_list()
+    {
+        $result = [];
+        $query = "select UWODSUnitKey, UnitName from InterfolioUnit  where UnitLevel = 1 order by UnitName";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->UWODSUnitKey] = $row->UnitName;
+        }
+        return $result;
     }
 
 }

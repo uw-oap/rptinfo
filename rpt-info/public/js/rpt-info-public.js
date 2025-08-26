@@ -81,6 +81,26 @@
             $('#SabbaticalSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionstartdate'));
             $('#SabbaticalSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionenddate'));
         });
+        $('#SabbaticalAcademicYear').change(function(){
+            $('#Unit-175').val($('#SabbaticalAcademicYear option:selected').data('175'));
+            $('#Unit-169').val($('#SabbaticalAcademicYear option:selected').data('169'));
+            $('#Unit-181').val($('#SabbaticalAcademicYear option:selected').data('181'));
+            $('#Unit-16').val($('#SabbaticalAcademicYear option:selected').data('16'));
+            $('#Unit-178').val($('#SabbaticalAcademicYear option:selected').data('178'));
+            $('#Unit-153').val($('#SabbaticalAcademicYear option:selected').data('153'));
+            $('#Unit-152').val($('#SabbaticalAcademicYear option:selected').data('152'));
+            $('#Unit-195').val($('#SabbaticalAcademicYear option:selected').data('195'));
+            $('#Unit-86').val($('#SabbaticalAcademicYear option:selected').data('86'));
+            $('#Unit-62').val($('#SabbaticalAcademicYear option:selected').data('62'));
+            $('#Unit-59').val($('#SabbaticalAcademicYear option:selected').data('59'));
+            $('#Unit-126').val($('#SabbaticalAcademicYear option:selected').data('126'));
+            $('#Unit-133').val($('#SabbaticalAcademicYear option:selected').data('133'));
+            $('#Unit-183').val($('#SabbaticalAcademicYear option:selected').data('183'));
+            $('#Unit-58').val($('#SabbaticalAcademicYear option:selected').data('58'));
+            $('#Unit-17').val($('#SabbaticalAcademicYear option:selected').data('17'));
+            $('#Unit-164').val($('#SabbaticalAcademicYear option:selected').data('164'));
+            $('#Unit-118').val($('#SabbaticalAcademicYear option:selected').data('118'));
+        });
 		$('#rptinfo_case_form').submit(function(e){
 			if( !confirm('Are you sure you want to submit the case?') ){
 				e.preventDefault();

@@ -45,6 +45,9 @@ class Rpt_Info_Admin {
      */
     private $option_name = 'rpt_info';
 
+    private $default_text_area_width = 60;
+    private $default_text_area_height = 6;
+
     /**
      * connection to database
      */
@@ -191,6 +194,76 @@ class Rpt_Info_Admin {
             array( 'label_for' => $this->option_name . '_database_name' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_database_name' );
+        // help text on pages
+        add_settings_section(
+            $this->option_name . '_system_text',
+            __( 'System', 'rptinfo' ),
+            array( $this, $this->option_name . '_system_text_cb' ),
+            $this->plugin_name
+        );
+        add_settings_field(
+            $this->option_name . '_home_page_text',
+            __( 'System home page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_home_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_home_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_home_page_text' );
+        add_settings_field(
+            $this->option_name . '_promo_home_page_text',
+            __( 'Promotion home page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_promo_home_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_promo_home_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_promo_home_page_text' );
+        add_settings_field(
+            $this->option_name . '_promo_case_page_text',
+            __( 'Promotion case page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_promo_case_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_promo_case_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_promo_case_page_text' );
+        add_settings_field(
+            $this->option_name . '_promo_case_list_page_text',
+            __( 'Promotion case list page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_promo_case_list_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_promo_case_list_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_promo_case_list_page_text' );
+        add_settings_field(
+            $this->option_name . '_sab_home_page_text',
+            __( 'Sabbatical home page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_sab_home_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_sab_home_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_sab_home_page_text' );
+        add_settings_field(
+            $this->option_name . '_sab_case_page_text',
+            __( 'Sabbatical case page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_sab_case_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_sab_case_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_sab_case_page_text' );
+        add_settings_field(
+            $this->option_name . '_sab_case_list_page_text',
+            __( 'Sabbatical case list page text', 'rptinfo' ),
+            array( $this, $this->option_name . '_sab_case_list_page_text_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_sab_case_list_page_text' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_sab_case_list_page_text' );
     }
 
     /**
@@ -280,6 +353,88 @@ class Rpt_Info_Admin {
             echo ' (not connected)';
         }
         echo '.</em></p>';
+    }
+
+    public function rpt_info_system_text_cb()
+    {
+        echo '<p>' . __( 'Settings dealing with the text displayed on pages.', 'rptinfo' ) . '</p>';
+    }
+
+    public function rpt_info_home_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_home_page_text' );
+        echo '<textarea name="' . $this->option_name . '_home_page_text" id="'
+            . $this->option_name . '_home_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_promo_home_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_promo_home_page_text' );
+        echo '<textarea name="' . $this->option_name . '_promo_home_page_text" id="'
+            . $this->option_name . '_promo_home_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_promo_case_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_promo_case_page_text' );
+        echo '<textarea name="' . $this->option_name . '_promo_case_page_text" id="'
+            . $this->option_name . '_promo_case_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_promo_case_list_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_promo_case_list_page_text' );
+        echo '<textarea name="' . $this->option_name . '_promo_case_list_page_text" id="'
+            . $this->option_name . '_promo_case_list_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_sab_home_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_sab_home_page_text' );
+        echo '<textarea name="' . $this->option_name . '_sab_home_page_text" id="'
+            . $this->option_name . '_sab_home_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_sab_case_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_sab_case_page_text' );
+        echo '<textarea name="' . $this->option_name . '_sab_case_page_text" id="'
+            . $this->option_name . '_sab_case_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_sab_case_list_page_text_cb()
+    {
+        $page_text = get_option( $this->option_name . '_sab_case_list_page_text' );
+        echo '<textarea name="' . $this->option_name . '_sab_case_list_page_text" id="'
+            . $this->option_name . '_sab_case_list_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
     }
 
 }

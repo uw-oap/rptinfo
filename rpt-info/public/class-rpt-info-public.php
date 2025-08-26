@@ -370,21 +370,16 @@ class Rpt_Info_Public
             . 'Sabbatical submission open: ' . $this->current_cycle->SabbaticalSubmissionAllowed . '</p>';
         switch ( $this->active_template_type) {
             case '0' :
-                echo '<p>This system provides an interface to certain functions of the Interfolio RPT system.</p>';
-                echo "<p>Select the type of function you need from the menu above, and from there you can
-                choose among the available actions and reports.</p>";
+                $page_text = get_option('rpt_info_home_page_text');
                 break;
             case '2' :
-                echo "<p>Functions dealing with Promotions and Tenure.</p>";
-                echo "<p>Select the type of function you need from the menu above, and from there you can
-                choose among the available actions and reports.</p>";
+                $page_text = get_option('rpt_info_promo_home_page_text');
                 break;
             case '5' :
-                echo "<p>Functions dealing with Sabbaticals.</p>";
-                echo "<p>Select the type of function you need from the menu above, and from there you can
-                choose among the available actions and reports.</p>";
+                $page_text = get_option('rpt_info_sab_home_page_text');
                 break;
         }
+        echo '<p>' . $page_text . '</p>';
         echo '</div>'; // col 12
         echo '</div>'; // row
     }
@@ -425,8 +420,15 @@ class Rpt_Info_Public
 
     private function case_page( $selector = 'case' ) : void
     {
-        echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
-            . ' Case maintenance page</p>';
+        switch ( $this->active_template_type) {
+            case '2' :
+                $page_text = get_option('rpt_info_promo_case_page_text');
+                break;
+            case '5' :
+                $page_text = get_option('rpt_info_sab_case_page_text');
+                break;
+        }
+        echo '<p>' . $page_text . '</p>';
         if ( $this->current_cycle->template_type_submissions_allowed($this->active_template_type) ) {
             echo '<p>Case initiation is allowed</p>';
         }
@@ -451,21 +453,17 @@ class Rpt_Info_Public
         }
     }
 
-    private function case_home() : void
-    {
-        echo '<div class="row">';
-        echo '<div class="col-12">';
-        echo '<p>This system provides an interface to certain functions of the Interfolio RPT system.</p>';
-        echo "<p>Select the type of function you need from the menu above, and from there you can
-                choose among the available actions and reports.</p>";
-        echo '</div>'; // col 12
-        echo '</div>'; // row
-    }
-
     private function case_list() : void
     {
         global $wp;
-        echo '<p>Case list page</p>';
+        switch ( $this->active_template_type) {
+            case '2' :
+                $page_text = get_option('rpt_info_promo_case_list_page_text');
+                break;
+            case '5' :
+                $page_text = get_option('rpt_info_sab_case_list_page_text');
+                break;
+        }
         $this->rpt_case_review_url = '';
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/cases';
@@ -482,13 +480,8 @@ class Rpt_Info_Public
 //        echo '<pre>' . print_r($case_list, true) . '</pre>'; exit;
         echo '<div class="row">';
         echo '<div class="col-12">';
-        echo '<p>This page is where RPT ' . $this->template_types[$this->active_template_type]->TemplateTypeName
-            . ' cases can be initiated and tracked, and where data sheets '
-            . 'can be created. To initiate a case, click on <strong>Initiate a new case</strong> and follow the '
-            . "instructions on the next page. To create a data sheet, locate the candidate's name "
-            . 'below and click on the <strong>Data Sheet</strong> button. For an overview of the RPT '
-            . 'case review step instructions, see <a href="' . $this->rpt_case_review_url
-            . '" alt="RPT case review instructions">2025-26 Promotion and Tenure Cycle</a>.</p>';
+        echo '<p>' . $page_text . '</p>';
+        // help link here
         echo '</div>'; // col 12
         echo '</div>'; // row
         echo '<div class="row">';
@@ -1215,6 +1208,7 @@ class Rpt_Info_Public
                 break;
             case 5:
                 $this->sabbatical_academic_year_setup();
+                $this->sabbatical_allowance_setup();
                 break;
         }
    }
@@ -1236,7 +1230,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
         echo rpt_form_hidden_field('RptTemplateTypeID', '2');
         echo rpt_form_dropdown_list('CycleAcademicYear', $this->current_cycle->AcademicYear,
-            'Academic year', $this->academic_year_select_list($this->active_template_type), 'Display');
+            'Academic year', $this->academic_year_select_list( 'dates' ), 'Display');
         echo rpt_form_date_select('PromotionSubmissionStartDate',
             $this->current_cycle->PromotionSubmissionStartDate,
             'Start date for promotion initializations');
@@ -1268,7 +1262,7 @@ class Rpt_Info_Public
        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
        echo rpt_form_hidden_field('RptTemplateTypeID', '5');
        echo rpt_form_dropdown_list('CycleAcademicYear', $this->current_cycle->AcademicYear,
-           'Academic year', $this->academic_year_select_list($this->active_template_type), 'Display');
+           'Academic year', $this->academic_year_select_list( 'dates' ), 'Display');
        echo rpt_form_number_box('SabbaticalCompLimit', $this->current_cycle->SabbaticalCompLimit,
            'Statutory compensation limit');
        echo rpt_form_date_select('SabbaticalSubmissionStartDate',
@@ -1277,6 +1271,36 @@ class Rpt_Info_Public
        echo rpt_form_date_select('SabbaticalSubmissionEndDate',
            $this->current_cycle->SabbaticalSubmissionEndDate,
             'End date for sabbatical initializations');
+       echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
+       echo '</div>'; // col 12
+       echo '</div>'; // form group row
+       echo '</form>';
+       echo '</div>'; // card body
+       echo '</div>'; // card
+   }
+
+   private function sabbatical_allowance_setup()
+   {
+       global $wp;
+       // get lists for dropdowns
+       $unit_list = $this->rpt_db->get_level_1_unit_list();
+       // display card
+       echo '<div class="card">';
+       echo '<div class="card-body">';
+       echo '<h4 class="card-title">Sabbatical quarter allowances</h4>';
+       echo '<p class="card-subtitle mb-2 text-muted">Select an Academic Year to change its allowances.</p>';
+       echo '<form id="rptinfo_sabbatical_setup_form" name="rptinfo_sabbatical_setup_form" action="'
+           . esc_url(admin_url('admin-post.php'))
+           . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
+       echo rpt_form_hidden_field('action', 'process_rptinfo_admin_setup');
+       echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
+       echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+       echo rpt_form_hidden_field('RptTemplateTypeID', '5');
+       echo rpt_form_dropdown_list('SabbaticalAcademicYear', $this->current_cycle->AcademicYear,
+           'Academic year', $this->academic_year_select_list( 'allowances' ), 'Display');
+       foreach ($unit_list as $unit_key => $unit) {
+           echo rpt_form_number_box('Unit-' . $unit_key, '0', $unit);
+       }
        echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
        echo '</div>'; // col 12
        echo '</div>'; // form group row
@@ -1295,18 +1319,43 @@ class Rpt_Info_Public
            $template_type_id = intval($_POST['RptTemplateTypeID']);
            $ay = intval($_POST['ay']);
            $redirect_url = sanitize_text_field($_POST['RedirectURL']);
-           if ( $template_type_id == 2 ) {
-               $update_ay = intval($_POST['PromotionAcademicYear']);
-               $update_values['PromotionSubmissionStartDate'] = sanitize_text_field($_POST['PromotionSubmissionStartDate']);
-               $update_values['PromotionSubmissionEndDate'] = sanitize_text_field($_POST['PromotionSubmissionEndDate']);
+           if ( isset($_POST['CycleAcademicYear']) ) {
+               if ($template_type_id == 2) {
+                   $update_ay = intval($_POST['CycleAcademicYear']);
+                   $update_values['PromotionSubmissionStartDate'] = sanitize_text_field($_POST['PromotionSubmissionStartDate']);
+                   $update_values['PromotionSubmissionEndDate'] = sanitize_text_field($_POST['PromotionSubmissionEndDate']);
+               } elseif ($template_type_id == 5) {
+                   $update_ay = intval($_POST['CycleAcademicYear']);
+                   $update_values['SabbaticalCompLimit'] = intval($_POST['SabbaticalCompLimit']);
+                   $update_values['SabbaticalSubmissionStartDate'] = sanitize_text_field($_POST['SabbaticalSubmissionStartDate']);
+                   $update_values['SabbaticalSubmissionEndDate'] = sanitize_text_field($_POST['SabbaticalSubmissionEndDate']);
+               }
+//           echo '<pre>' . print_r($update_values, true) . '</pre>'; exit;
+               $update_result = $this->rpt_db->update_cycle_settings($update_ay, $update_values);
            }
-           elseif ( $template_type_id == 5 ) {
+           elseif ( isset($_POST['SabbaticalAcademicYear']) ) {
                $update_ay = intval($_POST['SabbaticalAcademicYear']);
-               $update_values['SabbaticalCompLimit'] = intval($_POST['SabbaticalCompLimit']);
-               $update_values['SabbaticalSubmissionStartDate'] = sanitize_text_field($_POST['SabbaticalSubmissionStartDate']);
-               $update_values['SabbaticalSubmissionEndDate'] = sanitize_text_field($_POST['SabbaticalSubmissionEndDate']);
+               $update_values['175'] = intval($_POST['Unit-175']);
+               $update_values['169'] = intval($_POST['Unit-169']);
+               $update_values['181'] = intval($_POST['Unit-181']);
+               $update_values['16'] = intval($_POST['Unit-16']);
+               $update_values['178'] = intval($_POST['Unit-178']);
+               $update_values['153'] = intval($_POST['Unit-153']);
+               $update_values['152'] = intval($_POST['Unit-152']);
+               $update_values['195'] = intval($_POST['Unit-195']);
+               $update_values['86'] = intval($_POST['Unit-86']);
+               $update_values['62'] = intval($_POST['Unit-62']);
+               $update_values['59'] = intval($_POST['Unit-59']);
+               $update_values['126'] = intval($_POST['Unit-126']);
+               $update_values['133'] = intval($_POST['Unit-133']);
+               $update_values['183'] = intval($_POST['Unit-183']);
+               $update_values['58'] = intval($_POST['Unit-58']);
+               $update_values['17'] = intval($_POST['Unit-17']);
+               $update_values['164'] = intval($_POST['Unit-164']);
+               $update_values['118'] = intval($_POST['Unit-118']);
+//           echo '<pre>' . print_r($update_values, true) . '</pre>'; exit;
+               $update_result = $this->rpt_db->update_sabbatical_allowances($update_ay, $update_values);
            }
-           $update_result = $this->rpt_db->update_cycle_settings($update_ay, $update_values);
            if ( $update_result === 0 ) {
                $result_status = 'error';
                $result_message = 'There was an error updating the settings';
@@ -1322,18 +1371,24 @@ class Rpt_Info_Public
        exit;
    }
 
-   private function academic_year_select_list( $template_type_id ) : array
+   private function academic_year_select_list( $source = 'dates' ) : array
    {
        $result = [];
-       foreach ( $this->cycle_list as $id => $item ) {
-           $result[$id] = array(
-               'Display' => $item->Display,
-               'PromotionSubmissionStartDate' => $item->PromotionSubmissionStartDate,
-               'PromotionSubmissionEndDate' => $item->PromotionSubmissionEndDate,
-               'SabbaticalCompLimit' => $item->SabbaticalCompLimit,
-               'SabbaticalSubmissionStartDate' => $item->SabbaticalSubmissionStartDate,
-               'SabbaticalSubmissionEndDate' => $item->SabbaticalSubmissionEndDate
-           );
+       if ( $source == 'dates' ) {
+           // use the list we've already got
+           foreach ($this->cycle_list as $id => $item) {
+               $result[$id] = array(
+                   'Display' => $item->Display,
+                   'PromotionSubmissionStartDate' => $item->PromotionSubmissionStartDate,
+                   'PromotionSubmissionEndDate' => $item->PromotionSubmissionEndDate,
+                   'SabbaticalCompLimit' => $item->SabbaticalCompLimit,
+                   'SabbaticalSubmissionStartDate' => $item->SabbaticalSubmissionStartDate,
+                   'SabbaticalSubmissionEndDate' => $item->SabbaticalSubmissionEndDate
+               );
+           }
+       }
+       elseif ( $source == 'allowances' ) {
+            $result = $this->rpt_db->get_cycle_allowances();
        }
        return $result;
    }
