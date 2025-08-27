@@ -78,6 +78,25 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $this->PromotionCategoryID = intval($posted_values['PromotionCategoryID']);
     }
 
+    public function update_from_data_sheet_post( $posted_values ) : void
+    {
+        $this->TenureAward = intval($posted_values['TenureAward']);
+        $this->NewTermLength = intval($posted_values['NewTermLength']);
+        $this->Postponed = sanitize_text_field($posted_values['Postponed']);
+        $this->Vote1Eligible = intval($posted_values['Vote1Eligible']);
+        $this->Vote1Affirmative = intval($posted_values['Vote1Affirmative']);
+        $this->Vote1Negative = intval($posted_values['Vote1Negative']);
+        $this->Vote1Absent = intval($posted_values['Vote1Absent']);
+        $this->Vote1Abstaining = intval($posted_values['Vote1Abstaining']);
+        $this->Vote2Eligible = intval($posted_values['Vote2Eligible']);
+        $this->Vote2Affirmative = intval($posted_values['Vote2Affirmative']);
+        $this->Vote2Negative = intval($posted_values['Vote2Negative']);
+        $this->Vote2Absent = intval($posted_values['Vote2Absent']);
+        $this->Vote2Abstaining = intval($posted_values['Vote2Abstaining']);
+        $this->Leaves = sanitize_text_field($posted_values['Leaves']);
+        $this->Waivers = sanitize_text_field($posted_values['Waivers']);
+    }
+
     public function propose_effective_date( Rpt_Info_Cycle $cycle_obj )
     {
         if ( $this->EffectiveDate ) {
@@ -115,12 +134,41 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         );
     }
 
-    public function update_case_array() : array
+    /**
+     * update_promotion_array
+     *      array to be used to update a promotion record
+     *      these are the only fields that should change due to user
+     *          input after creation
+     *
+     * @return array
+     */
+    public function update_promotion_array() : array
     {
         return array(
             'PromotionCategoryID' => $this->PromotionCategoryID,
             'TargetRankKey' => $this->TargetRankKey,
             'EffectiveDate' => $this->EffectiveDate,
+        );
+    }
+
+    public function update_data_sheet_array() : array
+    {
+        return array(
+            'TenureAward' => $this->TenureAward,
+            'NewTermLength' => $this->NewTermLength,
+            'Postponed' => $this->Postponed,
+            'Vote1Eligible' => $this->Vote1Eligible,
+            'Vote1Affirmative' => $this->Vote1Affirmative,
+            'Vote1Negative' => $this->Vote1Negative,
+            'Vote1Absent' => $this->Vote1Absent,
+            'Vote1Abstaining' => $this->Vote1Abstaining,
+            'Vote2Eligible' => $this->Vote2Eligible,
+            'Vote2Affirmative' => $this->Vote2Affirmative,
+            'Vote2Negative' => $this->Vote2Negative,
+            'Vote2Absent' => $this->Vote2Absent,
+            'Vote2Abstaining' => $this->Vote2Abstaining,
+            'Leaves' => $this->Leaves,
+            'Waivers' => $this->Waivers
         );
     }
 
@@ -201,6 +249,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function data_sheet_card() : string
     {
+        global $wp;
         $result = '<div class="card">';
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">Data sheet</h4>';
@@ -243,7 +292,16 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dd>' . $this->SubcommitteeMembers . '</dd>';
         $result .= '<dt>Previous leaves</dt>';
         $result .= '<dd>' . $this->Leaves . '</dd>';
+        $result .= '<dt>Clock waivers</dt>';
+        $result .= '<dd>' . $this->Waivers . '</dd>';
         $result .= '</dl>';
+        if ( $this->data_sheet_edit_allowed() ) {
+            $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
+                    'template_type' => $this->RptTemplateTypeID,
+                    'ay' => $this->AcademicYear,
+                    'rpt_page' => 'datasheet'), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Edit</a>';
+        }
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
@@ -264,11 +322,9 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dt>Workflow step</dt>';
         $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '<dt>Cover sheet</dt>';
-        $result .= '<dd>' . $this->CoverSheetID . '</dd>';
-//        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dd>' . $this->CoverSheetStatus . ' (' . $this->CoverSheetID . ')</dd>';
         $result .= '<dt>Data sheet</dt>';
-        $result .= '<dd>' . $this->DataSheetID . '</dd>';
-//        $result .= '<dd>' . (($this->DataSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dd>' . $this->DataSheetStatus . ' (' . $this->DataSheetID . ')</dd>';
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card

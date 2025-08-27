@@ -220,6 +220,8 @@ class Rpt_Info {
             'rpt_info_candidate_search');
         $this->loader->add_action('admin_post_process_rptinfo_case_edit', $plugin_public,
             'process_rptinfo_case_edit');
+        $this->loader->add_action('admin_post_process_rptinfo_datasheet_edit', $plugin_public,
+            'process_rptinfo_datasheet_edit');
         $this->loader->add_action('admin_post_process_rptinfo_admin_setup', $plugin_public,
             'process_rptinfo_admin_setup');
 	}

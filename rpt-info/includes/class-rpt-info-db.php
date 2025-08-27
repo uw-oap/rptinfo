@@ -186,15 +186,16 @@ from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear ord
     public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, RptTemplateTypeID,
-CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID,
-LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
-UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
-ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
-EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
-Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
-Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID, TargetTrackTypeName, TargetRankDefaultTerm,
-TargetRankTenured, Postponed, CaseStatusID
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, RptTemplateTypeID, CaseStatus, 
+InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID, 
+LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
+TrackTypeName, UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, 
+DueDate, RankCategory, ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, 
+PromotionCategoryName, ServicePeriod, EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, 
+DatasheetID, Postponed, TenureAward, NewTermLength, Vote1Eligible, Vote1Affirmative, Vote1Negative, 
+Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, Vote2Negative, Vote2Absent, 
+Vote2Abstaining, DatasheetID, DataSheetStatus, TargetTrackTypeName, TargetRankDefaultTerm, TargetRankTenured, 
+Postponed, CaseStatusID, CoverSheetStatus
 FROM RptPromotionDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -212,16 +213,17 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
     public function get_sabbatical_cases_for_user( Rpt_Info_User $user_obj ) : array
     {
         $result = [];
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, 
-TemplateName, RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, 
-FirstName, LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
-UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
-ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
-TrackTypeName, ServicePeriod, DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, 
-HasSecondary, CaseStatus, WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, 
-SummerQtr, FallQtr, WinterQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, HireDate, 
-TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, MultiYear, 
-EligibilityReport, EligibilityNote, HireDate
+        $query = "SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
+RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, ConcurrenceLetterSection, 
+ConcurrenceLetterCount, SubcommitteeReviewStep, SubcommitteeMembers, LegalName, FirstName, LastName, 
+UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, 
+AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, 
+LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
+DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseStatus, RptStatus, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
+SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
+HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
+MultiYear, EligibilityReport, EligibilityNote, HireDate
 FROM RptSabbaticalDetails where InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -279,13 +281,16 @@ FROM RptSabbaticalDetails where InterfolioUnitID in ("
     public function get_promotion_case_for_candidate(int $track_id) : ?Rpt_Info_Promotion
     {
         $result = NULL;
-        $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, CaseStatus,
-LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
-UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, 
-ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName,
-EffectiveDate, HasJoint, HasSecondary,TargetTrackTypeName FROM RptPromotionDetails 
-where UWODSAppointmentTrackKey = '"
-            . $track_id . "'";
+        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID,
+CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID,
+LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
+UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
+ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
+EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
+Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
+Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm,
+TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey
+FROM RptPromotionDetails where UWODSAppointmentTrackKey = %", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -297,16 +302,18 @@ where UWODSAppointmentTrackKey = '"
     public function get_sabbatical_case_for_candidate(int $track_id) : ?Rpt_Info_Sabbatical
     {
         $result = NULL;
-        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, 
-TemplateName, RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, LegalName, 
-FirstName, LastName, UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, 
-UWODSAppointmentTrackKey, AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, 
-ParentUnitName, LevelOneID, LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, 
-TrackTypeName, ServicePeriod, DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, 
-HasSecondary, CaseStatus, WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, 
-SummerQtr, FallQtr, WinterQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, HireDate, 
-TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, MultiYear, 
-EligibilityReport, EligibilityNote FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %",
+        $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
+RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, ConcurrenceLetterSection, 
+ConcurrenceLetterCount, SubcommitteeReviewStep, SubcommitteeMembers, LegalName, FirstName, LastName, 
+UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, 
+AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, 
+LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
+DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseStatus, RptStatus, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
+SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
+HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey
+FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %",
             $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -373,7 +380,7 @@ ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, Pro
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm,
-TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers
+TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey
 FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -394,10 +401,10 @@ UWNetID, CandidateEmail, EmployeeID, InitiatorID, InitiatorName, CandidateKey, U
 AppointmentType, UWODSUnitKey, InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, 
 LevelOneUnitName, CurrentRankKey, CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
 DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseStatus, RptStatus, 
-WorkflowStepNumber, WorkflowStepName, CoverSheetSubmitted, CoverSheetID, DataSheetID, DataSheetSubmitted, 
+WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey
 FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
 //        echo $this->last_query; exit;
@@ -429,6 +436,7 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         $case_obj->CaseID = $this->rpt_db->insert_id;
         $this->last_query = $this->rpt_db->last_query;
         if ( $case_obj->CaseID ) {
+            // now insert the promotion or sabbatical record
             switch ($case_obj->RptTemplateTypeID) {
                 case '2' :
                     $query_result = $this->rpt_db->insert('RptPromotion', $case_obj->insert_promotion_array());
@@ -448,14 +456,36 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         return $query_result;
     }
 
-    public function update_case( Rpt_Info_Case $case_obj )
+    public function update_case( Rpt_Info_Promotion|Rpt_Info_Sabbatical $case_obj, $update_type = 'case' )
     {
-        /*        $query = "update promotions.RptCase set " . $case_obj->update_fields() . " where CaseID = '"
-                    . $case_obj->CaseID . "'";
-                $this->last_query = $query;
-                $query_result = $this->rpt_db->query($query); */
-        $query_result = $this->rpt_db->update('RptCase', $case_obj->insert_array(),
-            array('ID' => $case_obj->CaseID));
+        if ( $update_type == 'case' ) {
+            // first update the base case record
+            $query_result = $this->rpt_db->update('RptCase', $case_obj->update_case_array(),
+                array('ID' => $case_obj->CaseID));
+            // then update to promotion or sabbatical record
+            switch ($case_obj->RptTemplateTypeID) {
+                case '2' :
+                    $query_result = $this->rpt_db->update('RptPromotion', $case_obj->update_promotion_array(),
+                        array('CaseID' => $case_obj->CaseID));
+                    break;
+                case '5' :
+                    // TODO: add sabbatical update function
+                    break;
+            }
+        }
+        elseif ( $update_type == 'datasheet' ) {
+            $query_result = $this->rpt_db->update('RptCase', $case_obj->update_case_data_sheet(),
+                array('ID' => $case_obj->CaseID));
+            switch ($case_obj->RptTemplateTypeID) {
+                case '2' :
+                    $query_result = $this->rpt_db->update('RptPromotion', $case_obj->update_data_sheet_array(),
+                        array('CaseID' => $case_obj->CaseID));
+                    break;
+                case '5' :
+                    // TODO: add sabbatical update function
+                    break;
+            }
+        }
         $this->last_query = $this->rpt_db->last_error;
         if ( $query_result === FALSE ) {
             return 0;
@@ -600,11 +630,39 @@ where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
     public function get_candidate_leaves( Rpt_Info_Case $case_obj ) : void
     {
         $case_obj->PreviousLeaves = [];
+        $display = [];
         $query = $this->rpt_db->prepare("select StartDate, EndDate, LeaveTypeName from PersonLeaveDetails
 where UWODSPersonKey = %s", $case_obj->CandidateKey);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $case_obj->PreviousLeaves[] = $row;
+            $display[] = rpt_format_date($row->StartDate) . '&mdash;' . rpt_format_date($row->EndDate)
+                . ': ' . $row->LeaveTypeName;
+        }
+        if ( count($case_obj->PreviousLeaves) > 0 ) {
+            $case_obj->Leaves = implode("\n", $display);
+        }
+        else {
+            $case_obj->Leaves = '';
+        }
+    }
+
+    public function get_candidate_waivers( Rpt_Info_Case $case_obj ) : void
+    {
+        $case_obj->PreviousWaivers = [];
+        $display = [];
+        $query = $this->rpt_db->prepare("select AcademicYear, WaiverReason from PersonWaiverDetails
+where UWODSPersonKey = %s", $case_obj->CandidateKey);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $case_obj->PreviousWaivers[] = $row;
+            $display[] = $row->AcademicYear . ': ' . $row->WaiverReason;
+        }
+        if ( count($case_obj->PreviousWaivers) > 0 ) {
+            $case_obj->Waivers = implode("\n", $display);
+        }
+        else {
+            $case_obj->Waivers = '';
         }
     }
 

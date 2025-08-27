@@ -732,8 +732,14 @@ class Rpt_Info_Public
 //        echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
         if ( $case_obj ) {
             $this->rpt_db->get_other_appointments($case_obj);
-            $this->rpt_db->get_candidate_leaves($case_obj);
+            if ( $case_obj->Leaves == '' ) {
+                $this->rpt_db->get_candidate_leaves($case_obj);
+            }
+            if ( $case_obj->Waivers == '' ) {
+                $this->rpt_db->get_candidate_waivers($case_obj);
+            }
             $case_obj->set_calculated_values();
+//            echo '<pre>' . print_r( $case_obj, true ) . '</pre>';
             echo '<div class="row">';
             echo '<div class="col-12">';
             if ($case_obj->RptCaseID == '0') {
@@ -741,7 +747,7 @@ class Rpt_Info_Public
             }
             echo '<div class="row">';
             echo '<div class="col-6">';
-            echo $case_obj->candidate_info_card(TRUE);
+            echo $case_obj->candidate_info_card( ( $case_obj->RptCaseID == 0 ) );
             echo '</div>'; // col 6
             // template type specific fields in another card
             echo '<div class="col-6">';
@@ -837,10 +843,19 @@ class Rpt_Info_Public
             echo '<p><strong>No valid template found for candidate unit. Please make sure there is '
                 . 'a template available before initiating a case.</strong></p>';
         }
-        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type), home_url($wp->request)))
-            . '" class="btn btn-outline-secondary">Cancel</a>';
+        if ( $case_obj->CoverSheetID == '0' ) { // no case, back to listing
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Cancel</a>';
+        }
+        else { // case exists, return to display
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'case_id' => $case_obj->CaseID,
+                    'template_type' => $this->active_template_type), home_url($wp->request)))
+                . '" class="btn btn-outline-secondary">Cancel</a>';
+        }
         echo '</div>'; // form group row
         echo '</div>'; // col 12
         echo '</form>';
@@ -1007,8 +1022,15 @@ class Rpt_Info_Public
         echo '<div class="card">';
         echo '<div class="card-body">';
         echo '<h4 class="card-title">Data sheet information</h4>';
-        echo '<p class="card-subtitle mb-2 text-muted">Please review these '
-            . 'selections and update as needed.</p>';
+        if ( $case_obj->DataSheetID == '0' ) {
+            echo '<p class="card-subtitle mb-2 text-muted">Please review these '
+                . 'selections and update as needed.</p>';
+        }
+        else {
+            echo '<p class="card-subtitle mb-2 text-muted">The data sheet for this case '
+                . 'is already present in RPT. Make sure to delete the old one before '
+                . 'making changes.</p>';
+        }
         echo '<form id="rptinfo_datasheet_form" name="rptinfo_datasheet_form" action="'
             . esc_url(admin_url('admin-post.php'))
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
@@ -1032,7 +1054,69 @@ class Rpt_Info_Public
             echo rpt_form_number_box('NewTermLength', $case_obj->propose_new_term(),
                 'New term length', FALSE, 'form-control', FALSE, FALSE);
         }
+        echo rpt_yes_no_radio('Postponed', $case_obj->Postponed, 'Previously postponed?',
+            FALSE, TRUE);
+        echo '<p><strong>Vote #1</strong> &mdash; On the question of whether to recommend ' . $case_obj->ActionType . '</p>';
+        echo '<table>';
+        echo '<tr>';
+        echo '<th>Total Eligible to Vote</th>';
+        echo '<th>Total In Favor</th>';
+        echo '<th>Total Opposed</th>';
+        echo '<th>Total Absent</th>';
+        echo '<th>Total Abstaining</th>';
+        echo '</tr>';
+        echo '<tr>';
+        echo '<td><input type="text" name="Vote1Eligible" id="Vote1Eligible" size="5" value="'
+            . $case_obj->Vote1Eligible . '" /></td>';
+        echo '<td><input type="text" name="Vote1Affirmative" id="Vote1Affirmative" size="5" value="'
+            . $case_obj->Vote1Affirmative . '" /></td>';
+        echo '<td><input type="text" name="Vote1Negative" id="Vote1Negative" size="5" value="'
+            . $case_obj->Vote1Negative . '" /></td>';
+        echo '<td><input type="text" name="Vote1Absent" id="Vote1Absent" size="5" value="'
+            . $case_obj->Vote1Absent . '" /></td>';
+        echo '<td><input type="text" name="Vote1Abstaining" id="Vote1Abstaining" size="5" value="'
+            . $case_obj->Vote1Abstaining . '" /></td>';
+        echo '</tr>';
+        echo '</table>';
+        echo '<p><em>Vote counts must not include chair.</em></p>';
+        echo '<p><em>If this is a mandatory review and Vote #1 resulted in a majority Opposed, enter Vote #2 data.</em></p>';
+        echo '<p><strong>Vote #2</strong> &mdash; On the question of whether to recommend postponement of mandatory review</p>';
+        echo '<table>';
+        echo '<tr>';
+        echo '<th>Total Eligible to Vote</th>';
+        echo '<th>Total In Favor</th>';
+        echo '<th>Total Opposed</th>';
+        echo '<th>Total Absent</th>';
+        echo '<th>Total Abstaining</th>';
+        echo '</tr>';
+        echo '<tr>';
+        echo '<td><input type="text" name="Vote2Eligible" id="Vote2Eligible" size="5" value="'
+            . $case_obj->Vote2Eligible . '" /></td>';
+        echo '<td><input type="text" name="Vote2Affirmative" id="Vote2Affirmative" size="5" value="'
+            . $case_obj->Vote2Affirmative . '" /></td>';
+        echo '<td><input type="text" name="Vote2Negative" id="Vote2Negative" size="5" value="'
+            . $case_obj->Vote2Negative . '" /></td>';
+        echo '<td><input type="text" name="Vote2Absent" id="Vote2Absent" size="5" value="'
+            . $case_obj->Vote2Absent . '" /></td>';
+        echo '<td><input type="text" name="Vote2Abstaining" id="Vote2Abstaining" size="5" value="'
+            . $case_obj->Vote2Abstaining . '" /></td>';
+        echo '</tr>';
+        echo '</table>';
+        echo rpt_form_textarea('SubcommitteeMembers', strip_tags($case_obj->SubcommitteeMembers),
+            'Subcommittee members', 60, 4, FALSE, TRUE);
+        echo rpt_form_textarea('Leaves', $case_obj->Leaves,
+            'Leave history', 60, 4, FALSE, FALSE);
+        echo rpt_form_textarea('Waivers', $case_obj->Waivers,
+            'Clock waivers', 60, 4, FALSE, FALSE);
+        echo '<button type="submit" class="btn btn-primary" name="submit" value="save">Save</button>';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
+                'ay' => $this->current_cycle->AcademicYear,
+                'case_id' => $case_obj->CaseID,
+                'template_type' => $this->active_template_type), home_url($wp->request)))
+            . '" class="btn btn-outline-secondary">Cancel</a>';
         echo '</form>';
+        echo '<p>Click <strong>Save</strong> to save your changes. If the data sheet passes validation,'
+            . ' you will be able to sumbit it to RPT.</p>';
         echo '</div>'; // card body
         echo '</div>'; // card
     }
@@ -1050,7 +1134,43 @@ class Rpt_Info_Public
      */
     public function process_rptinfo_datasheet_edit() : void
     {
-        // placeholder
+        global $wp;
+        $update_values = [];
+        $result_status = 'info';
+        $result_message = 'No data submitted';
+        $save_action = 'none';
+        $update_result = 0;
+        $redirect_url = '';
+        if ( ! empty($_POST) ) {
+            $template_type_id = intval($_POST['RptTemplateTypeID']);
+            $case_id = intval($_POST['CaseID']);
+            $redirect_url = sanitize_text_field($_POST['RedirectURL']);
+            $ay = intval($_POST['ay']);
+            switch ( $template_type_id ) {
+                case '2': // promotion
+                    $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
+                    break;
+                case '5': // sabbatical
+                    $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
+                    break;
+            }
+            $case_obj->update_from_data_sheet_post($_POST);
+            $case_obj->DataSheetStatus = 'Draft';
+//            echo '<pre>' . print_r($case_obj, TRUE) . '</pre>'; exit;
+            $update_result = $this->rpt_db->update_case($case_obj, 'datasheet');
+            if ( $update_result > 0 ) {
+                $result_status = 'success';
+                $result_message = 'Your changes have been saved';
+            }
+            else {
+                $result_status = 'danger';
+                $result_message = 'Error: ' . $this->rpt_db->get_last_error() . '|' . $this->rpt_db->get_last_query();
+            }
+        }
+        wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message,
+            'status' => $result_status, 'template_type' => $case_obj->RptTemplateTypeID,
+            'ay' => $ay), home_url($redirect_url)));
+        exit;
     }
 
     /* ********************** functions dealing with templates ********************** */

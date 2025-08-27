@@ -40,10 +40,9 @@ class Rpt_Info_Case
     public int $ConcurrenceLetterSecion = 0;
     public int $ConcurrenceLetterCount = 0;
     public int $CoverSheetID = 0;
-    public string $CoverSheetSubmitted = 'No';
-    public string $CoverSheet = '';
+    public string $CoverSheetStatus = '';
     public int $DataSheetID = 0;
-    public string $DataSheetSubmitted = 'No';
+    public string $DataSheetStatus = '';
     public string $WorkflowStepNumber = '';
     public string $WorkflowStepName = '';
     public int $SubcommitteeReviewStep = 0;
@@ -57,6 +56,7 @@ class Rpt_Info_Case
     public int $RptTemplateTypeID = 0;
     public array $OtherAppointments = [];
     public array $PreviousLeaves = [];
+    public array $PreviousWaivers = [];
 
     public function __construct( $case_row = NULL )
     {
@@ -135,8 +135,14 @@ class Rpt_Info_Case
             if ( isset($case_row->CoverSheetID) ) {
                 $this->CoverSheetID = $case_row->CoverSheetID;
             }
+            if ( isset($case_row->CoverSheetStatus) ) {
+                $this->CoverSheetStatus = $case_row->CoverSheetStatus;
+            }
             if ( isset($case_row->DataSheetID) ) {
                 $this->DataSheetID = $case_row->DataSheetID;
+            }
+            if ( isset($case_row->DataSheetStatus) ) {
+                $this->DataSheetStatus = $case_row->DataSheetStatus;
             }
             if ( isset($case_row->SubcommitteeMembers) ) {
                 $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
@@ -167,8 +173,10 @@ class Rpt_Info_Case
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
         $this->RptCaseID = intval($posted_values['RptCaseID']);
         if ( $posted_values['CoverSheetID'] > '0' ) {
-            // over sheet already exists, so clear to trigger new upload
-            $this->CoverSheetID = 0;
+            // cover sheet already exists, keep so it can be deleted
+            $this->CoverSheetID = $posted_values['CoverSheetID'];
+            // set as submitted to trigger upload
+            $this->CoverSheetStatus = 'Submitted';
         }
         $this->CandidateID = intval($posted_values['CandidateID']);
         $this->CandidateKey = intval($posted_values['CandidateKey']);
@@ -200,6 +208,30 @@ class Rpt_Info_Case
             'CaseStatusID' => $this->CaseStatusID,
             'HasJoint' => $this->HasJoint,
             'HasSecondary' => $this->HasSecondary
+        );
+    }
+
+    /**
+     * update_case_array
+     *      array to be used in updating an existing case
+     *      these are the only fields that should ever change
+     *          from user input after creation
+     *
+     * @return array
+     */
+    public function update_case_array() : array
+    {
+        return array(
+            'CaseStatusID' => $this->CaseStatusID,
+            'CoverSheetID' => $this->CoverSheetID,
+            'CoverSheetStatus' => $this->CoverSheetStatus
+        );
+    }
+
+    public function update_case_data_sheet() : array
+    {
+        return array(
+            'DataSheetStatus' => $this->DataSheetStatus,
         );
     }
 
