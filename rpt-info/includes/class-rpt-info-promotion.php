@@ -33,6 +33,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         parent::__construct( $case_row );
         $this->RptTemplateTypeID = '2';
         if ( $case_row ) {
+//            echo '<pre>' . print_r( $case_row, true ) . '</pre>'; exit;
             $this->TargetRankKey = $case_row->TargetRankKey;
             $this->TargetRankName = $case_row->TargetRankName;
             if ( isset($case_row->TargetTrackTypeName) ) {
@@ -42,11 +43,11 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             }
             $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
-            $this->SubcommitteeMembers ??= $case_row->SubcommitteeMembers;
+//            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
             if ( isset($case_row->Vote1Eligible) ) {
-                $this->DataSheetID ??= $case_row->DataSheetID;
-                $this->TenureAward ??= $case_row->TenureAward;
-                $this->NewTermLength ??= $case_row->NewTermLength;
+                $this->TenureAward = $case_row->TenureAward;
+                $this->NewTermLength = $case_row->NewTermLength;
+                $this->EffectiveDate = $case_row->EffectiveDate;
                 $this->Vote1Eligible = $case_row->Vote1Eligible;
                 $this->Vote1Affirmative = $case_row->Vote1Affirmative;
                 $this->Vote1Negative = $case_row->Vote1Negative;
@@ -59,6 +60,13 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                 $this->Vote2Abstaining = $case_row->Vote2Abstaining;
                 $this->Postponed = $case_row->Postponed;
             }
+            if ( isset($case_row->Leaves) ) {
+                $this->Leaves = $case_row->Leaves;
+            }
+            if ( isset($case_row->Waivers) ) {
+                $this->Waivers = $case_row->Waivers;
+            }
+//            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
         }
     }
 
@@ -173,9 +181,10 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dt>Current status</dt>';
         $result .= '<dd>' . $this->CaseStatus . '</dd>';
         $result .= '</dl>';
+        $result .= '<p>';
         if ( $this->RptCaseID ) {
-            $result .= '<p><a href="' . $rpt_case_url . '/' . $this->RptCaseID
-                . '">Go to case</a></p>';
+            $result .= '<a href="' . $rpt_case_url . '/' . $this->RptCaseID
+                . '" class="btn btn-outline-secondary">Go to case in RPT</a>';
         }
         if ( $this->case_edit_allowed() ) {
             $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
@@ -184,6 +193,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
                     'rpt_page' => 'edit'), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Edit</a>';
         }
+        $result .= '</p>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
         return $result;
@@ -217,6 +227,18 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         }
         $result .= '<dt>Previously postponed?</dt>';
         $result .= '<dd>' . $this->Postponed . '</dd>';
+        $result .= '<dt>Vote #1</dt>';
+        $result .= '<dd>Eligible: ' . $this->Vote1Eligible . '<br>Affirmative: '
+            . $this->Vote1Affirmative . '<br>Negative: '
+            . $this->Vote1Negative . '<br>Abstaining: '
+            . $this->Vote1Abstaining . '<br>Absent: '
+            . $this->Vote1Absent. '</dd>';
+        $result .= '<dt>Vote #2</dt>';
+        $result .= '<dd>Eligible: ' . $this->Vote2Eligible . '<br>Affirmative: '
+            . $this->Vote2Affirmative . '<br>Negative: '
+            . $this->Vote2Negative . '<br>Abstaining: '
+            . $this->Vote2Abstaining . '<br>Absent: '
+            . $this->Vote2Absent. '</dd>';
         $result .= '<dt>Subcommittee members</dt>';
         $result .= '<dd>' . $this->SubcommitteeMembers . '</dd>';
         $result .= '<dt>Previous leaves</dt>';
@@ -236,13 +258,17 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dt>Interfolio Case ID</dt>';
         $result .= '<dd>' . $this->RptCaseID . '</dd>';
         $result .= '<dt>Status in RPT</dt>';
-        $result .= '<dd>' . $this->RptStatus . '</dd>';
+        $result .= '<dd>';
+        $result .= ($this->RptStatus) ? $this->RptStatus : '(Not set)';
+        $result .= '</dd>';
         $result .= '<dt>Workflow step</dt>';
         $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '<dt>Cover sheet</dt>';
-        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dd>' . $this->CoverSheetID . '</dd>';
+//        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
         $result .= '<dt>Data sheet</dt>';
-        $result .= '<dd>' . (($this->DataSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dd>' . $this->DataSheetID . '</dd>';
+//        $result .= '<dd>' . (($this->DataSheetID) ? 'Present' : 'Not present') . '</dd>';
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
@@ -261,7 +287,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function case_edit_allowed() : bool
     {
-        return false;
+        return true;
         if ( ( $this->CaseStatusID == '0' ) || ( $this->CaseStatusID == '1' ) ) {
             return true;
         }

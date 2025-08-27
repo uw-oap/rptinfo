@@ -74,7 +74,9 @@ class Rpt_Info_Case
             }
             $this->LegalName = $case_row->LegalName;
             $this->EmployeeID = $case_row->EmployeeID;
-            $this->InitiatorID ??= $case_row->InitiatorID;
+            if ( isset($case_row->InitiatorID) ) {
+                $this->InitiatorID = $case_row->InitiatorID;
+            }
             $this->InitiatorName = $case_row->InitiatorName;
             $this->CandidateKey = $case_row->CandidateKey;
             if ( isset($case_row->AcademicYear) ) {
@@ -87,11 +89,13 @@ class Rpt_Info_Case
             $this->UWODSAppointmentTrackKey = $case_row->UWODSAppointmentTrackKey;
             $this->AppointmentType = $case_row->AppointmentType;
             $this->UWODSUnitKey = $case_row->UWODSUnitKey;
-            $this->InterfolioUnitID = $case_row->InterfolioUnitID;
-            $this->ParentID = $case_row->ParentID;
-            $this->ParentUnitName = $case_row->ParentUnitName;
-            $this->LevelOneID = $case_row->LevelOneID;
-            $this->LevelOneUnitName = $case_row->LevelOneUnitName;
+            if ( $case_row->InterfolioUnitID ) {
+                $this->InterfolioUnitID = $case_row->InterfolioUnitID;
+                $this->ParentID = $case_row->ParentID;
+                $this->ParentUnitName = $case_row->ParentUnitName;
+                $this->LevelOneID = $case_row->LevelOneID;
+                $this->LevelOneUnitName = $case_row->LevelOneUnitName;
+            }
             $this->UnitName = $case_row->UnitName;
             $this->CurrentRankKey = $case_row->CurrentRankKey;
             $this->CurrentRankName = $case_row->CurrentRankName;
@@ -99,9 +103,11 @@ class Rpt_Info_Case
                 $this->HasJoint = 'Yes';
             }
             else {
-                $this->HasJoint ??= $case_row->HasJoint;
+                $this->HasJoint = $case_row->HasJoint;
             }
-            $this->HasSecondary ??= $case_row->HasSecondary;
+            if ( isset($case_row->HasSecondary) ) {
+                $this->HasSecondary = $case_row->HasSecondary;
+            }
             if ( isset($case_row->CaseStatusID) ) {
                 $this->CaseStatus = $case_row->CaseStatus;
                 $this->CaseStatusID = $case_row->CaseStatusID;
@@ -123,8 +129,18 @@ class Rpt_Info_Case
             if ( isset($case_row->AppointmentEndDate) ) {
                 $this->AppointmentEndDate = $case_row->AppointmentEndDate;
             }
-            $this->RptStatus ??= $case_row->RptStatus;
-            $this->CoverSheetID ??= $case_row->CoverSheetID;
+            if ( isset($case_row->RptStatus) ) {
+                $this->RptStatus = $case_row->RptStatus;
+            }
+            if ( isset($case_row->CoverSheetID) ) {
+                $this->CoverSheetID = $case_row->CoverSheetID;
+            }
+            if ( isset($case_row->DataSheetID) ) {
+                $this->DataSheetID = $case_row->DataSheetID;
+            }
+            if ( isset($case_row->SubcommitteeMembers) ) {
+                $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
+            }
 //            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
         }
     }
@@ -150,6 +166,10 @@ class Rpt_Info_Case
         $this->CaseID = intval($posted_values['CaseID']);
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
         $this->RptCaseID = intval($posted_values['RptCaseID']);
+        if ( $posted_values['CoverSheetID'] > '0' ) {
+            // over sheet already exists, so clear to trigger new upload
+            $this->CoverSheetID = 0;
+        }
         $this->CandidateID = intval($posted_values['CandidateID']);
         $this->CandidateKey = intval($posted_values['CandidateKey']);
         $this->InitiatorID = intval($posted_values['InitiatorID']);

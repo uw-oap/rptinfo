@@ -85,7 +85,7 @@ function rpt_form_target_rank_list($field_name, $field_value, $label_text, $valu
  */
 function rpt_template_select($field_name, $field_value, $label_text, $value_list,
                             $hide_group = FALSE, $control_class = '', $zero_text = '', $help_text = '',
-                            $required = FALSE) : string
+                            $required = FALSE, $readonly = FALSE) : string
 {
     $result = '<div class="form-group rpt-select-group" id="' . $field_name . '-group"';
     if ( $hide_group ) {
@@ -99,6 +99,9 @@ function rpt_template_select($field_name, $field_value, $label_text, $value_list
     }
     if ( $required == TRUE ) {
         $result .= ' required="required"';
+    }
+    if ( $readonly == TRUE ) {
+        $result .= ' readonly="readonly"';
     }
     $result .= ' />';
     if ( $zero_text ) {

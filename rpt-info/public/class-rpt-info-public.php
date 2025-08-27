@@ -439,6 +439,7 @@ class Rpt_Info_Public
         $case_id = get_query_var('case_id', '0');
         $candidate_id = get_query_var('candidate_id', '0');
         $track_id = get_query_var('track_id', '0');
+//        echo '<p>Case ID: ' . $case_id . ', Track ID: ' . $track_id . '</p>';
         if ( ( $case_id == '0' ) && ( $track_id == '0' ) ) {
             $this->case_list();
         }
@@ -448,7 +449,7 @@ class Rpt_Info_Public
         elseif ( ( $track_id > '0' ) || ( $selector != 'case' ) ) {
             $this->case_edit($case_id, $track_id, $selector);
         }
-        elseif ( $case_id != 'new' ) {
+        else { // case id is set
             $this->case_display($case_id);
         }
     }
@@ -785,8 +786,15 @@ class Rpt_Info_Public
         echo '<div class="card">';
         echo '<div class="card-body">';
         echo '<h4 class="card-title">Promotion information</h4>';
-        echo '<p class="card-subtitle mb-2 text-muted">Please review these '
-            . 'selections and update as needed.</p>';
+        if ( $case_obj->CoverSheetID == '0' ) {
+            echo '<p class="card-subtitle mb-2 text-muted">Please review these '
+                . 'selections and update as needed.</p>';
+        }
+        else {
+            echo '<p class="card-subtitle mb-2 text-muted">The cover sheet for this case '
+                . 'is already present in RPT. Make sure to delete the old one before '
+                . 'making changes. Template cannot be changed once the case is initialized.</p>';
+        }
         echo '<form id="rptinfo_promotion_form" name="rptinfo_promotion_form" action="'
             . esc_url(admin_url('admin-post.php'))
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
@@ -805,6 +813,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
         echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+        echo rpt_form_hidden_field('CoverSheetID', $case_obj->CoverSheetID);
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
@@ -818,7 +827,7 @@ class Rpt_Info_Public
             $promotion_type_list, '', FALSE, 'form-control', '', '');
         echo rpt_template_select('RptTemplateID', $case_obj->RptTemplateID, 'RPT Template',
             $template_list, FALSE, 'form-control', ( count($template_list) > 1) ? 'Select...' : '',
-            'Choose which template to use', TRUE);
+            'Choose which template to use', TRUE, ($case_obj->RptCaseID > '0'));
         echo '<div class="form-goup row">';
         echo '<div class="col-12">';
         if ( count($template_list) > 0 ) {

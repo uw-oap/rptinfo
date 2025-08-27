@@ -203,6 +203,7 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
         $this->last_query = $query;
 //        echo $this->last_query;
         foreach ($this->rpt_db->get_results($query) as $row) {
+//            echo '<pre>' . print_r($row, true) . '</pre>'; exit;
             $result[$row->CaseID] = new Rpt_Info_Promotion($row);
         }
         return $result;
@@ -369,10 +370,11 @@ CaseStatus, InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName
 LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, TrackTypeName,
 UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRankName, DueDate, RankCategory,
 ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
-EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DatasheetID, Postponed, TenureAward, NewTermLength, 
+EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
-Vote2Negative, Vote2Absent, Vote2Abstaining, DatasheetID, TargetTrackTypeName, TargetRankDefaultTerm,
-TargetRankTenured, Postponed, RptTemplateTypeID FROM RptPromotionDetails where CaseID = %s", $case_id);
+Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm,
+TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers
+FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
 //        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
