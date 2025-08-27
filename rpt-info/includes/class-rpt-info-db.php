@@ -379,7 +379,7 @@ UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRa
 ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
-Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm,
+Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, CaseStatusID,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey
 FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;

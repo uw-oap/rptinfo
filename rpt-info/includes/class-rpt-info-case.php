@@ -109,8 +109,10 @@ class Rpt_Info_Case
                 $this->HasSecondary = $case_row->HasSecondary;
             }
             if ( isset($case_row->CaseStatusID) ) {
-                $this->CaseStatus = $case_row->CaseStatus;
                 $this->CaseStatusID = $case_row->CaseStatusID;
+            }
+            if ( isset($case_row->CaseStatus) ) {
+                $this->CaseStatus = $case_row->CaseStatus;
             }
             $this->TrackTypeName = $case_row->TrackTypeName;
             $this->RankCategory = $case_row->RankCategory;

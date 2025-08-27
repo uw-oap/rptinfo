@@ -1121,15 +1121,24 @@ class Rpt_Info_Public
             'Leave history', 60, 4, FALSE, FALSE);
         echo rpt_form_textarea('Waivers', $case_obj->Waivers,
             'Clock waivers', 60, 4, FALSE, FALSE);
-        echo '<button type="submit" class="btn btn-primary" name="submit" value="save">Save</button>';
+        echo '<button type="submit" class="btn btn-primary" name="save" value="save">Save</button>';
+        if ( $case_obj->data_sheet_ok() ) {
+            echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
+        }
         echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
                 'ay' => $this->current_cycle->AcademicYear,
                 'case_id' => $case_obj->CaseID,
                 'template_type' => $this->active_template_type), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Cancel</a>';
         echo '</form>';
-        echo '<p>Click <strong>Save</strong> to save your changes. If the data sheet passes validation,'
-            . ' you will be able to sumbit it to RPT.</p>';
+        if ( ! $case_obj->data_sheet_ok() ) {
+            echo '<p>Click <strong>Save</strong> to save your changes. If the data sheet passes validation,'
+                . ' you will be able to submit it to RPT.</p>';
+        }
+        else {
+            echo '<p>Click <strong>Save</strong> to save your changes, or click <strong>Submit</strong> '
+                . ' to add the data sheet to the case in RPT.</p>';
+        }
         echo '</div>'; // card body
         echo '</div>'; // card
     }
@@ -1168,7 +1177,17 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_data_sheet_post($_POST);
-            $case_obj->DataSheetStatus = 'Draft';
+            if ( isset($_POST['save']) ) {
+                $case_obj->DataSheetStatus = 'Draft';
+            }
+            elseif ( isset($_POST['submit']) ) {
+                if ( $case_obj->data_sheet_ok() ) {
+                    $case_obj->DataSheetStatus = 'Submitted';
+                }
+                else {
+                    $case_obj->DataSheetStatus = 'Draft';
+                }
+            }
 //            echo '<pre>' . print_r($case_obj, TRUE) . '</pre>'; exit;
             $update_result = $this->rpt_db->update_case($case_obj, 'datasheet');
             if ( $update_result > 0 ) {
@@ -1182,6 +1201,7 @@ class Rpt_Info_Public
         }
         wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message,
             'status' => $result_status, 'template_type' => $case_obj->RptTemplateTypeID,
+            'case_id' => $case_obj->CaseID,
             'ay' => $ay), home_url($redirect_url)));
         exit;
     }
