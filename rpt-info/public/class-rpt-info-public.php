@@ -805,7 +805,6 @@ class Rpt_Info_Public
             . esc_url(admin_url('admin-post.php'))
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
-        echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
@@ -822,6 +821,13 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('CoverSheetID', $case_obj->CoverSheetID);
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
+        if ( $this->rpt_user->SystemAdmin() ) {
+            echo rpt_form_number_box('RptCaseID', $case_obj->RptCaseID, 'RPT case ID', FALSE,
+            '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
+        }
+        else {
+            echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
+        }
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
             'Proposed rank', $target_rank_list, '', FALSE,
             'form-control', '','', TRUE);
@@ -878,7 +884,13 @@ class Rpt_Info_Public
             . esc_url(admin_url('admin-post.php'))
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
-        echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
+        if ( $this->rpt_user->SystemAdmin() ) {
+            echo rpt_form_number_box('RptCaseID', $case_obj->RptCaseID, 'RPT case ID', FALSE,
+                '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
+        }
+        else {
+            echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
+        }
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
@@ -962,16 +974,17 @@ class Rpt_Info_Public
         $redirect_url = '';
         if ( ! empty($_POST) ) {
             $template_type_id = intval($_POST['RptTemplateTypeID']);
-            $case_id = intval($_POST['RptCaseID']);
+            $case_id = intval($_POST['CaseID']);
+            $rpt_case_id = intval($_POST['RptCaseID']);
             $candidate_id = intval($_POST['CandidateID']);
             $redirect_url = sanitize_text_field($_POST['RedirectURL']);
             $ay = intval($_POST['ay']);
             switch ( $template_type_id ) {
                 case '2': // promotion
-                    $case_obj = new Rpt_Info_Promotion();
+                    $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
                     break;
                 case '5': // sabbatical
-                    $case_obj = new Rpt_Info_Sabbatical();
+                    $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
                     break;
             }
             $case_obj->update_from_post($_POST);
