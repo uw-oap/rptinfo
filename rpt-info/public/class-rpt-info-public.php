@@ -1388,6 +1388,13 @@ class Rpt_Info_Public
         echo '<ul>';
         echo '<li><a href="' . $this->voting_matrix_url . '" alt="Voting Matrix page">Voting Guidelines</a></li>';
         echo '<li><a href="' . $this->committee_setup_url . '" alt="Shell committee setu page">Shell Committee Setup</a></li>';
+        echo '</div>'; // col
+        echo '</div>'; // row
+        echo '<div class="row">';
+        echo '<div class="col-6">';
+        echo '<div class="card">';
+        echo '<div class="card-body">';
+        echo '<h4 class="card-title">Report parameters</h4>';
         echo '<form id="rptinfo_voting_form" name="rptinfo_voting_form" action="'
             . esc_url(add_query_arg(array('rpt_page' => 'report'), home_url($wp->request)))
             . '" role="form" method="get" accept-charset="utf-8" class="rptinfo-form ">';
@@ -1407,6 +1414,8 @@ class Rpt_Info_Public
             'Voting on promotions to rank', $rank_list);
         echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
         echo '</form>';
+        echo '</div>';
+        echo '</div>';
         echo '</div>';
         echo '</div>';
         // display report if parameters present
