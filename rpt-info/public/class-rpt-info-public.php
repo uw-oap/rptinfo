@@ -151,6 +151,7 @@ class Rpt_Info_Public
         $vars[] = 'template_id'; // template id
         $vars[] = 'unit_type'; // dep/undep
         $vars[] = 'unit_id'; // unit id
+        $vars[] = 'rank_id'; // rank id (key)
         $vars[] = 'template_id'; // template id
         $vars[] = 'report_type'; // report name/slug
         return $vars;
@@ -503,7 +504,7 @@ class Rpt_Info_Public
         echo '<div class="col-12">';
         if ( count( $case_list ) > 0 ) {
 //            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
-            echo '<table class="table table-border sort-table">';
+            echo '<table class="table table-bordered table-striped sort-table">';
             echo '<thead>';
             echo $this->case_list_header_row();
             echo '</thead>';
@@ -1257,7 +1258,7 @@ class Rpt_Info_Public
             }
 //        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
             if (count($template_list) > 0) {
-                echo '<table class="table table-bordered table-striped">';
+                echo '<table class="table table-bordered table-striped sort-table">';
                 echo '<thead>';
                 echo '<tr>';
                 echo '<th>ID</th>';
@@ -1326,6 +1327,14 @@ class Rpt_Info_Public
                 'report_type' => 'cases-by-scc'),
                 home_url($wp->request)))
             . '">Cases by SCC</a>';
+        if ( $this->active_template_type == 2 ) {
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'voting'),
+                    home_url($wp->request)))
+                . '">Eligible Voting Faculty</a>';
+        }
         echo '</p>';
         $report_type = get_query_var('report_type', '');
         switch ( $report_type) {
@@ -1344,11 +1353,92 @@ class Rpt_Info_Public
                     'CaseTotal' => 'Total');
                 $detail_report = '';
                 break;
+            case 'voting':
+                $this->voting_report();
+                break;
         }
 //        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
         if ( count($report_data) > 0 ) {
             echo rpt_report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
                 $detail_report, $this->active_template_type, $this->current_cycle->AcademicYear);
+        }
+    }
+
+    private function voting_report()
+    {
+        global $wp;
+        // incoming params
+        $unit_id = get_query_var('unit_id', '');
+        $rank_id = get_query_var('rank_id', '');
+        $this->voting_matrix_url = get_option('ap_ptinfo_voting_matrix_url');
+        $this->committee_setup_url = get_option('ap_ptinfo_rpt_committee_setup_url');
+        // lists for dropdowns
+        $unit_list = $this->rpt_db->get_user_subunits(array_keys($this->rpt_user->Units));
+        $rank_list = $this->rpt_db->get_target_ranks();
+//        echo '<pre>' . print_r($rank_list, true) . '</pre>'; exit;
+        // parameter form
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        echo '<p>Obtain a list of eligible voting faculty for a unit by selecting the proposed rank of a '
+            . 'candidate. This list can be used to create the committee in RPT for the Eligible Voting '
+            . 'Faculty Review case step.</p>';
+        echo '<p>The list is based on Workday current appointment information, so please review the '
+            . 'results carefully before creating your committee. The results will not take into account any faculty on leave.</p>';
+        echo '<p>Additional voting resources:</p>';
+        echo '<ul>';
+        echo '<li><a href="' . $this->voting_matrix_url . '" alt="Voting Matrix page">Voting Guidelines</a></li>';
+        echo '<li><a href="' . $this->committee_setup_url . '" alt="Shell committee setu page">Shell Committee Setup</a></li>';
+        echo '<form id="rptinfo_voting_form" name="rptinfo_voting_form" action="'
+            . esc_url(add_query_arg(array('rpt_page' => 'report'), home_url($wp->request)))
+            . '" role="form" method="get" accept-charset="utf-8" class="rptinfo-form ">';
+        echo rpt_form_hidden_field('rpt_page', 'report');
+        echo rpt_form_hidden_field('report_type', 'voting');
+        echo rpt_form_hidden_field('template_type', '2');
+        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        if ( count($unit_list) > 1 ) {
+            echo rpt_form_dropdown_list('unit_id', $unit_id, 'Unit', $unit_list);
+        }
+        else {
+            echo rpt_form_hidden_field('unit_id', $unit_id);
+            $unit = reset($this->rpt_user->Units);
+            echo '<p>' . $unit . '</p>';
+        }
+        echo rpt_form_dropdown_list('rank_id', $rank_id,
+            'Voting on promotions to rank', $rank_list);
+        echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
+        echo '</form>';
+        echo '</div>';
+        echo '</div>';
+        // display report if parameters present
+        if ( ( $unit_id != 0 ) && ( $rank_id != 0 ) ) {
+            $voting_list = $this->rpt_db->get_voting_faculty($unit_id, $rank_id);
+            $unit_name = $this->rpt_db->get_unit_name($unit_id);
+            $rank_name = $this->rpt_db->get_rank_name($rank_id);
+            echo '<div class="row">';
+            echo '<div class="col-12">';
+            echo '<h3>Faculty members eligible to vote for ' . $rank_name . ' in ' . $unit_name . '</h3>';
+            if ( ! empty($voting_list) ) {
+                echo '<table class="table table-bordered table-striped">';
+                echo '<thead>';
+                echo '<tr>';
+                echo '<th>NetID</th>';
+                echo '<th>Name</th>';
+                echo '<th>Rank</th>';
+                echo '</tr>';
+                echo '</thead>';
+                echo '<tbody>';
+                foreach ( $voting_list as $voting ) {
+                    echo '<tr>';
+                    echo '<td>' . $voting->UWNetID . '</td>';
+                    echo '<td>' . $voting->LegalName . '</td>';
+                    echo '<td>' . $voting->RankName . '</td>';
+                    echo '</tr>';
+                }
+                echo '</tbody>';
+                echo '</table>';
+            }
+            echo '</div>';
+            echo '</div>';
         }
     }
 

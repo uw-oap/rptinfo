@@ -181,6 +181,22 @@ from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear ord
         return $user_obj;
     }
 
+    public function get_user_subunits( $user_units ) : array
+    {
+        $result = [];
+        $query = 'select InterfolioUnitID, UnitName from InterfolioUnit where InterfolioUnitID in ('
+            . implode(',', $user_units) . ') or ParentID in (' . implode(',', $user_units)
+            . ') or LevelOneID in (' . implode(',', $user_units)
+            . ") or '28343' in (" . implode(',', $user_units)
+            . ") and IsAcademic = 'Yes' and IsActive = 'Yes' order by UnitName";
+        $this->last_query = $query;
+//        echo $this->last_query; exit;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->InterfolioUnitID] = $row->UnitName;
+        }
+        return $result;
+    }
+
     /** ******************* case functions ********************************** */
 
     public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
@@ -625,6 +641,20 @@ where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
         return $result;
     }
 
+
+    public function get_voting_faculty( $unit_id, $rank_key ) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select distinct UWNetID, LegalName, RankName, UnitName from UnitVotingFaculty
+where TargetUWODSRankKey = %s and (InterfolioUnitID = %s or ParentID = %s or LevelOneID = %s)", $rank_key,
+            $unit_id, $unit_id, $unit_id);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
     /** ******************* person (candidate) functions ********************************** */
 
     public function get_candidate_leaves( Rpt_Info_Case $case_obj ) : void
@@ -702,6 +732,44 @@ where UWODSAppointmentTrackKey = %s", $case_obj->UWODSAppointmentTrackKey);
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->UWODSUnitKey] = $row->UnitName;
+        }
+        return $result;
+    }
+
+    public function get_target_ranks() : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select distinct TargetUWODSRankKey, TargetRankName 
+from ValidPromotion where TargetActive = 'Yes'");
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->TargetUWODSRankKey] = $row->TargetRankName;
+        }
+        return $result;
+    }
+
+    public function get_rank_name( $rank_key ) : string
+    {
+        $result = '';
+        $query = $this->rpt_db->prepare("select distinct TargetRankName from ValidPromotion
+where TargetUWODSRankKey = %s", $rank_key);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = $result_row->TargetRankName;
+        }
+        return $result;
+    }
+
+    public function get_unit_name( $unit_id ) : string
+    {
+        $result = '';
+        $query = $this->rpt_db->prepare("select UnitName from InterfolioUnit
+where InterfolioUnitID = %s", $unit_id);
+        $this->last_query = $query;
+        $result_row = $this->rpt_db->get_row($query);
+        if ( $result_row ) {
+            $result = $result_row->UnitName;
         }
         return $result;
     }
