@@ -27,6 +27,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public int $Vote2Abstaining = 0;
     public string $Leaves = ''; // string representation to submit
     public string $Waivers = '';
+    public string $DataSheetValidation = '';
 
     public function __construct( $case_row = NULL )
     {
@@ -298,11 +299,23 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dd>' . $this->DataSheetStatus . '</dd>';
         $result .= '</dl>';
         if ( $this->data_sheet_edit_allowed() ) {
+            if ( $this->data_sheet_ok() ) {
+                $button_text = 'Edit / Submit';
+            }
+            else {
+                $button_text = 'Edit';
+            }
             $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                     'template_type' => $this->RptTemplateTypeID,
                     'ay' => $this->AcademicYear,
                     'rpt_page' => 'datasheet'), home_url($wp->request)))
-                . '" class="btn btn-outline-secondary">Edit / Submit</a>';
+                . '" class="btn btn-outline-secondary">' . $button_text . '</a>';
+            if ( $this->DataSheetValidation) {
+                $result .= '<div class="form-check">';
+                $result .= '<p><strong>Issues preventing submission:</strong></p>';
+                $result .= $this->DataSheetValidation;
+                $result .= '</div>';
+            }
         }
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
@@ -389,7 +402,50 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function data_sheet_ok() : bool
     {
-        return true;
+        $errors = [];
+        // not if data sheet already submitted
+        if ( $this->DataSheetID > 0 ) {
+            $errors[] = 'Data sheet already submitted';
+        }
+        // not if main vote counts not present
+        if ( $this->Vote1Eligible == '0' ) {
+            $errors[] = 'No counts for Vote #1';
+        }
+        else {
+            // not if main vote counts don't add up
+            if ( ( $this->Vote1Affirmative
+                    + $this->Vote1Negative
+                    + $this->Vote1Absent
+                    + $this->Vote1Abstaining) != $this->Vote1Eligible ) {
+                $errors[] = 'Vote #1 counts do not add up';
+            }
+        }
+        // if 2ndary vote present, must add up
+        if ( $this->Vote2Eligible > '0' ) {
+            if ( ( $this->Vote2Affirmative
+                    + $this->Vote2Negative
+                    + $this->Vote2Absent
+                    + $this->Vote2Abstaining) != $this->Vote2Eligible ) {
+                $errors[] = 'Vote #2 counts do not add up';
+            }
+        }
+        // subcommittee members must be set
+        if ( $this->SubcommitteeMembers == '' ) {
+//            $errors[] = 'Missing Subcommittee Members (must be set in Interfolio)';
+        }
+        // missing tenure on tenured rank
+        if ( ( $this->TargetRankTenured == 'Yes' && $this->TenureAward == 0 ) ) {
+            $errors[] = 'Missing tenure amount on tenured rank';
+        }
+        // missing term length on termed rank
+        if ( ( $this->TargetDefaultTerm ) && ( ! $this->NewTermLength ) ) {
+            $errors[] = 'Missing term length on termed rank';
+        }
+        if ( count( $errors ) ) {
+            $this->DataSheetValidation = implode( '<br />', $errors );
+            return FALSE;
+        }
+        return TRUE;
     }
 
 }

@@ -421,22 +421,6 @@ class Rpt_Info_Public
 
     private function case_page( $selector = 'case' ) : void
     {
-        switch ( $this->active_template_type) {
-            case '2' :
-                $page_text = get_option('rpt_info_promo_case_page_text');
-                break;
-            case '5' :
-                $page_text = get_option('rpt_info_sab_case_page_text');
-                break;
-        }
-        echo '<p>' . $page_text . '</p>';
-        if ( $this->current_cycle->template_type_submissions_allowed($this->active_template_type) ) {
-            echo '<p>Case initiation is allowed</p>';
-        }
-        else {
-            echo '<p>Case initiation is not allowed<br>Initiation window: '
-                . $this->current_cycle->template_type_submission_window($this->active_template_type) . '</p>';
-        }
         $case_id = get_query_var('case_id', '0');
         $candidate_id = get_query_var('candidate_id', '0');
         $track_id = get_query_var('track_id', '0');
@@ -483,6 +467,13 @@ class Rpt_Info_Public
         echo '<div class="row">';
         echo '<div class="col-12">';
         echo '<p>' . $page_text . '</p>';
+        if ( $this->current_cycle->template_type_submissions_allowed($this->active_template_type) ) {
+//            echo '<p>Case initiation is allowed</p>';
+        }
+        else {
+            echo '<p>Case initiation is not allowed<br>Initiation window: '
+                . $this->current_cycle->template_type_submission_window($this->active_template_type) . '</p>';
+        }
         // help link here
         echo '</div>'; // col 12
         echo '</div>'; // row
@@ -631,7 +622,15 @@ class Rpt_Info_Public
     private function case_display( $case_id )
     {
         global $wp;
-        echo '<p>Case display page</p>';
+        switch ( $this->active_template_type) {
+            case '2' :
+                $page_text = get_option('rpt_info_promo_case_page_text');
+                break;
+            case '5' :
+                $page_text = get_option('rpt_info_sab_case_page_text');
+                break;
+        }
+        echo '<p>' . $page_text . '</p>';
         $case_obj = NULL;
 //        echo 'case id ' . $case_id . ', type ' . $this->active_template_type;
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
@@ -690,8 +689,16 @@ class Rpt_Info_Public
     private function case_edit( int $case_id = 0, int $track_id = 0, $selector = 'case' ) : void
     {
         global $wp;
-        echo '<p>Case edit page</p>';
-        echo 'track id ' . $track_id . ', case id ' . $case_id;
+        switch ($selector) {
+            case 'case':
+            case 'edit':
+                $page_text = 'Edit the basic information for case submission.';
+                break;
+            case 'datasheet':
+                $page_text = 'Edit the basic information for data sheet submission.';
+        }
+        echo '<p>' . $page_text . '</p>';
+//        echo 'track id ' . $track_id . ', case id ' . $case_id;
         $case_obj = NULL;
         if ( ( $track_id ) && ( ! $case_id ) ) { // candidate but no case - see if there is one
             switch ( $this->active_template_type) {
@@ -1423,10 +1430,10 @@ class Rpt_Info_Public
             $voting_list = $this->rpt_db->get_voting_faculty($unit_id, $rank_id);
             $unit_name = $this->rpt_db->get_unit_name($unit_id);
             $rank_name = $this->rpt_db->get_rank_name($rank_id);
-            echo '<div class="row">';
-            echo '<div class="col-12">';
-            echo '<h3>Faculty members eligible to vote for ' . $rank_name . ' in ' . $unit_name . '</h3>';
             if ( ! empty($voting_list) ) {
+                echo '<div class="row">';
+                echo '<div class="col-12">';
+                echo '<h3>Faculty members eligible to vote for ' . $rank_name . ' in ' . $unit_name . '</h3>';
                 echo '<table class="table table-bordered table-striped">';
                 echo '<thead>';
                 echo '<tr>';
