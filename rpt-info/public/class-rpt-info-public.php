@@ -990,9 +990,11 @@ class Rpt_Info_Public
             switch ( $template_type_id ) {
                 case '2': // promotion
                     $case_obj = $this->rpt_db->get_promotion_by_id($case_id);
+                    if ( ! $case_obj ) { $case_obj = new Rpt_Info_Promotion(); }
                     break;
                 case '5': // sabbatical
                     $case_obj = $this->rpt_db->get_sabbatical_by_id($case_id);
+                    if ( ! $case_obj ) { $case_obj = new Rpt_Info_Sabbatical(); }
                     break;
             }
             $case_obj->update_from_post($_POST);
