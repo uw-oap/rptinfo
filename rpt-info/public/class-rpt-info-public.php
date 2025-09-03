@@ -716,9 +716,11 @@ class Rpt_Info_Public
                 switch ( $this->active_template_type) {
                     case '2': // promotion
                         $case_obj = $this->rpt_db->get_promotion_from_track($track_id);
+                        if ( ! $case_obj ) { $case_obj = new Rpt_Info_Promotion(); }
                         break;
                     case '5': // sabbatical
                         $case_obj = $this->rpt_db->get_sabbatical_from_track($track_id);
+                        if ( ! $case_obj ) { $case_obj = new Rpt_Info_Sabbatical(); }
                         break;
                 }
                 $case_obj->InitiatorID = $this->rpt_user->InterfolioUserID;
