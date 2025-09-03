@@ -329,8 +329,7 @@ WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetI
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
 MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey
-FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %",
-            $track_id);
+FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
