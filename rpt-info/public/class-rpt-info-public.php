@@ -1340,6 +1340,18 @@ class Rpt_Info_Public
                 'report_type' => 'cases-by-scc'),
                 home_url($wp->request)))
             . '">Cases by SCC</a>';
+        echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type,
+                'report_type' => 'withdrawn'),
+                home_url($wp->request)))
+            . '">Withdrawn Cases</a>';
+        echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                'ay' => $this->current_cycle->AcademicYear,
+                'template_type' => $this->active_template_type,
+                'report_type' => 'missing'),
+                home_url($wp->request)))
+            . '">Missing Cases</a>';
         if ( $this->active_template_type == 2 ) {
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'ay' => $this->current_cycle->AcademicYear,
@@ -1347,6 +1359,14 @@ class Rpt_Info_Public
                     'report_type' => 'voting'),
                     home_url($wp->request)))
                 . '">Eligible Voting Faculty</a>';
+        }
+        if ( $this->rpt_user->SystemAdmin() ) {
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'apf'),
+                    home_url($wp->request)))
+                . '">Cases with APF</a>';
         }
         echo '</p>';
         $report_type = get_query_var('report_type', '');
@@ -1368,6 +1388,11 @@ class Rpt_Info_Public
                 break;
             case 'voting':
                 $this->voting_report();
+                break;
+            case 'withdrawn':
+            case 'missing':
+            case 'apf':
+                $this->cases_by_status($report_type);
                 break;
         }
 //        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
@@ -1462,6 +1487,42 @@ class Rpt_Info_Public
             echo '</div>';
             echo '</div>';
         }
+    }
+
+    private function cases_by_status( $status )
+    {
+        $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/cases';
+//        $this->rpt_case_review_url = get_option('ap_rptinfo_rpt_case_review_url');
+        $case_list = [];
+        switch ( $this->active_template_type) {
+            case '2': // promotion
+                $case_list = $this->rpt_db->get_promotion_cases_for_user($this->rpt_user, $status);
+                break;
+            case '5': // sabbatical
+                $case_list = $this->rpt_db->get_sabbatical_cases_for_user($this->rpt_user, $status);
+                break;
+        }
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        if ( count( $case_list ) > 0 ) {
+//            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
+            echo '<table class="table table-bordered table-striped sort-table">';
+            echo '<thead>';
+            echo $this->case_list_header_row();
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ( $case_list as $case ) {
+                echo $case->listing_table_row($rpt_case_url);
+            }
+            echo '</tbody>';
+            echo '</table>';
+        }
+        else {
+            echo '<p><em>None found.</em></p>';
+        }
+        echo '</div>'; // col 12
+        echo '</div>'; // row
     }
 
     /* ********************** functions dealing with admin ********************** */

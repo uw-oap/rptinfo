@@ -199,9 +199,23 @@ from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear ord
 
     /** ******************* case functions ********************************** */
 
-    public function get_promotion_cases_for_user( Rpt_Info_User $user_obj ) : array
+    public function get_promotion_cases_for_user( Rpt_Info_User $user_obj, $status_type = 'active' ) : array
     {
         $result = [];
+        switch ( $status_type ) {
+            case 'active':
+                $limit = 'CaseStatusID not in (7,9)';
+                break;
+            case 'withdrawn':
+                $limit = 'CaseStatusID = 7';
+                break;
+            case 'missing':
+                $limit = 'CaseStatusID = 9';
+                break;
+            case 'apf':
+                $limit = 'CaseStatusID in (3,4,5)';
+                break;
+        }
         $query = "SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID, RptTemplateTypeID, CaseStatus, 
 InterfolioUnitID, AcademicYear, WorkflowStepNumber, WorkflowStepName, TemplateName, CoverSheetID, 
 LegalName, InitiatorID, InitiatorName, CandidateKey, UWODSAppointmentTrackKey, AppointmentType, 
@@ -212,11 +226,11 @@ DatasheetID, Postponed, TenureAward, NewTermLength, Vote1Eligible, Vote1Affirmat
 Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, Vote2Negative, Vote2Absent, 
 Vote2Abstaining, DatasheetID, DataSheetStatus, TargetTrackTypeName, TargetRankDefaultTerm, TargetRankTenured, 
 Postponed, CaseStatusID, CoverSheetStatus, RptStatus
-FROM RptPromotionDetails where InterfolioUnitID in ("
+FROM RptPromotionDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
-            . implode(',', array_keys($user_obj->Units)) . ")";
+            . implode(',', array_keys($user_obj->Units)) . "))";
         $this->last_query = $query;
 //        echo $this->last_query;
         foreach ($this->rpt_db->get_results($query) as $row) {
@@ -226,9 +240,23 @@ FROM RptPromotionDetails where InterfolioUnitID in ("
         return $result;
     }
 
-    public function get_sabbatical_cases_for_user( Rpt_Info_User $user_obj ) : array
+    public function get_sabbatical_cases_for_user( Rpt_Info_User $user_obj, $status_type = 'active' ) : array
     {
         $result = [];
+        switch ( $status_type ) {
+            case 'active':
+                $limit = 'CaseStatusID not in (7,9)';
+                break;
+            case 'withdrawn':
+                $limit = 'CaseStatusID = 7';
+                break;
+            case 'missing':
+                $limit = 'CaseStatusID = 9';
+                break;
+            case 'apf':
+                $limit = 'CaseStatusID in (3,4,5)';
+                break;
+        }
         $query = "SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
 RptTemplateTypeID, TemplateTypeName, CandidateID, CaseDataSectionID, ConcurrenceLetterSection, 
 ConcurrenceLetterCount, SubcommitteeReviewStep, SubcommitteeMembers, LegalName, FirstName, LastName, 
@@ -240,11 +268,11 @@ WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetI
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
 MultiYear, EligibilityReport, EligibilityNote, HireDate, RptStatus
-FROM RptSabbaticalDetails where InterfolioUnitID in ("
+FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
-            . implode(',', array_keys($user_obj->Units)) . ")";
+            . implode(',', array_keys($user_obj->Units)) . "))";
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->CaseID] = new Rpt_Info_Sabbatical($row);
