@@ -102,7 +102,7 @@ class Rpt_Info_Case
             if ( $this->AppointmentType == 'Joint' ) {
                 $this->HasJoint = 'Yes';
             }
-            else {
+            elseif ( isset($case_row->HasJoint)) {
                 $this->HasJoint = $case_row->HasJoint;
             }
             if ( isset($case_row->HasSecondary) ) {

@@ -380,6 +380,7 @@ where UWODSAppointmentTrackKey = %s", $track_id);
 //        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
         if ( $result_row ) {
             $result = new Rpt_Info_Sabbatical($result_row);
+//            echo '<pre>' . print_r( $result, true ) . '</pre>'; exit;
         }
         return $result;
     }
