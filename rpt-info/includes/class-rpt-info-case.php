@@ -190,7 +190,7 @@ class Rpt_Info_Case
             $this->AppointmentType = sanitize_text_field($posted_values['AppointmentType']);
         }
         $this->InterfolioUnitID = intval($posted_values['InterfolioUnitID']);
-//        $this->CaseStatus = sanitize_text_field($posted_values['CaseStatus']);
+        $this->CaseStatusID = sanitize_text_field($posted_values['CaseStatusID']);
         $this->AcademicYear = intval($posted_values['ay']);
         $this->HasJoint = sanitize_text_field($posted_values['HasJoint']);
         $this->HasSecondary = sanitize_text_field($posted_values['HasSecondary']);

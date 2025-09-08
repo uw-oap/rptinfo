@@ -278,7 +278,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         return $result;
     }
 
-    public function sabbatical_info_card($rpt_case_url) : string
+    public function sabbatical_info_card($rpt_case_url, $is_admin = FALSE ) : string
     {
         global $wp;
         $result = '<div class="card">';
@@ -353,10 +353,10 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         );
     }
 
-    public function case_edit_allowed() : bool
+    public function case_edit_allowed( $is_admin = FALSE ) : bool
     {
         return false;
-        if ( ( $this->CaseStatusID == '0' ) || ( $this->CaseStatusID == '1' ) ) {
+        if ( ( $this->CaseStatusID < '3' ) || ( $is_admin ) ) { // draft, submitted, in progress
             return true;
         }
         return false;

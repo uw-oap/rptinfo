@@ -654,10 +654,10 @@ class Rpt_Info_Public
         echo '<div class="col-6">';
         switch ( $case_obj->RptTemplateTypeID ) {
             case '2':
-                echo $case_obj->promotion_info_card($rpt_case_url);
+                echo $case_obj->promotion_info_card($rpt_case_url, $this->rpt_user->SystemAdmin());
                 break;
             case '5':
-                echo $case_obj->sabbatical_info_card($rpt_case_url);
+                echo $case_obj->sabbatical_info_card($rpt_case_url, $this->rpt_user->SystemAdmin());
                 break;
         }
         echo '</div>'; // col 6
@@ -827,16 +827,18 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('UWODSUnitKey', $case_obj->UWODSUnitKey);
         echo rpt_form_hidden_field('InterfolioUnitID', $case_obj->InterfolioUnitID);
         echo rpt_form_hidden_field('CurrentRankKey', $case_obj->CurrentRankKey);
-        echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
         echo rpt_form_hidden_field('CoverSheetID', $case_obj->CoverSheetID);
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
         if ( $this->rpt_user->SystemAdmin() ) {
             echo rpt_form_number_box('RptCaseID', $case_obj->RptCaseID, 'RPT case ID', FALSE,
             '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
+            echo rpt_form_dropdown_list('CaseStatusID', $case_obj->CaseStatusID, 'Case Status',
+                $this->rpt_db->get_case_status_list());
         }
         else {
             echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
+            echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
         }
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
             'Proposed rank', $target_rank_list, '', FALSE,
@@ -1000,7 +1002,7 @@ class Rpt_Info_Public
                     break;
             }
             $case_obj->update_from_post($_POST);
-            if ( $case_obj->ok_to_submit() ) {
+            if ( $case_obj->ok_to_submit() && ( $case_obj->CaseStatusID == 0 ) ) {
                 $case_obj->CaseStatusID = '1';
             }
 //            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
@@ -1012,12 +1014,12 @@ class Rpt_Info_Public
                 $update_result = $this->rpt_db->update_case($case_obj);
             }
             $result_message = 'Your changes have been saved';
-            if ( $update_result == 1 ) {
-                $result_status = 'success';
-            }
-            else {
+            if ( $update_result === FALSE ) {
                 $result_status = 'danger';
                 $result_message = 'Error: ' . $this->rpt_db->get_last_error() . '|' . $this->rpt_db->get_last_query();
+            }
+            else {
+                $result_status = 'success';
             }
         }
         wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message,

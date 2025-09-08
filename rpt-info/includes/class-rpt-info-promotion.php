@@ -212,7 +212,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         return $result;
     }
 
-    public function promotion_info_card( $rpt_case_url ) : string
+    public function promotion_info_card( $rpt_case_url, $is_admin = FALSE ) : string
     {
         global $wp;
         $result = '<div class="card">';
@@ -235,7 +235,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $result .= '<a href="' . $rpt_case_url . '/' . $this->RptCaseID
                 . '" class="btn btn-outline-secondary">Go to case in RPT</a>';
         }
-        if ( $this->case_edit_allowed() ) {
+        if ( $this->case_edit_allowed($is_admin) ) {
             $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                     'template_type' => $this->RptTemplateTypeID,
                     'ay' => $this->AcademicYear,
@@ -356,15 +356,15 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         }
     }
 
-    public function case_edit_allowed() : bool
+    public function case_edit_allowed( $is_admin = FALSE ) : bool
     {
-        if ( $this->CaseStatusID < '3' ) { // draft, submitted, in progress
+        if ( ( $this->CaseStatusID < '3' ) || ( $is_admin ) ) { // draft, submitted, in progress
             return true;
         }
-        return false;
+        return $is_admin;
     }
 
-    public function data_sheet_edit_allowed() : bool
+    public function data_sheet_edit_allowed( $is_admin = FALSE ) : bool
     {
         // what conditions should be here?
         if ( $this->RptCaseID == 0 ) {
