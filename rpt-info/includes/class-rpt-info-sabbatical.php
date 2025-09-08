@@ -179,7 +179,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<td>';
         if ( $this->RptCaseID ) {
             $result .= '<a href="' . $rpt_case_url . '/' . $this->RptCaseID
-                . '">$this->InterfolioCaseID</a>';
+                . '">' . $this->RptCaseID . '</a>';
         }
         else {
             $result .= 'N/A';
