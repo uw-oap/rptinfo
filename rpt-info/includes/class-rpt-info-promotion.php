@@ -81,8 +81,12 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 
     public function update_from_data_sheet_post( $posted_values ) : void
     {
-        $this->TenureAward = intval($posted_values['TenureAward']);
-        $this->NewTermLength = intval($posted_values['NewTermLength']);
+        if ( isset($posted_values['TenureAward']) ) {
+            $this->TenureAward = intval($posted_values['TenureAward']);
+        }
+        if ( isset($posted_values['NewTermLength']) ) {
+            $this->NewTermLength = intval($posted_values['NewTermLength']);
+        }
         $this->Postponed = sanitize_text_field($posted_values['Postponed']);
         $this->Vote1Eligible = intval($posted_values['Vote1Eligible']);
         $this->Vote1Affirmative = intval($posted_values['Vote1Affirmative']);

@@ -1204,13 +1204,13 @@ class Rpt_Info_Public
             }
 //            echo '<pre>' . print_r($case_obj, TRUE) . '</pre>'; exit;
             $update_result = $this->rpt_db->update_case($case_obj, 'datasheet');
-            if ( $update_result > 0 ) {
-                $result_status = 'success';
-                $result_message = 'Your changes have been saved';
-            }
-            else {
+            if ( $update_result === FALSE ) {
                 $result_status = 'danger';
                 $result_message = 'Error: ' . $this->rpt_db->get_last_error() . '|' . $this->rpt_db->get_last_query();
+            }
+            else {
+                $result_status = 'success';
+                $result_message = 'Your changes have been saved';
             }
         }
         wp_redirect(add_query_arg(array('rpt_page' => 'case', 'msg' => $result_message,
