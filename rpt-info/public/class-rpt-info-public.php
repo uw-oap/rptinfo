@@ -838,7 +838,7 @@ class Rpt_Info_Public
         }
         else {
             echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
-            echo rpt_form_hidden_field('CaseStatus', $case_obj->CaseStatus);
+            echo rpt_form_hidden_field('CaseStatusID', $case_obj->CaseStatusID);
         }
         echo rpt_form_target_rank_list('TargetRankKey', $case_obj->TargetRankKey,
             'Proposed rank', $target_rank_list, '', FALSE,
