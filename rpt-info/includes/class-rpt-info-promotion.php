@@ -409,7 +409,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $errors = [];
         // not if data sheet already submitted
         if ( $this->DataSheetID > 0 ) {
-            $errors[] = 'Data sheet already submitted';
+//            $errors[] = 'Data sheet already submitted';
         }
         // not if main vote counts not present
         if ( $this->Vote1Eligible == '0' ) {
