@@ -1342,18 +1342,6 @@ class Rpt_Info_Public
                 'report_type' => 'cases-by-scc'),
                 home_url($wp->request)))
             . '">Cases by SCC</a>';
-        echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type,
-                'report_type' => 'withdrawn'),
-                home_url($wp->request)))
-            . '">Withdrawn Cases</a>';
-        echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type,
-                'report_type' => 'missing'),
-                home_url($wp->request)))
-            . '">Missing Cases</a>';
         if ( $this->active_template_type == 2 ) {
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'ay' => $this->current_cycle->AcademicYear,
@@ -1366,9 +1354,27 @@ class Rpt_Info_Public
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type,
+                    'report_type' => 'withdrawn'),
+                    home_url($wp->request)))
+                . '">Withdrawn Cases</a>';
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'missing'),
+                    home_url($wp->request)))
+                . '">Missing Cases</a>';
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type,
                     'report_type' => 'apf'),
                     home_url($wp->request)))
                 . '">Cases with APF</a>';
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $this->current_cycle->AcademicYear,
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'joint'),
+                    home_url($wp->request)))
+                . '">Joint Cases</a>';
         }
         echo '</p>';
         $report_type = get_query_var('report_type', '');
@@ -1395,6 +1401,9 @@ class Rpt_Info_Public
             case 'missing':
             case 'apf':
                 $this->cases_by_status($report_type);
+                break;
+            case 'joint':
+                $this->joint_case_report();
                 break;
         }
 //        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
@@ -1516,6 +1525,64 @@ class Rpt_Info_Public
             echo '<tbody>';
             foreach ( $case_list as $case ) {
                 echo $case->listing_table_row($rpt_case_url);
+            }
+            echo '</tbody>';
+            echo '</table>';
+        }
+        else {
+            echo '<p><em>None found.</em></p>';
+        }
+        echo '</div>'; // col 12
+        echo '</div>'; // row
+    }
+
+    private function joint_case_report()
+    {
+        $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
+            . get_option('rpt_info_tenant_id') . '/cases';
+        $case_list = [];
+        switch ( $this->active_template_type) {
+            case '2': // promotion
+                $case_list = $this->rpt_db->get_joint_promotion_report();
+                break;
+            case '5': // sabbatical
+                break;
+        }
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        if ( count( $case_list ) > 0 ) {
+//            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
+            echo '<table class="table table-bordered table-striped">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>EmployeeID</th>';
+            echo '<th>Name</th>';
+            echo '<th>Type</th>';
+            echo '<th>Rank</th>';
+            echo '<th>Unit</th>';
+            echo '<th>Case</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            $last_id = '';
+            foreach ( $case_list as $employee_id => $value ) {
+                foreach ($value as $case) {
+                    echo '<tr>';
+                    if ($employee_id != $last_id) {
+                        echo '<td>' . $case->EmployeeID . '</td>';
+                        echo '<td>' . $case->LegalName . '</td>';
+                    }
+                    else {
+                        echo '<td>&nbsp;</td>';
+                        echo '<td>&nbsp;</td>';
+                    }
+                    echo '<td>' . $case->AppointmentType . '</td>';
+                    echo '<td>' . $case->RankName . '</td>';
+                    echo '<td>' . $case->UnitName . '</td>';
+                    echo '<td>' . $case->StatusName . '</td>';
+                    echo '</tr>';
+                    $last_id = $employee_id;
+                }
             }
             echo '</tbody>';
             echo '</table>';

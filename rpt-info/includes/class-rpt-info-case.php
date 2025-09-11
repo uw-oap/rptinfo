@@ -172,8 +172,13 @@ class Rpt_Info_Case
     public function update_from_post( $posted_values ) : void
     {
         $this->CaseID = intval($posted_values['CaseID']);
+        if ( ! isset($posted_values['RptCaseID']) ) {
+            $this->RptCaseID = 0;
+        }
+        else {
+            $this->RptCaseID = intval($posted_values['RptCaseID']);
+        }
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
-        $this->RptCaseID = intval($posted_values['RptCaseID']);
         if ( $posted_values['CoverSheetID'] > '0' ) {
             // cover sheet already exists, keep so it can be deleted
             $this->CoverSheetID = $posted_values['CoverSheetID'];
@@ -224,6 +229,7 @@ class Rpt_Info_Case
     public function update_case_array() : array
     {
         return array(
+            'RptCaseID' => $this->RptCaseID,
             'CaseStatusID' => $this->CaseStatusID,
             'CoverSheetID' => $this->CoverSheetID,
             'CoverSheetStatus' => $this->CoverSheetStatus

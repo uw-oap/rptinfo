@@ -669,7 +669,6 @@ where RptTemplateTypeID = %s and AcademicYear = %s and LevelOneID = %s",
         return $result;
     }
 
-
     public function get_voting_faculty( $unit_id, $rank_key ) : array
     {
         $result = [];
@@ -679,6 +678,19 @@ where TargetUWODSRankKey = %s and (InterfolioUnitID = %s or ParentID = %s or Lev
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[] = $row;
+        }
+        return $result;
+    }
+
+    public function get_joint_promotion_report() : array
+    {
+        $result = [];
+        $query = "select distinct EmployeeID, LegalName, RankName, UnitName, Level1UnitName, AppointmentType, 
+UWODSAppointmentTrackKey, CaseID, StatusName 
+from rpt.JointPromotions;";
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query) as $row) {
+            $result[$row->EmployeeID][$row->UWODSAppointmentTrackKey] = $row;
         }
         return $result;
     }
