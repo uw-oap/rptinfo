@@ -1055,8 +1055,8 @@ class Rpt_Info_Public
         }
         else {
             echo '<p class="card-subtitle mb-2 text-muted">The data sheet for this case '
-                . 'is already present in RPT. Make sure to delete the old one before '
-                . 'making changes.</p>';
+                . 'is already present in RPT. Changes made here will be flagged to create '
+                . 'a new data sheet to replace the old one.</p>';
         }
         echo '<form id="rptinfo_datasheet_form" name="rptinfo_datasheet_form" action="'
             . esc_url(admin_url('admin-post.php'))
@@ -1067,6 +1067,8 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
         echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
+        echo rpt_form_hidden_field('DataSheetStatus', $case_obj->DataSheetStatus);
+        echo rpt_form_hidden_field('DataSheetID', $case_obj->DataSheetID);
         echo rpt_form_text_box('TargetRankName', $case_obj->TargetRankName,
             'Proposed rank', FALSE, 'form-control', TRUE, FALSE);
         echo rpt_form_text_box('TargetTrackTypeName', $case_obj->TargetTrackTypeName,
