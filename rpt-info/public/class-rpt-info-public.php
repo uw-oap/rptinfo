@@ -835,6 +835,7 @@ class Rpt_Info_Public
             '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
             echo rpt_form_dropdown_list('CaseStatusID', $case_obj->CaseStatusID, 'Case Status',
                 $this->rpt_db->get_case_status_list());
+            echo rpt_form_hidden_field('AdminOverride', 'Yes');
         }
         else {
             echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
@@ -899,6 +900,7 @@ class Rpt_Info_Public
         if ( $this->rpt_user->SystemAdmin() ) {
             echo rpt_form_number_box('RptCaseID', $case_obj->RptCaseID, 'RPT case ID', FALSE,
                 '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
+            echo rpt_form_hidden_field('AdminOverride', 'Yes');
         }
         else {
             echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
@@ -1003,9 +1005,12 @@ class Rpt_Info_Public
             }
             $case_obj->update_from_post($_POST);
             if ( $case_obj->ok_to_submit() && ( $case_obj->CaseStatusID == 0 ) ) {
-                $case_obj->CaseStatusID = '1';
+                if ( ! isset($_POST['AdminOverride']) ) {
+                    $case_obj->CaseStatusID = '1';
+                }
             }
 //            echo '<pre>' . print_r($case_obj->insert_case_array(), TRUE) . '</pre>'; exit;
+//            echo '<pre>' . print_r($case_obj->update_case_array(), TRUE) . '</pre>'; exit;
             // anything else?
             if ( $case_obj->CaseID == 0 ) {
                 $update_result = $this->rpt_db->insert_case($case_obj);
