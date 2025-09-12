@@ -185,7 +185,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             $result .= 'N/A';
         }
         $result .= '</td>';
-        $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
+        $result .= '<td><strong>' . $this->display_name() . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
         $result .= '<td>' . $this->quarter_list() . '</td>';
@@ -218,7 +218,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<dt>Employee ID</dt>';
         $result .= '<dd>' . $this->EmployeeID . '</dd>';
         $result .= '<dt>Name</dt>';
-        $result .= '<dd>' . $this->LegalName . '</dd>';
+        $result .= '<dd>' . $this->display_name() . '</dd>';
         $result .= '<dt>Appointment type</dt>';
         $result .= '<dd>' . $this->AppointmentType . '</dd>';
         $result .= '<dt>S/C/C</dt>';

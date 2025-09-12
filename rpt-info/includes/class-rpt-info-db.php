@@ -225,7 +225,7 @@ PromotionCategoryName, ServicePeriod, EffectiveDate, HasJoint, HasSecondary, Sub
 DatasheetID, Postponed, TenureAward, NewTermLength, Vote1Eligible, Vote1Affirmative, Vote1Negative, 
 Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, Vote2Negative, Vote2Absent, 
 Vote2Abstaining, DatasheetID, DataSheetStatus, TargetTrackTypeName, TargetRankDefaultTerm, TargetRankTenured, 
-Postponed, CaseStatusID, CoverSheetStatus, RptStatus
+Postponed, CaseStatusID, CoverSheetStatus, RptStatus, PreferredName
 FROM RptPromotionDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -267,7 +267,7 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, RptStatus
+MultiYear, EligibilityReport, EligibilityNote, HireDate, RptStatus, PreferredName
 FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -284,7 +284,7 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
     {
         $result = [];
         $search_terms = explode(' ', $search_string);
-        $query = "select InterfolioUserID, EmployeeID, LegalName, RankName, UnitName, AppointmentType, 
+        $query = "select InterfolioUserID, EmployeeID, LegalName, PreferredName, RankName, UnitName, AppointmentType, 
        UWODSAppointmentTrackKey, CaseStatus, CaseID from CurrentPromotable where (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or ParentID in ("
             . implode(',', array_keys($user_obj->Units))
@@ -305,7 +305,7 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
     {
         $result = [];
         $search_terms = explode(' ', $search_string);
-        $query = "select InterfolioUserID, EmployeeID, LegalName, RankName, UnitName, AppointmentType, 
+        $query = "select InterfolioUserID, EmployeeID, LegalName, PreferredName, RankName, UnitName, AppointmentType, 
        UWODSAppointmentTrackKey, CaseStatus, CaseID from CurrentSabbaticalEligible where (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or ParentID in ("
             . implode(',', array_keys($user_obj->Units))
@@ -332,7 +332,7 @@ UWODSUnitKey, UnitName, CurrentRankKey, CurrentRankName, TargetRankKey, TargetRa
 ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, PromotionCategoryName, ServicePeriod,
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
-Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm,
+Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, PreferredName,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey
 FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
@@ -356,7 +356,7 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, PreferredName
 FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -377,7 +377,7 @@ AppointmentType, TrackTypeName, UWODSUnitKey, UnitName, UWODSRankKey CurrentRank
 RankName CurrentRankName, '0' TargetRankKey, '' TargetRankName, RankCategory, ParentID, 
 '' ParentUnitName, Level1InterfolioUnitID LevelOneID, Level1UnitName LevelOneUnitName, 
 PromotionCategoryID, PromotionCategoryName, ServicePeriod, NULL EffectiveDate, 'No' HasJoint, 
-'No' HasSecondary, '' SubcommitteeMembers, '0' DatasheetID, '2' RptTemplateTypeID
+'No' HasSecondary, '' SubcommitteeMembers, '0' DatasheetID, '2' RptTemplateTypeID, PreferredName
 FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -399,7 +399,7 @@ InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitNa
 UWODSRankKey CurrentRankKey, RankName CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
 'N/A' CaseStatus, 'No' SummerQtr, 'No' FallQtr, 'No' WinterQtr, 'No' SpringQtr, '' SalarySupportPct,
 RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear,
-AppointmentStartDate, AppointmentEndDate, TotalBasePayAmt MonthlySalary, HireDate
+AppointmentStartDate, AppointmentEndDate, TotalBasePayAmt MonthlySalary, HireDate, PreferredName
 from CurrentSabbaticalEligible
 where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
@@ -425,7 +425,7 @@ EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postpon
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, CaseStatusID,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
-RptStatus FROM RptPromotionDetails where CaseID = %s", $case_id);
+RptStatus, PreferredName FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
 //        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
@@ -448,7 +448,7 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, RptStatus
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, RptStatus, PreferredName
 FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
 //        echo $this->last_query; exit;

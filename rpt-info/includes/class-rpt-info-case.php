@@ -13,6 +13,7 @@ class Rpt_Info_Case
     public string $LegalName = '';
     public string $FirstName = '';
     public string $LastName = '';
+    public string $PreferredName = '';
     public string $UWNetID = '';
     public string $CandidateEmail = '';
     public int $UWODSAppointmentTrackKey = 0;
@@ -73,6 +74,7 @@ class Rpt_Info_Case
                 $this->CandidateID = 0;
             }
             $this->LegalName = $case_row->LegalName;
+            $this->PreferredName = $case_row->PreferredName;
             $this->EmployeeID = $case_row->EmployeeID;
             if ( isset($case_row->InitiatorID) ) {
                 $this->InitiatorID = $case_row->InitiatorID;
@@ -248,6 +250,15 @@ class Rpt_Info_Case
         );
     }
 
+    public function display_name() : string
+    {
+        $result = $this->LegalName;
+        if ( ( $this->PreferredName ) && ( $this->PreferredName != $this->LegalName ) ) {
+            $result .= ' / ' . $this->PreferredName;
+        }
+        return $result;
+    }
+
     public function candidate_info_card( $show_instructions = FALSE ) : string
     {
         $result = '<div class="card">';
@@ -263,7 +274,7 @@ class Rpt_Info_Case
         $result .= '<dt>Employee ID</dt>';
         $result .= '<dd>' . $this->EmployeeID . '</dd>';
         $result .= '<dt>Name</dt>';
-        $result .= '<dd>' . $this->LegalName . '</dd>';
+        $result .= '<dd>' . $this->display_name() . '</dd>';
         $result .= '<dt>Appointment type</dt>';
         $result .= '<dd>' . $this->AppointmentType . '</dd>';
         $result .= '<dt>S/C/C</dt>';

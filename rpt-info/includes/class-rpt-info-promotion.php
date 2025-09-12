@@ -190,7 +190,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $result .= 'N/A';
         }
         $result .= '</td>';
-        $result .= '<td><strong>' . $this->LegalName . ' (' . $this->EmployeeID . ')</strong><br>';
+        $result .= '<td><strong>' . $this->display_name() . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
         $result .= '<td>' . $this->PromotionCategoryName . '</td>';
