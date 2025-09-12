@@ -366,10 +366,7 @@ class Rpt_Info_Public
     {
         echo '<div class="row">';
         echo '<div class="col-12">';
-        echo '<p>Currently selected year: ' . $this->current_cycle->Display . '<br>';
-        echo 'Promotion initiation open: ' . $this->current_cycle->PromotionSubbmissionAllowed . '<br>'
-            . 'Sabbatical submission open: ' . $this->current_cycle->SabbaticalSubmissionAllowed . '</p>';
-        switch ( $this->active_template_type) {
+        switch ( $this->active_template_type ) {
             case '0' :
                 $page_text = get_option('rpt_info_home_page_text');
                 break;
@@ -381,6 +378,32 @@ class Rpt_Info_Public
                 break;
         }
         echo '<p>' . $page_text . '</p>';
+        if ( $this->active_template_type == '0' ) {
+            $init_year = $this->init_case_allowed('2');
+            if ( $init_year > 0 ) {
+                echo '<p>Promotion case initiation is open for '
+                    . $this->cycle_list[$init_year]->Display . '.</p>';
+            }
+            else {
+                echo '<p>Promotion case initiation is not open.</p>';
+            }
+            $init_year = $this->init_case_allowed('5');
+            if ( $init_year > 0 ) {
+                echo '<p>Sabbatical case initiation is open for '
+                    . $this->cycle_list[$init_year]->Display . '.</p>';
+            }
+            else {
+                echo '<p>Sabbatical case initiation is not open.</p>';
+            }
+        }
+        else {
+            if ( $this->init_case_allowed($this->active_template_type) > 0 ) {
+                echo '<p>Case initiation is open.</p>';
+            }
+            else {
+                echo '<p>Case initiation is not open.</p>';
+            }
+        }
         echo '</div>'; // col 12
         echo '</div>'; // row
     }
@@ -450,6 +473,7 @@ class Rpt_Info_Public
                 $page_text = get_option('rpt_info_sab_case_list_page_text');
                 break;
         }
+        $init_allowed_year = $this->init_case_allowed($this->active_template_type);
         $this->rpt_case_review_url = '';
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/cases';
@@ -467,12 +491,11 @@ class Rpt_Info_Public
         echo '<div class="row">';
         echo '<div class="col-12">';
         echo '<p>' . $page_text . '</p>';
-        if ( $this->current_cycle->template_type_submissions_allowed($this->active_template_type) ) {
-//            echo '<p>Case initiation is allowed</p>';
+        if ( $init_allowed_year > 0 ) {
+            echo '<p>Case initiation is open.</p>';
         }
         else {
-            echo '<p>Case initiation is not allowed<br>Initiation window: '
-                . $this->current_cycle->template_type_submission_window($this->active_template_type) . '</p>';
+            echo '<p>Case initiation is not open.</p>';
         }
         // help link here
         echo '</div>'; // col 12
@@ -482,10 +505,10 @@ class Rpt_Info_Public
         echo '<p>Current cases: (' . count($case_list) . ' found)</p>';
         echo '</div>'; // col 6
         echo '<div class="col-6 text-right">';
-        if ( $this->current_cycle->template_type_submissions_allowed($this->active_template_type) ) {
+        if ( $init_allowed_year > 0 ) {
             echo '<a href="'
                 . esc_url(add_query_arg(array('rpt_page' => 'case', 'case_id' => 'new',
-                    'ay' => $this->current_cycle->AcademicYear,
+                    'ay' => $init_allowed_year,
                     'template_type' => $this->active_template_type), home_url($wp->request)))
                 . '" class="btn btn-primary">Initiate a new case</a>';
         }
@@ -519,7 +542,7 @@ class Rpt_Info_Public
         switch ( $this->active_template_type) {
             case '2': // promotion
                 $result .= '<th>ID</th>';
-                $result .= '<th>Candidate Name</th>';
+                $result .= '<th>Legal Name / Preferred Name</th>';
                 $result .= '<th>Type</th>';
                 $result .= '<th>Status</th>';
                 $result .= '<th>Workflow Step</th>';
@@ -576,12 +599,21 @@ class Rpt_Info_Public
             . 'the candidate.</p>';
         echo '</div>';
         echo '</div>';
-        echo '<div class="form-group">';
-        echo '<label for="rptinfo_search">Search by name or Employee ID</label>';
-        echo '<input id="rptinfo_search" name="rptinfo_search" type="text" class="form-control col-lg-4" 
+        if ( $this->init_case_allowed($this->active_template_type) > 0 ) {
+            echo '<div class="form-group">';
+            echo '<label for="rptinfo_search">Search by name or Employee ID</label>';
+            echo '<input id="rptinfo_search" name="rptinfo_search" type="text" class="form-control col-lg-4" 
                 placeholder="Enter at least 3 characters to search">';
-        echo '</div>';
-        echo '<div id="rptinfo_search_results"></div>';
+            echo '</div>';
+            echo '<div id="rptinfo_search_results"></div>';
+        }
+        else {
+            echo '<div class="row">';
+            echo '<div class="col-12">';
+            echo '<p>Case initiation is not currently open.</p>';
+            echo '</div>';
+            echo '</div>';
+        }
     }
 
     /**
@@ -1801,4 +1833,23 @@ class Rpt_Info_Public
        }
        return $result;
    }
+
+    /**
+     * init_case_allowed
+     *      return academic year that currently allows initialization
+     *      return 0 if none are open
+     *
+     * @param $template_type_id
+     * @return int
+     */
+    private function init_case_allowed($template_type_id ) : int
+   {
+       foreach ( $this->cycle_list as $id => $item ) {
+           if ( $item->template_type_submissions_allowed($template_type_id) == 'Yes' ) {
+               return $id;
+           }
+       }
+       return 0;
+   }
+
 }

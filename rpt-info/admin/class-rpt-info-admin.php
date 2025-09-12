@@ -230,13 +230,22 @@ class Rpt_Info_Admin {
         register_setting( $this->plugin_name, $this->option_name . '_promo_case_page_text' );
         add_settings_field(
             $this->option_name . '_promo_case_list_page_text',
-            __( 'Promotion case list page text', 'rptinfo' ),
+            __( 'Promotion case list page text (init open)', 'rptinfo' ),
             array( $this, $this->option_name . '_promo_case_list_page_text_cb' ),
             $this->plugin_name,
             $this->option_name . '_system_text',
             array( 'label_for' => $this->option_name . '_promo_case_list_page_text' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_promo_case_list_page_text' );
+        add_settings_field(
+            $this->option_name . '_promo_case_list_page_text_no_init',
+            __( 'Promotion case list page text (init not open)', 'rptinfo' ),
+            array( $this, $this->option_name . '_promo_case_list_page_text_no_init_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_promo_case_list_page_text_no_init' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_promo_case_list_page_text_no_init' );
         add_settings_field(
             $this->option_name . '_sab_home_page_text',
             __( 'Sabbatical home page text', 'rptinfo' ),
@@ -257,13 +266,22 @@ class Rpt_Info_Admin {
         register_setting( $this->plugin_name, $this->option_name . '_sab_case_page_text' );
         add_settings_field(
             $this->option_name . '_sab_case_list_page_text',
-            __( 'Sabbatical case list page text', 'rptinfo' ),
+            __( 'Sabbatical case list page text (init open)', 'rptinfo' ),
             array( $this, $this->option_name . '_sab_case_list_page_text_cb' ),
             $this->plugin_name,
             $this->option_name . '_system_text',
             array( 'label_for' => $this->option_name . '_sab_case_list_page_text' )
         );
         register_setting( $this->plugin_name, $this->option_name . '_sab_case_list_page_text' );
+        add_settings_field(
+            $this->option_name . '_sab_case_list_page_text_no_init',
+            __( 'Sabbatical case list page text (init not open)', 'rptinfo' ),
+            array( $this, $this->option_name . '_sab_case_list_page_text_no_init_cb' ),
+            $this->plugin_name,
+            $this->option_name . '_system_text',
+            array( 'label_for' => $this->option_name . '_sab_case_list_page_text_no_init' )
+        );
+        register_setting( $this->plugin_name, $this->option_name . '_sab_case_list_page_text_no_init' );
     }
 
     /**
@@ -404,6 +422,17 @@ class Rpt_Info_Admin {
         echo '</textarea>';
     }
 
+    public function rpt_info_promo_case_list_page_text_no_init_cb()
+    {
+        $page_text = get_option( $this->option_name . '_promo_case_list_page_text_no_init' );
+        echo '<textarea name="' . $this->option_name . '_promo_case_list_page_text_no_init" id="'
+            . $this->option_name . '_promo_case_list_page_text_no_init" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
     public function rpt_info_sab_home_page_text_cb()
     {
         $page_text = get_option( $this->option_name . '_sab_home_page_text' );
@@ -431,6 +460,17 @@ class Rpt_Info_Admin {
         $page_text = get_option( $this->option_name . '_sab_case_list_page_text' );
         echo '<textarea name="' . $this->option_name . '_sab_case_list_page_text" id="'
             . $this->option_name . '_sab_case_list_page_text" cols="'
+            . $this->default_text_area_width . '" rows="'
+            . $this->default_text_area_height . '">';
+        echo $page_text;
+        echo '</textarea>';
+    }
+
+    public function rpt_info_sab_case_list_page_text_no_init_cb()
+    {
+        $page_text = get_option( $this->option_name . '_sab_case_list_page_text_no_init' );
+        echo '<textarea name="' . $this->option_name . '_sab_case_list_page_text_no_init" id="'
+            . $this->option_name . '_sab_case_list_page_text_no_init" cols="'
             . $this->default_text_area_width . '" rows="'
             . $this->default_text_area_height . '">';
         echo $page_text;
