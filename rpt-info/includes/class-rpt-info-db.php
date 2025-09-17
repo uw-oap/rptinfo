@@ -79,8 +79,8 @@ SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAll
     public function get_cycle_allowances() : array
     {
         $result = [];
-        $query = "select sa.AcademicYear, ay.Display, sa.UWODSUnitKey, sa.QuartersAllowed 
-from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear order by sa.AcademicYear";
+        $query = "select AcademicYear, Display, UWODSUnitKey, QuartersAllowed 
+from YearSabbaticalAllowances where YearStatus in ('Current','Future') order by AcademicYear";
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             if ( array_key_exists($row->AcademicYear, $result) ) {
@@ -122,9 +122,10 @@ from SabbaticalAllowances sa join AcademicYear ay on ay.ID = sa.AcademicYear ord
     {
         $result = 0;
         foreach ($update_values as $unit => $allowance) {
-            $query_result = $this->rpt_db->update('SabbaticalAllowances',
-                array('QuartersAllowed' => $allowance),
-                array('AcademicYear' => $AcademicYear, 'UWODSUnitKey' => $unit));
+            $query_result = $this->rpt_db->replace('SabbaticalAllowances',
+                array('QuartersAllowed' => $allowance,
+                    'AcademicYear' => $AcademicYear,
+                    'UWODSUnitKey' => $unit));
             if ( $query_result === FALSE ) {
                 return 0;
             }

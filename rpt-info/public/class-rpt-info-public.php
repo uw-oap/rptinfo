@@ -1794,7 +1794,7 @@ class Rpt_Info_Public
                $update_values['17'] = intval($_POST['Unit-17']);
                $update_values['164'] = intval($_POST['Unit-164']);
                $update_values['118'] = intval($_POST['Unit-118']);
-//           echo '<pre>' . print_r($update_values, true) . '</pre>'; exit;
+//               echo '<pre>' . print_r($update_values, true) . '</pre>'; exit;
                $update_result = $this->rpt_db->update_sabbatical_allowances($update_ay, $update_values);
            }
            if ( $update_result === 0 ) {
@@ -1830,6 +1830,7 @@ class Rpt_Info_Public
        }
        elseif ( $source == 'allowances' ) {
             $result = $this->rpt_db->get_cycle_allowances();
+//            echo '<pre>' . print_r($result, true) . '</pre>';
        }
        return $result;
    }
