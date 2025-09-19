@@ -1461,7 +1461,7 @@ class Rpt_Info_Public
         // lists for dropdowns
         $unit_list = $this->rpt_db->get_user_subunits(array_keys($this->rpt_user->Units));
         $rank_list = $this->rpt_db->get_target_ranks();
-//        echo '<pre>' . print_r($rank_list, true) . '</pre>'; exit;
+//        echo '<pre>' . print_r($unit_list, true) . '</pre>'; exit;
         // parameter form
         echo '<div class="row">';
         echo '<div class="col-12">';
@@ -1493,7 +1493,7 @@ class Rpt_Info_Public
         }
         else {
             echo rpt_form_hidden_field('unit_id', $unit_id);
-            $unit = reset($this->rpt_user->Units);
+            $unit = reset($unit_list);
             echo '<p>' . $unit . '</p>';
         }
         echo rpt_form_dropdown_list('rank_id', $rank_id,
@@ -1758,14 +1758,15 @@ class Rpt_Info_Public
        $result_message = 'No data submitted';
        if ( ! empty($_POST) ) {
            $template_type_id = intval($_POST['RptTemplateTypeID']);
-           $ay = intval($_POST['ay']);
+           $update_ay = intval($_POST['ay']);
            $redirect_url = sanitize_text_field($_POST['RedirectURL']);
            if ( isset($_POST['CycleAcademicYear']) ) {
                if ($template_type_id == 2) {
                    $update_ay = intval($_POST['CycleAcademicYear']);
                    $update_values['PromotionSubmissionStartDate'] = sanitize_text_field($_POST['PromotionSubmissionStartDate']);
                    $update_values['PromotionSubmissionEndDate'] = sanitize_text_field($_POST['PromotionSubmissionEndDate']);
-               } elseif ($template_type_id == 5) {
+               }
+               elseif ($template_type_id == 5) {
                    $update_ay = intval($_POST['CycleAcademicYear']);
                    $update_values['SabbaticalCompLimit'] = intval($_POST['SabbaticalCompLimit']);
                    $update_values['SabbaticalSubmissionStartDate'] = sanitize_text_field($_POST['SabbaticalSubmissionStartDate']);
@@ -1808,7 +1809,7 @@ class Rpt_Info_Public
        }
        wp_redirect(add_query_arg(array('rpt_page' => 'admin', 'msg' => $result_message,
            'status' => $result_status, 'template_type' => $template_type_id,
-           'ay' => $ay), home_url($redirect_url)));
+           'ay' => $update_ay), home_url($redirect_url)));
        exit;
    }
 
