@@ -438,7 +438,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
 //            $errors[] = 'Missing Subcommittee Members (must be set in Interfolio)';
         }
         // missing tenure on tenured rank
-        if ( ( $this->TargetRankTenured == 'Yes' && $this->TenureAward == 0 ) ) {
+        if ( ( $this->TargetRankTenured == 'Yes' && $this->TenureAward == 0 ) &&
+            !($this->AppointmentType == 'Joint')) {
             $errors[] = 'Missing tenure amount on tenured rank';
         }
         // missing term length on termed rank
