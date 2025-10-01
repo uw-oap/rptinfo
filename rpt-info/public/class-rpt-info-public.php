@@ -1147,6 +1147,7 @@ class Rpt_Info_Public
         echo '</table>';
         echo '<p><em>Vote counts must not include chair.</em></p>';
         echo '<p><em>If this is a mandatory review and Vote #1 resulted in a majority Opposed, enter Vote #2 data.</em></p>';
+        echo '<p>A favorable recommendation requires a majority (i.e., > 50%) of favorable votes out of the total number of eligible votes.</p>';
         echo '<p><strong>Vote #2</strong> &mdash; On the question of whether to recommend postponement of mandatory review</p>';
         echo '<table>';
         echo '<tr>';
