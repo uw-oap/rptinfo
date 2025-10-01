@@ -189,6 +189,7 @@ class Rpt_Info_Case
             if ( $rpt_id_changed ) {
                 // zero it out so new one is created
                 $this->CoverSheetID = 0;
+                $this->CoverSheetStatus = 'None';
                 $this->CaseDataSectionID = 0;
                 $this->DataSheetID = 0;
                 $this->DataSheetStatus = 'None';
