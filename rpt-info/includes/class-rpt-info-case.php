@@ -173,17 +173,31 @@ class Rpt_Info_Case
 
     public function update_from_post( $posted_values ) : void
     {
+        $rpt_id_changed = FALSE;
         $this->CaseID = intval($posted_values['CaseID']);
         if ( ! isset($posted_values['RptCaseID']) ) {
             $this->RptCaseID = 0;
         }
         else {
+            if (intval($posted_values['RptCaseID']) != $this->RptCaseID) {
+                $rpt_id_changed = TRUE;
+            }
             $this->RptCaseID = intval($posted_values['RptCaseID']);
         }
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
         if ( $posted_values['CoverSheetID'] > '0' ) {
-            // cover sheet already exists, keep so it can be deleted
-            $this->CoverSheetID = $posted_values['CoverSheetID'];
+            if ( $rpt_id_changed ) {
+                // zero it out so new one is created
+                $this->CoverSheetID = 0;
+                $this->CoverSheetStatus = 'None';
+                $this->CaseDataSectionID = 0;
+                $this->DataSheetID = 0;
+                $this->DataSheetStatus = 'None';
+            }
+            else {
+                // cover sheet already exists, keep so it can be deleted
+                $this->CoverSheetID = $posted_values['CoverSheetID'];
+            }
             // set as submitted to trigger upload
             $this->CoverSheetStatus = 'Submitted';
         }

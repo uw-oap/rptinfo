@@ -863,6 +863,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('HasJoint', $case_obj->HasJoint);
         echo rpt_form_hidden_field('HasSecondary', $case_obj->HasSecondary);
         if ( $this->rpt_user->SystemAdmin() ) {
+            echo rpt_form_hidden_field('PrevRptCaseID', $case_obj->RptCaseID);
             echo rpt_form_number_box('RptCaseID', $case_obj->RptCaseID, 'RPT case ID', FALSE,
             '', FALSE, FALSE, 'If case already exists in RPT, enter ID');
             echo rpt_form_dropdown_list('CaseStatusID', $case_obj->CaseStatusID, 'Case Status',
