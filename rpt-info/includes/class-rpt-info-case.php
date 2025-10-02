@@ -252,6 +252,7 @@ class Rpt_Info_Case
         return array(
             'RptCaseID' => $this->RptCaseID,
             'CaseStatusID' => $this->CaseStatusID,
+            'CaseDataSectionID' => $this->CaseDataSectionID,
             'CoverSheetID' => $this->CoverSheetID,
             'CoverSheetStatus' => $this->CoverSheetStatus
         );
