@@ -116,7 +116,7 @@
 				"buttons": {
                     "buttons": [ 
                         { "extend": "excelHtml5", "className" : "btn btn-outline-dark" },
-                        { "extend: "csvHtml5", "className": "btn btn-outline-dark" } 
+                        { "extend": "csvHtml5", "className": "btn btn-outline-dark" } 
                     ]
                 },
 				"aaSorting": [[1, 'asc' ],[2, 'asc']],
