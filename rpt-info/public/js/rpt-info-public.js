@@ -120,7 +120,12 @@
 				}],
 				"oLanguage": {
 					"sSearch": "Filter: "
-				}
+				},
+				"layout": {
+                    "topStart": {
+                        "buttons": ["csv", "excel"]
+                    }
+                }
 			});
 		}
 	});
