@@ -94,7 +94,9 @@ class Rpt_Info_Case
             if ( $case_row->InterfolioUnitID ) {
                 $this->InterfolioUnitID = $case_row->InterfolioUnitID;
                 $this->ParentID = $case_row->ParentID;
-                $this->ParentUnitName = $case_row->ParentUnitName;
+                if ( $this->ParentUnitName ) {
+                    $this->ParentUnitName = $case_row->ParentUnitName;
+                }
                 $this->LevelOneID = $case_row->LevelOneID;
                 $this->LevelOneUnitName = $case_row->LevelOneUnitName;
             }
