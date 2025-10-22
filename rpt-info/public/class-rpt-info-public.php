@@ -518,7 +518,7 @@ class Rpt_Info_Public
         echo '<div class="col-12">';
         if ( count( $case_list ) > 0 ) {
 //            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
-            echo '<table class="table table-bordered table-striped sort-table">';
+            echo '<table class="table table-bordered table-striped rpt-sort-table">';
             echo '<thead>';
             echo $this->case_list_header_row();
             echo '</thead>';

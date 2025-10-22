@@ -106,24 +106,26 @@
 				e.preventDefault();
 			}
 		});
-		if ( $.fn.dataTable.isDataTable( '.sort-table' ) ) {
-			var rpttable = $('.sort-table').DataTable();
+		if ( $.fn.dataTable.isDataTable( '.rpt-sort-table' ) ) {
+			var rpttable = $('.rpt-sort-table').DataTable();
 		}
 		else {
-			var rpttable = $('.sort-table').DataTable({
+			var rpttable = $('.rpt-sort-table').DataTable({
 				"aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
 				"pageLength": 50,
 				"dom": "Bfrtip",
-                "buttons": [ 
-                    "excel"
-                ],
+                "layout": {
+                    "topStart": {
+                        "buttons" : ["excel"]
+                    }
+                },
 				"aaSorting": [[1, 'asc' ],[2, 'asc']],
 				"columnDefs": [ {
 					"targets"  : 'no-sort',
 					"orderable": false
 				}],
 				"oLanguage": {
-					"sSearch": "Filter: "
+					"sSearch": "Search: "
 				}
 			});
 		}
