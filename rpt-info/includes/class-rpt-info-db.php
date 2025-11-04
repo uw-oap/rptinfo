@@ -512,6 +512,7 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
                 case '2' :
                     $query_result = $this->rpt_db->update('RptPromotion', $case_obj->update_promotion_array(),
                         array('CaseID' => $case_obj->CaseID));
+                    echo $this->rpt_db->last_query; exit;
                     break;
                 case '5' :
                     // TODO: add sabbatical update function

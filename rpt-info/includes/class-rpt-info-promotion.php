@@ -44,6 +44,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             }
             $this->PromotionCategoryID = $case_row->PromotionCategoryID;
             $this->PromotionCategoryName = $case_row->PromotionCategoryName;
+            $this->EffectiveDate = $case_row->EffectiveDate;
 //            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
             if ( isset($case_row->Vote1Eligible) ) {
                 $this->TenureAward = $case_row->TenureAward;
