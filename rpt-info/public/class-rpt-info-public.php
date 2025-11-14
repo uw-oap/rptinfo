@@ -510,7 +510,7 @@ class Rpt_Info_Public
                 . esc_url(add_query_arg(array('rpt_page' => 'case', 'case_id' => 'new',
                     'ay' => $init_allowed_year,
                     'template_type' => $this->active_template_type), home_url($wp->request)))
-                . '" class="btn btn-primary">Initiate a new case</a>';
+                . '" class="btn btn-primary active">Initiate a new case</a>';
         }
         echo '</div>'; // col 6
         echo '</div>'; // row
