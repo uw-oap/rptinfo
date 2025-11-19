@@ -187,9 +187,15 @@ class Rpt_Info_Public
         echo '</div>';
     }
 
-    private function set_current_cycle( $ay ) : void
+    private function set_current_cycle() : void
     {
-        $this->current_cycle = $this->cycle_list[$ay];
+        $ay = $this->init_case_allowed( $this->active_template_type );
+        if ( $ay > 0 ) {
+            $this->current_cycle = $this->cycle_list[$ay];
+        }
+        else {
+            $this->current_cycle = null;
+        }
     }
 
     /**
@@ -207,7 +213,6 @@ class Rpt_Info_Public
         echo '<div class="toolbar" role="toolbar" aria-label="Application navigation">';
         echo '<div class="btn-group mr-2" role="group" aria-label="Main pages">';
         echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'home',
-                'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => '0'), home_url($wp->request)))
             . '" class="btn ';
         if ( ( $this->active_page == 'home' ) && ( ! $this->active_template_type ) ) {
@@ -217,26 +222,32 @@ class Rpt_Info_Public
             echo ' btn-outline-secondary';
         }
         echo '">RPT Home</a>';
-        foreach ($this->template_types as $id => $template_type) {
-            echo '<a href="' . esc_url(add_query_arg(array('template_type' => $id,
-                    'ay' => $this->current_cycle->AcademicYear,
-                    'rpt_page' => 'home'), home_url($wp->request)))
-                . '" class="btn ';
-            if ( $id == $this->active_template_type ) {
-                echo ' active btn-primary';
-            }
-            else {
-                echo ' btn-outline-secondary';
-            }
-            echo '">' . $template_type->TemplateTypeName . '</a>';
+        echo '<a href="' . esc_url(add_query_arg(array('template_type' => '2',
+                'rpt_page' => 'home'), home_url($wp->request)))
+            . '" class="btn ';
+        if ( $this->active_template_type == '2' ) {
+            echo ' active btn-primary';
         }
+        else {
+            echo ' btn-outline-secondary';
+        }
+        echo '">Promotion</a>';
+        echo '<a href="' . esc_url(add_query_arg(array('template_type' => '5',
+                'rpt_page' => 'home'), home_url($wp->request)))
+            . '" class="btn ';
+        if ( $this->active_template_type == '5' ) {
+            echo ' active btn-primary';
+        }
+        else {
+            echo ' btn-outline-secondary';
+        }
+        echo '">Sabbatical</a>';
         echo '</div>'; // button group
         echo '</div>'; // toolbar
         if ( $this->active_template_type != '0' ) {
             echo '<div class="toolbar" role="toolbar" aria-label="Application navigation">';
             echo '<div class="btn-group mr-2" role="group" aria-label="Area sub-pages">';
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
-                    'ay' => $this->current_cycle->AcademicYear,
                     'rpt_page' => 'case'), home_url($wp->request)))
                 . '" class="btn ';
             if ( $this->active_page == 'case' ) {
@@ -247,7 +258,6 @@ class Rpt_Info_Public
             }
             echo '">Cases</a>';
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
-                    'ay' => $this->current_cycle->AcademicYear,
                     'rpt_page' => 'template'), home_url($wp->request)))
                 . '" class="btn ';
             if ( $this->active_page == 'template' ) {
@@ -258,7 +268,6 @@ class Rpt_Info_Public
             }
             echo '">Templates</a>';
             echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
-                    'ay' => $this->current_cycle->AcademicYear,
                     'rpt_page' => 'report'), home_url($wp->request)))
                 . '" class="btn ';
             if ( $this->active_page == 'report' ) {
@@ -270,7 +279,6 @@ class Rpt_Info_Public
             echo '">Reports</a>';
             if ( $this->rpt_user->SystemAdmin() ) {
                 echo '<a href="' . esc_url(add_query_arg(array('template_type' => $this->active_template_type,
-                        'ay' => $this->current_cycle->AcademicYear,
                         'rpt_page' => 'admin'), home_url($wp->request)))
                     . '" class="btn ';
                 if ( $this->active_page == 'admin' ) {
@@ -299,7 +307,6 @@ class Rpt_Info_Public
     {
         $this->force_login();
         ob_start();
-//        echo 'wtf?';
         $ay = get_query_var('ay', '2025');
         $status_type = get_query_var('status', '');
         $status_message = get_query_var('msg', '');
@@ -309,12 +316,14 @@ class Rpt_Info_Public
         if ($status_message) {
             $this->show_status_message($status_type, $status_message);
         }
+//        echo 'wtf?';
         if ( isset($this->rpt_db) ) {
             $this->rpt_user = $this->rpt_db->get_rpt_user_info($this->wordpress_user->user_login);
             $this->cycle_list = $this->rpt_db->get_rpt_cycle_list();
 //            echo '<pre>' . print_r($this->cycle_list, true) . '</pre>';
-            $this->set_current_cycle($ay);
+//            $this->set_current_cycle();
             $this->template_types = $this->rpt_db->get_template_type_list(TRUE);
+//            echo '<pre>' . print_r($this->template_types, true) . '</pre>'; exit;
             echo '<div class="row">';
             echo '<div class="col-12">';
             $this->show_main_menu();
@@ -428,7 +437,6 @@ class Rpt_Info_Public
             . ' &mdash; ' . $this->rpt_user->InterfolioUserID . ')<br>';
         echo 'Access to: ' . $this->rpt_user->display_units() . '<br>';
         echo 'Plugin version: ' . $this->version . '<br>';
-        echo 'Selected Academic Year: ' . $this->current_cycle->Display . '<br>';
         echo 'Template Type: ' . $this->active_template_type . '<br>';
         echo 'Page: ' . $this->active_page . '<br>';
 //        echo 'Case ID: ' . $case_id . '<br>';
@@ -575,11 +583,9 @@ class Rpt_Info_Public
             'template_type' => $this->active_template_type,
             'user_id' => $this->rpt_user->UWNetID,
             'init_url' => esc_url(add_query_arg(array('rpt_page' => 'case',
-                'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => $this->active_template_type,
                 'track_id' => ''), home_url($wp->request))),
             'case_url' => esc_url(add_query_arg(array('rpt_page' => 'case',
-                'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => $this->active_template_type,
                 'case_id' => ''), home_url($wp->request)))
         );
@@ -729,6 +735,8 @@ class Rpt_Info_Public
             case 'datasheet':
                 $page_text = 'Edit the basic information for data sheet submission.';
         }
+        $init_allowed_year = $this->init_case_allowed($this->active_template_type);
+        $this->current_cycle = $this->cycle_list[$init_allowed_year];
         echo '<p>' . $page_text . '</p>';
 //        echo 'track id ' . $track_id . ', case id ' . $case_id;
         $case_obj = NULL;
@@ -813,6 +821,7 @@ class Rpt_Info_Public
 
     private function case_form( Rpt_Info_Case $case_obj ) : void
     {
+        $this->current_cycle = $this->cycle_list[$case_obj->AcademicYear];
         switch ( $case_obj->RptTemplateTypeID ) {
             case '2':
                 $this->promotion_form( $case_obj );
@@ -849,7 +858,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('action', 'process_rptinfo_case_edit');
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('ay', $case_obj->AcademicYear);
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
@@ -897,13 +906,11 @@ class Rpt_Info_Public
         }
         if ( $case_obj->CoverSheetID == '0' ) { // no case, back to listing
             echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Cancel</a>';
         }
         else { // case exists, return to display
             echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'case_id' => $case_obj->CaseID,
                     'template_type' => $this->active_template_type), home_url($wp->request)))
                 . '" class="btn btn-outline-secondary">Cancel</a>';
@@ -942,7 +949,7 @@ class Rpt_Info_Public
         }
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('ay', $case_obj->AcademicYear);
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_hidden_field('CandidateID', $case_obj->CandidateID);
         echo rpt_form_hidden_field('CandidateKey', $case_obj->CandidateKey);
@@ -996,7 +1003,6 @@ class Rpt_Info_Public
                 . 'a template available before initiating a case.</strong></p>';
         }
         echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
-                'ay' => $this->current_cycle->AcademicYear,
                 'template_type' => $this->active_template_type), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Cancel</a>';
         echo '</div>'; // col 12
@@ -1105,7 +1111,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('RptCaseID', $case_obj->RptCaseID);
         echo rpt_form_hidden_field('CaseID', $case_obj->CaseID);
         echo rpt_form_hidden_field('RptTemplateTypeID', $case_obj->RptTemplateTypeID);
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
+        echo rpt_form_hidden_field('ay', $case_obj->AcademicYear);
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
         echo rpt_form_hidden_field('DataSheetStatus', $case_obj->DataSheetStatus);
         echo rpt_form_hidden_field('DataSheetID', $case_obj->DataSheetID);
@@ -1183,7 +1189,6 @@ class Rpt_Info_Public
             echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
         }
         echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'case',
-                'ay' => $this->current_cycle->AcademicYear,
                 'case_id' => $case_obj->CaseID,
                 'template_type' => $this->active_template_type), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Cancel</a>';
@@ -1288,15 +1293,12 @@ class Rpt_Info_Public
             }
             echo '<p>Enable and disable templates found in RPT.</p>';
             echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type, 'unit_type' => 'dep'), home_url($wp->request)))
                 . '">DEP</a> | ';
             echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type, 'unit_type' => 'undep'), home_url($wp->request)))
                 . '">UNDEP</a> | ';
             echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type, 'unit_type' => 'all'), home_url($wp->request)))
                 . '">All</a></p>';
         }
@@ -1326,7 +1328,6 @@ class Rpt_Info_Public
                 echo '</thead>';
                 echo '<tbody>';
                 foreach ($template_list as $template) {
-                    $template->AcademicYear = $this->current_cycle->AcademicYear;
                     echo $template->listing_table_row($rpt_template_url, $allow_update);
                 }
                 echo '</tbody>';
@@ -1341,7 +1342,6 @@ class Rpt_Info_Public
         $rpt_template_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/templates';
         $template_obj = $this->rpt_db->get_template_by_id($rpt_template_id);
-        $template_obj->AcademicYear = $this->current_cycle->AcademicYear;
 //        echo '<pre>' . print_r($template_obj, true) . '</pre>';
         echo $template_obj->template_info_card($rpt_template_url, $allow_update);
     }
@@ -1374,18 +1374,20 @@ class Rpt_Info_Public
         global $wp;
         $report_data = [];
         $report_header = [];
+        $year_list = $this->rpt_db->active_year_list($this->active_template_type);
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' RPT reporting</p>';
         echo '<p>';
-        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                'ay' => $this->current_cycle->AcademicYear,
-                'template_type' => $this->active_template_type,
-                'report_type' => 'cases-by-scc'),
-                home_url($wp->request)))
-            . '">Cases by SCC</a>';
+        foreach ( $year_list as $year ) {
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'ay' => $year,
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'cases-by-scc'),
+                    home_url($wp->request)))
+                . '">Cases by SCC ' . $year . '</a>&nbsp;|&nbsp;';
+        }
         if ( $this->active_template_type == 2 ) {
-            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                    'ay' => $this->current_cycle->AcademicYear,
+            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'template_type' => $this->active_template_type,
                     'report_type' => 'voting'),
                     home_url($wp->request)))
@@ -1393,25 +1395,21 @@ class Rpt_Info_Public
         }
         if ( $this->rpt_user->SystemAdmin() ) {
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type,
                     'report_type' => 'withdrawn'),
                     home_url($wp->request)))
                 . '">Withdrawn Cases</a>';
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type,
                     'report_type' => 'missing'),
                     home_url($wp->request)))
                 . '">Missing Cases</a>';
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type,
                     'report_type' => 'apf'),
                     home_url($wp->request)))
                 . '">Cases with APF</a>';
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
-                    'ay' => $this->current_cycle->AcademicYear,
                     'template_type' => $this->active_template_type,
                     'report_type' => 'joint'),
                     home_url($wp->request)))
@@ -1419,10 +1417,10 @@ class Rpt_Info_Public
         }
         echo '</p>';
         $report_type = get_query_var('report_type', '');
+        $ay = get_query_var('ay', '2025');
         switch ( $report_type) {
             case 'cases-by-scc':
-                $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type,
-                    $this->current_cycle->AcademicYear);
+                $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type, $ay);
                 $report_header = array('LevelOneUnitName' => 'S/C/C',
                     'CaseTotal' => 'Total');
                 $detail_report = 'cases-by-unit';
@@ -1430,7 +1428,7 @@ class Rpt_Info_Public
             case 'cases-by-unit':
                 $unit_id = get_query_var('unit_id', '');
                 $report_data = $this->rpt_db->case_count_by_unit($this->active_template_type,
-                    $this->current_cycle->AcademicYear, $unit_id);
+                    $ay, $unit_id);
                 $report_header = array('UnitName' => 'Unit',
                     'CaseTotal' => 'Total');
                 $detail_report = '';
@@ -1450,7 +1448,7 @@ class Rpt_Info_Public
 //        echo '<pre>' . $this->rpt_db->get_last_query() . '<br>' . print_r($report_data, TRUE) . '</pre>';
         if ( count($report_data) > 0 ) {
             echo rpt_report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
-                $detail_report, $this->active_template_type, $this->current_cycle->AcademicYear);
+                $detail_report, $this->active_template_type, $ay);
         }
     }
 
@@ -1491,7 +1489,6 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('rpt_page', 'report');
         echo rpt_form_hidden_field('report_type', 'voting');
         echo rpt_form_hidden_field('template_type', '2');
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
         if ( count($unit_list) > 1 ) {
             echo rpt_form_dropdown_list('unit_id', $unit_id, 'Unit', $unit_list);
         }
@@ -1672,15 +1669,14 @@ class Rpt_Info_Public
             . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
         echo rpt_form_hidden_field('action', 'process_rptinfo_admin_setup');
         echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
-        echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
         echo rpt_form_hidden_field('RptTemplateTypeID', '2');
-        echo rpt_form_dropdown_list('CycleAcademicYear', $this->current_cycle->AcademicYear,
+        echo rpt_form_dropdown_list('CycleAcademicYear', '',
             'Academic year', $this->academic_year_select_list( 'dates' ), 'Display');
         echo rpt_form_date_select('PromotionSubmissionStartDate',
-            $this->current_cycle->PromotionSubmissionStartDate,
+            '',
             'Start date for promotion initializations');
         echo rpt_form_date_select('PromotionSubmissionEndDate',
-            $this->current_cycle->PromotionSubmissionEndDate,
+            '',
             'End date for promotion initializations');
         echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
         echo '</div>'; // col 12
@@ -1704,17 +1700,14 @@ class Rpt_Info_Public
            . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
        echo rpt_form_hidden_field('action', 'process_rptinfo_admin_setup');
        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
-       echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
        echo rpt_form_hidden_field('RptTemplateTypeID', '5');
-       echo rpt_form_dropdown_list('CycleAcademicYear', $this->current_cycle->AcademicYear,
+       echo rpt_form_dropdown_list('CycleAcademicYear', '',
            'Academic year', $this->academic_year_select_list( 'dates' ), 'Display');
-       echo rpt_form_number_box('SabbaticalCompLimit', $this->current_cycle->SabbaticalCompLimit,
+       echo rpt_form_number_box('SabbaticalCompLimit', '',
            'Statutory compensation limit');
-       echo rpt_form_date_select('SabbaticalSubmissionStartDate',
-           $this->current_cycle->SabbaticalSubmissionStartDate,
+       echo rpt_form_date_select('SabbaticalSubmissionStartDate', '',
            'Start date for sabbatical initializations');
-       echo rpt_form_date_select('SabbaticalSubmissionEndDate',
-           $this->current_cycle->SabbaticalSubmissionEndDate,
+       echo rpt_form_date_select('SabbaticalSubmissionEndDate', '',
             'End date for sabbatical initializations');
        echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
        echo '</div>'; // col 12
@@ -1739,9 +1732,8 @@ class Rpt_Info_Public
            . '" role="form" method="post" accept-charset="utf-8" class="rptinfo-form ">';
        echo rpt_form_hidden_field('action', 'process_rptinfo_admin_setup');
        echo rpt_form_hidden_field('RedirectURL', home_url($wp->request));
-       echo rpt_form_hidden_field('ay', $this->current_cycle->AcademicYear);
        echo rpt_form_hidden_field('RptTemplateTypeID', '5');
-       echo rpt_form_dropdown_list('SabbaticalAcademicYear', $this->current_cycle->AcademicYear,
+       echo rpt_form_dropdown_list('SabbaticalAcademicYear', '',
            'Academic year', $this->academic_year_select_list( 'allowances' ), 'Display');
        foreach ($unit_list as $unit_key => $unit) {
            echo rpt_form_number_box('Unit-' . $unit_key, '0', $unit);
@@ -1762,7 +1754,6 @@ class Rpt_Info_Public
        $result_message = 'No data submitted';
        if ( ! empty($_POST) ) {
            $template_type_id = intval($_POST['RptTemplateTypeID']);
-           $update_ay = intval($_POST['ay']);
            $redirect_url = sanitize_text_field($_POST['RedirectURL']);
            if ( isset($_POST['CycleAcademicYear']) ) {
                if ($template_type_id == 2) {
@@ -1848,10 +1839,10 @@ class Rpt_Info_Public
      * @param $template_type_id
      * @return int
      */
-    private function init_case_allowed($template_type_id ) : int
+    private function init_case_allowed( $template_type_id ) : int
    {
        foreach ( $this->cycle_list as $id => $item ) {
-           if ( $item->template_type_submissions_allowed($template_type_id) == 'Yes' ) {
+           if ( $item->template_type_submissions_allowed( $template_type_id ) == 'Yes' ) {
                return $id;
            }
        }

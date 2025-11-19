@@ -17,7 +17,6 @@ class Rpt_Info_Template
     public $InUse = 'No';
     public $IsPublished = 'No';
     public $TemplateTypeInUse = 'No';
-    public $AcademicYear = '';
 
     public function __construct( $template_row = NULL )
     {
@@ -79,7 +78,6 @@ class Rpt_Info_Template
             $update_value = ($this->InUse == 'Yes') ? 'No' : 'Yes';
             $update_action = ($this->InUse == 'Yes') ? 'Disable' : 'Enable';
             $result .= '&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                    'ay' => $this->AcademicYear,
                     'template_id' => $this->RptTemplateID,
                     'in_use' => $update_value,
                     'template_type' => $this->RptTemplateTypeID), home_url($wp->request)))
@@ -108,14 +106,12 @@ class Rpt_Info_Template
         $result .= '<td>';
         $result .= '<a href="' . esc_url(add_query_arg(array('template_id' => $this->RptTemplateID,
                 'template_type' => $this->RptTemplateTypeID,
-                'ay' => $this->AcademicYear,
                 'rpt_page' => 'template'), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Details</a>';
         if ( $allow_update ) {
             $update_value = ($this->InUse == 'Yes') ? 'No' : 'Yes';
             $update_action = ($this->InUse == 'Yes') ? 'Disable' : 'Enable';
             $result .= '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
-                            'ay' => $this->AcademicYear,
                             'template_id' => $this->RptTemplateID,
                             'in_use' => $update_value,
                             'template_type' => $this->RptTemplateTypeID), home_url($wp->request)))

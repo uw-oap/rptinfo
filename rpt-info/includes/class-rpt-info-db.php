@@ -140,7 +140,7 @@ from YearSabbaticalAllowances where YearStatus in ('Current','Future') order by 
 
     public function get_template_type_list( $active_only = FALSE )
     {
-        $result = [];
+        $result = array();
         $query = "SELECT RptTemplateTypeID, TemplateTypeName, InUse FROM RptTemplateType";
         if ( $active_only ) {
             $query .= " WHERE InUse = 'Yes'";
@@ -642,6 +642,19 @@ FROM RptTemplateDetails where RptTemplateID = %s",
     }
 
     /** ******************* report functions ********************************** */
+
+    public function active_year_list( $template_type_id ) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select distinct AcademicYear FROM RptCaseDetails
+where RptTemplateTypeID = %s",  $template_type_id);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[] = $row['AcademicYear'];
+        }
+        return $result;
+
+    }
 
     public function case_count_by_scc( $template_type_id, $academic_year ) : array
     {
