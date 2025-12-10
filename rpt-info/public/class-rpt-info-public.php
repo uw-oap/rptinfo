@@ -149,6 +149,7 @@ class Rpt_Info_Public
         $vars[] = 'candidate_id'; // candidate id
         $vars[] = 'track_id'; // appointment track id
         $vars[] = 'template_id'; // template id
+        $vars[] = 'in_use'; // template in use flag
         $vars[] = 'unit_type'; // dep/undep
         $vars[] = 'unit_id'; // unit id
         $vars[] = 'rank_id'; // rank id (key)
@@ -1288,8 +1289,10 @@ class Rpt_Info_Public
         if ( $this->rpt_user->SystemAdmin() ) {
             $allow_update = TRUE;
             $in_use = get_query_var('in_use', '');
+//            echo '<p>Template ID: ' . $rpt_template_id . '. InUse: ' . $in_use . '</p>';
             if ( ( $rpt_template_id > '0' ) && ( $in_use != '' ) ) {
                 $this->update_template_in_use($rpt_template_id, $in_use);
+//                echo '<p>' . $this->rpt_db->get_last_query() . '</p>'; exit;
             }
             echo '<p>Enable and disable templates found in RPT.</p>';
             echo '<p><a href="' . esc_url(add_query_arg(array('rpt_page' => 'template',
@@ -1361,6 +1364,7 @@ class Rpt_Info_Public
             }
         }
     }
+
     /* ********************** functions dealing with reports ********************** */
 
     /**
