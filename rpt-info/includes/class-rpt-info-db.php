@@ -514,7 +514,8 @@ FROM RptSabbaticalDetails where CaseID = %s", $case_id);
                         array('CaseID' => $case_obj->CaseID));
                     break;
                 case '5' :
-                    // TODO: add sabbatical update function
+                    $query_result = $this->rpt_db->update('RptSabbatical', $case_obj->update_sabbatical_array(),
+                        array('CaseID' => $case_obj->CaseID));
                     break;
             }
         }

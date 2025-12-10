@@ -130,6 +130,22 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         );
     }
 
+    public function update_sabbatical_array() : array
+    {
+        return array(
+            'SummerQtr' => $this->SummerQtr,
+            'FallQtr' => $this->FallQtr,
+            'WinterQtr' => $this->WinterQtr,
+            'SpringQtr' => $this->SpringQtr,
+            'SalarySupportPct' => $this->SalarySupportPct,
+            'LastSabbaticalAcademicYear' => $this->LastSabbaticalAcademicYear,
+            'ContingentOnExtension' => $this->ContingentOnExtension,
+            'MultiYear' => $this->MultiYear,
+            'EligibilityReport' => $this->EligibilityReport,
+            'EligibilityNote' => $this->EligibilityNote
+        );
+    }
+
     private function quarter_list( $include_academic_year = TRUE ) : string
     {
         $quarter_list = array();

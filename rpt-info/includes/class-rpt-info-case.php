@@ -187,21 +187,13 @@ class Rpt_Info_Case
             $this->RptCaseID = intval($posted_values['RptCaseID']);
         }
         $this->RptTemplateID = intval($posted_values['RptTemplateID']);
-        if ( $posted_values['CoverSheetID'] > '0' ) {
-            if ( $rpt_id_changed ) {
-                // zero it out so new one is created
-                $this->CoverSheetID = 0;
-                $this->CoverSheetStatus = 'None';
-                $this->CaseDataSectionID = 0;
-                $this->DataSheetID = 0;
-                $this->DataSheetStatus = 'None';
-            }
-            else {
-                // cover sheet already exists, keep so it can be deleted
-                $this->CoverSheetID = $posted_values['CoverSheetID'];
-            }
-            // set as submitted to trigger upload
-            $this->CoverSheetStatus = 'Submitted';
+        if ( $rpt_id_changed ) {
+            // zero it out so new one is created
+            $this->CoverSheetID = 0;
+            $this->CoverSheetStatus = 'None';
+            $this->CaseDataSectionID = 0;
+            $this->DataSheetID = 0;
+            $this->DataSheetStatus = 'None';
         }
         $this->CandidateID = intval($posted_values['CandidateID']);
         $this->CandidateKey = intval($posted_values['CandidateKey']);
