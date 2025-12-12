@@ -737,7 +737,8 @@ class Rpt_Info_Public
                 $page_text = 'Edit the basic information for data sheet submission.';
         }
         $init_allowed_year = $this->init_case_allowed($this->active_template_type);
-        $this->current_cycle = $this->cycle_list[$init_allowed_year];
+//        echo '$init_allowed_year ' . $init_allowed_year;
+//        $this->current_cycle = $this->cycle_list[$init_allowed_year];
         echo '<p>' . $page_text . '</p>';
 //        echo 'track id ' . $track_id . ', case id ' . $case_id;
         $case_obj = NULL;
