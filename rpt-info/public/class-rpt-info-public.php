@@ -740,9 +740,9 @@ class Rpt_Info_Public
 //        echo '$init_allowed_year ' . $init_allowed_year;
 //        $this->current_cycle = $this->cycle_list[$init_allowed_year];
         echo '<p>' . $page_text . '</p>';
-//        echo 'track id ' . $track_id . ', case id ' . $case_id;
+//        echo 'track id ' . $track_id . ', case id ' . $case_id . ', init allowed year ' . $init_allowed_year . '</p>';
         $case_obj = NULL;
-        if ( ( $track_id ) && ( ! $case_id ) ) { // candidate but no case - see if there is one
+        if ( ( $track_id ) && ( ! $case_id ) && ( $init_allowed_year ) ) { // candidate but no case - see if there is one
             switch ( $this->active_template_type) {
                 case '2': // promotion
                     $case_obj = $this->rpt_db->get_promotion_case_for_candidate($track_id);
@@ -766,6 +766,7 @@ class Rpt_Info_Public
                         break;
                 }
                 $case_obj->InitiatorID = $this->rpt_user->InterfolioUserID;
+                $this->current_cycle = $this->cycle_list[$init_allowed_year];
                 $case_obj->AcademicYear = $this->current_cycle->AcademicYear;
                 $case_obj->AcademicYearDisplay = $this->current_cycle->Display;
             }
