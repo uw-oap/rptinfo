@@ -38,7 +38,7 @@ class Rpt_Info_Case
     public int $InitiatorID = 0;
     public string $InitiatorName = '';
     public int $CaseDataSectionID = 0;
-    public int $ConcurrenceLetterSecion = 0;
+    public int $ConcurrenceLetterSection = 0;
     public int $ConcurrenceLetterCount = 0;
     public int $CoverSheetID = 0;
     public string $CoverSheetStatus = '';
@@ -152,6 +152,12 @@ class Rpt_Info_Case
             }
             if ( isset($case_row->SubcommitteeMembers) ) {
                 $this->SubcommitteeMembers = $case_row->SubcommitteeMembers;
+            }
+            if ( isset($case_row->ConcurrenceLetterSection) ) {
+                $this->ConcurrenceLetterSection = $case_row->ConcurrenceLetterSection;
+            }
+            if ( isset($case_row->ConcurrenceLetterCount) ) {
+                $this->ConcurrenceLetterCount = $case_row->ConcurrenceLetterCount;
             }
 //            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
         }

@@ -338,12 +338,18 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">RPT details</h4>';
         $result .= '<dl class="rptinfo-list">';
-        $result .= '<dt>Interfolio Case ID</dt>';
+        $result .= '<dt>Interfolio case ID</dt>';
         $result .= '<dd>' . $this->RptCaseID . '</dd>';
+        $result .= '<dt>Status in RPT</dt>';
+        $result .= '<dd>';
+        $result .= ($this->RptStatus) ? $this->RptStatus : '(Not set)';
+        $result .= '</dd>';
         $result .= '<dt>Workflow step</dt>';
         $result .= '<dd>' . $this->WorkflowStepName . ' (' . $this->WorkflowStepNumber. ')</dd>';
         $result .= '<dt>Cover sheet</dt>';
-        $result .= '<dd>' . (($this->CoverSheetID) ? 'Present' : 'Not present') . '</dd>';
+        $result .= '<dd>' . $this->CoverSheetStatus . ' (' . $this->CoverSheetID . ')</dd>';
+        $result .= '<dt>Concurrence letters</dt>';
+        $result .= '<dd>' . $this->ConcurrenceLetterCount . '</dd>';
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card

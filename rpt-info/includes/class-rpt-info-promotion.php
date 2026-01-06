@@ -333,7 +333,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<div class="card-body">';
         $result .= '<h4 class="card-title">RPT details</h4>';
         $result .= '<dl class="rptinfo-list">';
-        $result .= '<dt>Interfolio Case ID</dt>';
+        $result .= '<dt>Interfolio case ID</dt>';
         $result .= '<dd>' . $this->RptCaseID . '</dd>';
         $result .= '<dt>Status in RPT</dt>';
         $result .= '<dd>';
@@ -345,6 +345,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<dd>' . $this->CoverSheetStatus . ' (' . $this->CoverSheetID . ')</dd>';
         $result .= '<dt>Data sheet</dt>';
         $result .= '<dd>' . $this->DataSheetStatus . ' (' . $this->DataSheetID . ')</dd>';
+        $result .= '<dt>Concurrence letters</dt>';
+        $result .= '<dd>' . $this->ConcurrenceLetterCount . '</dd>';
         $result .= '</dl>';
         $result .= '</div>'; // card body
         $result .= '</div>'; // card
