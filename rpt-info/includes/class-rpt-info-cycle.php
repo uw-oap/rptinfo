@@ -17,12 +17,14 @@ class Rpt_Info_Cycle
     public $PromotionSubmissionStartDate = '';
     public $PromotionSubmissionEndDate = '';
     public $PromotionSubbmissionAllowed = '';
+    public $PromotionShowOutcomes = 'No';
 
     // sabbatical related items
     public $SabbaticalCompLimit = 0.00;
     public $SabbaticalSubmissionStartDate = '';
     public $SabbaticalSubmissionEndDate = '';
     public $SabbaticalSubmissionAllowed = '';
+    public $SabbaticalShowOutcomes = 'No';
 
     public function __construct( $cycle_row )
     {
@@ -37,10 +39,12 @@ class Rpt_Info_Cycle
         $this->PromotionSubmissionStartDate = $cycle_row->PromotionSubmissionStartDate;
         $this->PromotionSubmissionEndDate = $cycle_row->PromotionSubmissionEndDate;
         $this->PromotionSubbmissionAllowed = $cycle_row->PromotionSubbmissionAllowed;
+        $this->PromotionShowOutcomes = $cycle_row->PromotionShowOutcomes;
         $this->SabbaticalCompLimit = $cycle_row->SabbaticalCompLimit;
         $this->SabbaticalSubmissionStartDate = $cycle_row->SabbaticalSubmissionStartDate;
         $this->SabbaticalSubmissionEndDate = $cycle_row->SabbaticalSubmissionEndDate;
         $this->SabbaticalSubmissionAllowed = $cycle_row->SabbaticalSubmissionAllowed;
+        $this->SabbaticalShowOutcomes = $cycle_row->SabbaticalShowOutcomes;
     }
 
     public function template_type_submissions_allowed( int $template_type_id ) : bool

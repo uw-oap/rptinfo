@@ -67,8 +67,9 @@ FROM AcademicYear where YearStatus = 'Past'");
         $result = [];
         $query = "SELECT AcademicYear, Display, YearStatus, EffectiveDate09Month, EffectiveDate12Month, 
 MandatoryDueDate, NonMandatoryDueDate, LibrarianDueDate, PromotionSubmissionStartDate, 
-PromotionSubmissionEndDate, SabbaticalCompLimit, SabbaticalSubmissionStartDate, 
-SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAllowed FROM RptCycleDetails;";
+PromotionSubmissionEndDate, PromotionShowOutcomes, SabbaticalCompLimit, SabbaticalSubmissionStartDate, 
+SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAllowed, 
+SabbaticalShowOutcomes FROM RptCycleDetails;";
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->AcademicYear] = new Rpt_Info_Cycle($row);

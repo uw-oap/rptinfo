@@ -1684,6 +1684,8 @@ class Rpt_Info_Public
         echo rpt_form_date_select('PromotionSubmissionEndDate',
             '',
             'End date for promotion initializations');
+        echo rpt_form_dropdown_list('PromotionShowOutcomes', 'No', 'Show outcomes?',
+            array('Yes' => 'Yes', 'No' => 'No'));
         echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
         echo '</div>'; // col 12
         echo '</div>'; // form group row
@@ -1766,12 +1768,14 @@ class Rpt_Info_Public
                    $update_ay = intval($_POST['CycleAcademicYear']);
                    $update_values['PromotionSubmissionStartDate'] = sanitize_text_field($_POST['PromotionSubmissionStartDate']);
                    $update_values['PromotionSubmissionEndDate'] = sanitize_text_field($_POST['PromotionSubmissionEndDate']);
+                   $update_values['PromotionShowOutcomes'] = sanitize_text_field($_POST['PromotionShowOutcomes']);
                }
                elseif ($template_type_id == 5) {
                    $update_ay = intval($_POST['CycleAcademicYear']);
                    $update_values['SabbaticalCompLimit'] = intval($_POST['SabbaticalCompLimit']);
                    $update_values['SabbaticalSubmissionStartDate'] = sanitize_text_field($_POST['SabbaticalSubmissionStartDate']);
                    $update_values['SabbaticalSubmissionEndDate'] = sanitize_text_field($_POST['SabbaticalSubmissionEndDate']);
+                   $update_values['SabbaticalShowOutcomes'] = sanitize_text_field($_POST['SabbaticalShowOutcomes']);
                }
 //           echo '<pre>' . print_r($update_values, true) . '</pre>'; exit;
                $update_result = $this->rpt_db->update_cycle_settings($update_ay, $update_values);
@@ -1824,9 +1828,11 @@ class Rpt_Info_Public
                    'Display' => $item->Display,
                    'PromotionSubmissionStartDate' => $item->PromotionSubmissionStartDate,
                    'PromotionSubmissionEndDate' => $item->PromotionSubmissionEndDate,
+                   'PromotionShowOutcomes' => $item->PromotionShowOutcomes,
                    'SabbaticalCompLimit' => $item->SabbaticalCompLimit,
                    'SabbaticalSubmissionStartDate' => $item->SabbaticalSubmissionStartDate,
-                   'SabbaticalSubmissionEndDate' => $item->SabbaticalSubmissionEndDate
+                   'SabbaticalSubmissionEndDate' => $item->SabbaticalSubmissionEndDate,
+                   'SabbaticalShowOutcomes' => $item->SabbaticalShowOutcomes,
                );
            }
        }
@@ -1853,6 +1859,11 @@ class Rpt_Info_Public
            }
        }
        return 0;
+   }
+
+   private function show_outcome_column( $template_type_id ) : bool
+   {
+       return FALSE;
    }
 
 }

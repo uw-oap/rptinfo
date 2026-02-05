@@ -77,9 +77,11 @@
         $('#CycleAcademicYear').change(function(){
             $('#PromotionSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionstartdate'));
             $('#PromotionSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionenddate'));
+			$('#PromotionShowOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshowoutcomes'));
             $('#SabbaticalCompLimit').val($('#CycleAcademicYear option:selected').data('sabbaticalcomplimit'));
             $('#SabbaticalSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionstartdate'));
             $('#SabbaticalSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionenddate'));
+			$('#SabbaticalShowOutcomes').val($('#CycleAcademicYear option:selected').data('sabbaticalshowoutcomes'));
         });
         $('#SabbaticalAcademicYear').change(function(){
             $('#Unit-175').val($('#SabbaticalAcademicYear option:selected').data('175'));
