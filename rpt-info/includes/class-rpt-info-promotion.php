@@ -10,6 +10,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public string $ActionType = '';
     public int $PromotionCategoryID = 0;
     public string $PromotionCategoryName = '';
+    public string $PromotionShowOutcomes = 'No';
+    public string $PromotionOutcomeName = '';
 
     // fields for datasheet
     public string $Postponed = 'No';
@@ -67,6 +69,12 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             }
             if ( isset($case_row->Waivers) ) {
                 $this->Waivers = $case_row->Waivers;
+            }
+            if ( isset($case_row->PromotionShowOutcomes) ) {
+                $this->PromotionShowOutcomes = $case_row->PromotionShowOutcomes;
+            }
+            if ( isset($case_row->PromotionOutcomeName) ) {
+                $this->PromotionOutcomeName = $case_row->PromotionOutcomeName;
             }
 //            echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
         }
@@ -178,7 +186,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         );
     }
 
-    public function listing_table_row( $rpt_case_url ) : string
+    public function listing_table_row( $rpt_case_url, $outcome_col = FALSE ) : string
     {
         global $wp;
         $result = '<tr class="border-bottom border-right">';
@@ -191,6 +199,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             $result .= 'N/A';
         }
         $result .= '</td>';
+        $result .= '<td>' . $this->AcademicYear . '</td>';
         $result .= '<td><strong>' . $this->display_name() . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
@@ -199,6 +208,16 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<td>' . $this->WorkflowStepName . '<br>(Step '
             . $this->WorkflowStepNumber . ')';
         $result .= '</td>';
+        if ( $outcome_col) {
+            $result .= '<td>';
+            if ( $this->PromotionShowOutcomes == 'Yes' ) {
+                $result .= $this->PromotionOutcomeName;
+            }
+            else {
+                $result .= '&nbsp;';
+            }
+            $result .= '</td>';
+        }
         $result .= '<td>';
         $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                     'template_type' => $this->RptTemplateTypeID,

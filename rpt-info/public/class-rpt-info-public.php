@@ -483,6 +483,7 @@ class Rpt_Info_Public
                 break;
         }
         $init_allowed_year = $this->init_case_allowed($this->active_template_type);
+        $outcome_column = $this->show_outcome_column($this->active_template_type);
         $this->rpt_case_review_url = '';
         $rpt_case_url = get_option('rpt_info_rpt_site_url') . '/'
             . get_option('rpt_info_tenant_id') . '/cases';
@@ -529,11 +530,11 @@ class Rpt_Info_Public
 //            echo '<pre>' . print_r( $case_list, true ) . '</pre>';
             echo '<table class="table table-bordered table-striped rpt-sort-table">';
             echo '<thead>';
-            echo $this->case_list_header_row();
+            echo $this->case_list_header_row($outcome_column);
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
-                echo $case->listing_table_row($rpt_case_url);
+                echo $case->listing_table_row($rpt_case_url, $outcome_column);
             }
             echo '</tbody>';
             echo '</table>';
@@ -545,16 +546,20 @@ class Rpt_Info_Public
         echo '</div>'; // row
     }
 
-    private function case_list_header_row() : string
+    private function case_list_header_row( $outcome_column = FALSE ) : string
     {
         $result = '<tr>';
         switch ( $this->active_template_type) {
             case '2': // promotion
                 $result .= '<th>ID</th>';
+                $result .= '<th>Cycle</th>';
                 $result .= '<th>Legal Name / Preferred Name</th>';
                 $result .= '<th>Type</th>';
                 $result .= '<th>Status</th>';
                 $result .= '<th>Workflow Step</th>';
+                if ( $outcome_column ) {
+                    $result .= '<th>Outcome</th>';
+                }
                 $result .= '<th>Action</th>';
                 break;
             case '5': // sabbatical
@@ -1863,6 +1868,11 @@ class Rpt_Info_Public
 
    private function show_outcome_column( $template_type_id ) : bool
    {
+       foreach ( $this->cycle_list as $id => $item ) {
+           if ( ( $template_type_id == 2 ) && ( $item->PromotionShowOutcomes == 'Yes' ) ) {
+               return TRUE;
+           }
+       }
        return FALSE;
    }
 

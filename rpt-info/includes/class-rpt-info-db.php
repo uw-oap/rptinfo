@@ -227,7 +227,7 @@ PromotionCategoryName, ServicePeriod, EffectiveDate, HasJoint, HasSecondary, Sub
 DatasheetID, Postponed, TenureAward, NewTermLength, Vote1Eligible, Vote1Affirmative, Vote1Negative, 
 Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, Vote2Negative, Vote2Absent, 
 Vote2Abstaining, DatasheetID, DataSheetStatus, TargetTrackTypeName, TargetRankDefaultTerm, TargetRankTenured, 
-Postponed, CaseStatusID, CoverSheetStatus, RptStatus, PreferredName
+Postponed, CaseStatusID, CoverSheetStatus, RptStatus, PreferredName, PromotionShowOutcomes, PromotionOutcomeName
 FROM RptPromotionDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -335,8 +335,8 @@ ParentID, ParentUnitName, LevelOneID, LevelOneUnitName, PromotionCategoryID, Pro
 EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postponed, TenureAward, NewTermLength, 
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, PreferredName,
-TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey
-FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
+TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
+PromotionShowOutcomes, PromotionOutcomeName FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -379,7 +379,8 @@ AppointmentType, TrackTypeName, UWODSUnitKey, UnitName, UWODSRankKey CurrentRank
 RankName CurrentRankName, '0' TargetRankKey, '' TargetRankName, RankCategory, ParentID, 
 '' ParentUnitName, Level1InterfolioUnitID LevelOneID, Level1UnitName LevelOneUnitName, 
 PromotionCategoryID, PromotionCategoryName, ServicePeriod, NULL EffectiveDate, 'No' HasJoint, 
-'No' HasSecondary, '' SubcommitteeMembers, '0' DatasheetID, '2' RptTemplateTypeID, PreferredName
+'No' HasSecondary, '' SubcommitteeMembers, '0' DatasheetID, '2' RptTemplateTypeID, PreferredName,
+'No' PromotionShowOutcomes, 'Pending' PromotionOutcomeName
 FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -427,7 +428,8 @@ EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postpon
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, CaseStatusID,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
-RptStatus, PreferredName, ConcurrenceLetterCount FROM RptPromotionDetails where CaseID = %s", $case_id);
+RptStatus, PreferredName, ConcurrenceLetterCount, PromotionShowOutcomes, PromotionOutcomeName
+FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
 //        echo '<pre>' . print_r( $result_row, true ) . '</pre>';
