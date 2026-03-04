@@ -1473,6 +1473,11 @@ class Rpt_Info_Public
         $this->committee_setup_url = get_option('ap_ptinfo_rpt_committee_setup_url');
         // lists for dropdowns
         $unit_list = $this->rpt_db->get_user_subunits(array_keys($this->rpt_user->Units));
+        if ( count($unit_list) == 1 ) {
+            foreach ( $unit_list as $id => $unit ) {
+                $unit_id = $id;
+            }
+        }
         $rank_list = $this->rpt_db->get_target_ranks();
 //        echo '<pre>' . print_r($unit_list, true) . '</pre>'; exit;
         // parameter form
