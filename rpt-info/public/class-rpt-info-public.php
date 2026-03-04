@@ -1500,14 +1500,14 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('rpt_page', 'report');
         echo rpt_form_hidden_field('report_type', 'voting');
         echo rpt_form_hidden_field('template_type', '2');
-        if ( count($unit_list) > 1 ) {
-            echo rpt_form_dropdown_list('unit_id', $unit_id, 'Unit', $unit_list);
+        echo rpt_form_dropdown_list('unit_id', $unit_id, 'Unit', $unit_list);
+/*        if ( count($unit_list) > 1 ) {
         }
         else {
             echo rpt_form_hidden_field('unit_id', $unit_id);
             $unit = reset($unit_list);
             echo '<p>' . $unit . '</p>';
-        }
+        } */
         echo rpt_form_dropdown_list('rank_id', $rank_id,
             'Voting on promotions to rank', $rank_list);
         echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
