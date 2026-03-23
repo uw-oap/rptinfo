@@ -77,7 +77,10 @@
         $('#CycleAcademicYear').change(function(){
             $('#PromotionSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionstartdate'));
             $('#PromotionSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('promotionsubmissionenddate'));
-			$('#PromotionShowOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshowoutcomes'));
+			$('#PromotionShowMandatoryOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshowmandatoryoutcomes'));
+			$('#PromotionShowNonMandatoryOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshownonmandatoryoutcomes'));
+			$('#PromotionShowEarlyOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshowearlyoutcomes'));
+			$('#PromotionShowLibrarianOutcomes').val($('#CycleAcademicYear option:selected').data('promotionshowlibrarianoutcomes'));
             $('#SabbaticalCompLimit').val($('#CycleAcademicYear option:selected').data('sabbaticalcomplimit'));
             $('#SabbaticalSubmissionStartDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionstartdate'));
             $('#SabbaticalSubmissionEndDate').val($('#CycleAcademicYear option:selected').data('sabbaticalsubmissionenddate'));

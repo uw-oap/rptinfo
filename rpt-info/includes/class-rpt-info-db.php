@@ -29,7 +29,8 @@ class Rpt_Info_DB
         $result = NULL;
         if ( $academic_year ) {
             $query = $this->rpt_db->prepare("SELECT AcademicYear, Display, IsCurrent, MandatoryDueDate, NonMandatoryDueDate, 
-LibrarianDueDate, EffectiveDate09Month, EffectiveDate12Month FROM PromotionCycle where AcademicYear = %s", $academic_year);
+LibrarianDueDate, EffectiveDate09Month, EffectiveDate12Month 
+FROM PromotionCycle where AcademicYear = %s", $academic_year);
         }
         else {
             $query = "SELECT AcademicYear, Display, IsCurrent, MandatoryDueDate, NonMandatoryDueDate, LibrarianDueDate, 
@@ -67,7 +68,9 @@ FROM AcademicYear where YearStatus = 'Past'");
         $result = [];
         $query = "SELECT AcademicYear, Display, YearStatus, EffectiveDate09Month, EffectiveDate12Month, 
 MandatoryDueDate, NonMandatoryDueDate, LibrarianDueDate, PromotionSubmissionStartDate, 
-PromotionSubmissionEndDate, PromotionShowOutcomes, SabbaticalCompLimit, SabbaticalSubmissionStartDate, 
+PromotionSubmissionEndDate, PromotionShowMandatoryOutcomes, PromotionShowNonMandatoryOutcomes,
+PromotionShowEarlyOutcomes, PromotionShowLibrarianOutcomes,
+SabbaticalCompLimit, SabbaticalSubmissionStartDate, 
 SabbaticalSubmissionEndDate,PromotionSubbmissionAllowed, SabbaticalSubmissionAllowed, 
 SabbaticalShowOutcomes FROM RptCycleDetails;";
         $this->last_query = $query;
@@ -227,7 +230,8 @@ PromotionCategoryName, ServicePeriod, EffectiveDate, HasJoint, HasSecondary, Sub
 DatasheetID, Postponed, TenureAward, NewTermLength, Vote1Eligible, Vote1Affirmative, Vote1Negative, 
 Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, Vote2Negative, Vote2Absent, 
 Vote2Abstaining, DatasheetID, DataSheetStatus, TargetTrackTypeName, TargetRankDefaultTerm, TargetRankTenured, 
-Postponed, CaseStatusID, CoverSheetStatus, RptStatus, PreferredName, PromotionShowOutcomes, PromotionOutcomeName
+Postponed, CaseStatusID, CoverSheetStatus, RptStatus, PreferredName, PromotionShowOutcome, 
+PromotionOutcomeName
 FROM RptPromotionDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -336,7 +340,7 @@ EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postpon
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, PreferredName,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
-PromotionShowOutcomes, PromotionOutcomeName FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
+PromotionShowOutcome, PromotionOutcomeName FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -380,7 +384,7 @@ RankName CurrentRankName, '0' TargetRankKey, '' TargetRankName, RankCategory, Pa
 '' ParentUnitName, Level1InterfolioUnitID LevelOneID, Level1UnitName LevelOneUnitName, 
 PromotionCategoryID, PromotionCategoryName, ServicePeriod, NULL EffectiveDate, 'No' HasJoint, 
 'No' HasSecondary, '' SubcommitteeMembers, '0' DatasheetID, '2' RptTemplateTypeID, PreferredName,
-'No' PromotionShowOutcomes, 'Pending' PromotionOutcomeName
+'No' PromotionShowOutcome, 'Pending' PromotionOutcomeName
 FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -428,7 +432,7 @@ EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postpon
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, CaseStatusID,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
-RptStatus, PreferredName, ConcurrenceLetterCount, PromotionShowOutcomes, PromotionOutcomeName
+RptStatus, PreferredName, ConcurrenceLetterCount, PromotionShowOutcome, PromotionOutcomeName
 FROM RptPromotionDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);

@@ -17,7 +17,10 @@ class Rpt_Info_Cycle
     public $PromotionSubmissionStartDate = '';
     public $PromotionSubmissionEndDate = '';
     public $PromotionSubbmissionAllowed = '';
-    public $PromotionShowOutcomes = 'No';
+    public $PromotionShowMandatoryOutcomes = 'No';
+    public $PromotionShowNonMandatoryOutcomes = 'No';
+    public $PromotionShowEarlyOutcomes = 'No';
+    public $PromotionShowLibrarianOutcomes = 'No';
 
     // sabbatical related items
     public $SabbaticalCompLimit = 0.00;
@@ -39,7 +42,10 @@ class Rpt_Info_Cycle
         $this->PromotionSubmissionStartDate = $cycle_row->PromotionSubmissionStartDate;
         $this->PromotionSubmissionEndDate = $cycle_row->PromotionSubmissionEndDate;
         $this->PromotionSubbmissionAllowed = $cycle_row->PromotionSubbmissionAllowed;
-        $this->PromotionShowOutcomes = $cycle_row->PromotionShowOutcomes;
+        $this->PromotionShowMandatoryOutcomes = $cycle_row->PromotionShowMandatoryOutcomes;
+        $this->PromotionShowNonMandatoryOutcomes = $cycle_row->PromotionShowNonMandatoryOutcomes;
+        $this->PromotionShowEarlyOutcomes = $cycle_row->PromotionShowEarlyOutcomes;
+        $this->PromotionShowLibrarianOutcomes = $cycle_row->PromotionShowLibrarianOutcomes;
         $this->SabbaticalCompLimit = $cycle_row->SabbaticalCompLimit;
         $this->SabbaticalSubmissionStartDate = $cycle_row->SabbaticalSubmissionStartDate;
         $this->SabbaticalSubmissionEndDate = $cycle_row->SabbaticalSubmissionEndDate;

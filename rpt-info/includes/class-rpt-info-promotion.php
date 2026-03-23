@@ -10,7 +10,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public string $ActionType = '';
     public int $PromotionCategoryID = 0;
     public string $PromotionCategoryName = '';
-    public string $PromotionShowOutcomes = 'No';
+    public string $PromotionShowOutcome = 'No';
     public string $PromotionOutcomeName = '';
 
     // fields for datasheet
@@ -70,8 +70,8 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
             if ( isset($case_row->Waivers) ) {
                 $this->Waivers = $case_row->Waivers;
             }
-            if ( isset($case_row->PromotionShowOutcomes) ) {
-                $this->PromotionShowOutcomes = $case_row->PromotionShowOutcomes;
+            if ( isset($case_row->PromotionShowOutcome) ) {
+                $this->PromotionShowOutcome = $case_row->PromotionShowOutcome;
             }
             if ( isset($case_row->PromotionOutcomeName) ) {
                 $this->PromotionOutcomeName = $case_row->PromotionOutcomeName;
@@ -189,6 +189,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public function listing_table_row( $rpt_case_url, $outcome_col = FALSE ) : string
     {
         global $wp;
+        $show_outcome = FALSE;
         $result = '<tr class="border-bottom border-right">';
         $result .= '<td>';
         if ( $this->RptCaseID > '0' ) {
@@ -210,7 +211,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '</td>';
         if ( $outcome_col) {
             $result .= '<td>';
-            if ( $this->PromotionShowOutcomes == 'Yes' ) {
+            if ( $this->PromotionShowOutcome == 'Yes' ) {
                 $result .= $this->PromotionOutcomeName;
             }
             else {

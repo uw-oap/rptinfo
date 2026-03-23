@@ -534,7 +534,7 @@ class Rpt_Info_Public
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
-                echo $case->listing_table_row($rpt_case_url, $outcome_column);
+                echo $case->listing_table_row($rpt_case_url, $this->cycle_list);
             }
             echo '</tbody>';
             echo '</table>';
@@ -1694,7 +1694,14 @@ class Rpt_Info_Public
         echo rpt_form_date_select('PromotionSubmissionEndDate',
             '',
             'End date for promotion initializations');
-        echo rpt_form_dropdown_list('PromotionShowOutcomes', 'No', 'Show outcomes?',
+        echo '<p><strong>Show outcomes?</strong></p>';
+        echo rpt_form_dropdown_list('PromotionShowMandatoryOutcomes', 'No', 'Mandatory',
+            array('Yes' => 'Yes', 'No' => 'No'));
+        echo rpt_form_dropdown_list('PromotionShowNonMandatoryOutcomes', 'No', 'Non-mandatory',
+            array('Yes' => 'Yes', 'No' => 'No'));
+        echo rpt_form_dropdown_list('PromotionShowEarlyOutcomes', 'No', 'Early non-mandatory',
+            array('Yes' => 'Yes', 'No' => 'No'));
+        echo rpt_form_dropdown_list('PromotionShowLibrarianOutcomes', 'No', 'Librarian',
             array('Yes' => 'Yes', 'No' => 'No'));
         echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
         echo '</div>'; // col 12
@@ -1778,7 +1785,10 @@ class Rpt_Info_Public
                    $update_ay = intval($_POST['CycleAcademicYear']);
                    $update_values['PromotionSubmissionStartDate'] = sanitize_text_field($_POST['PromotionSubmissionStartDate']);
                    $update_values['PromotionSubmissionEndDate'] = sanitize_text_field($_POST['PromotionSubmissionEndDate']);
-                   $update_values['PromotionShowOutcomes'] = sanitize_text_field($_POST['PromotionShowOutcomes']);
+                   $update_values['PromotionShowMandatoryOutcomes'] = sanitize_text_field($_POST['PromotionShowMandatoryOutcomes']);
+                   $update_values['PromotionShowNonMandatoryOutcomes'] = sanitize_text_field($_POST['PromotionShowNonMandatoryOutcomes']);
+                   $update_values['PromotionShowEarlyOutcomes'] = sanitize_text_field($_POST['PromotionShowEarlyOutcomes']);
+                   $update_values['PromotionShowLibrarianOutcomes'] = sanitize_text_field($_POST['PromotionShowLibrarianOutcomes']);
                }
                elseif ($template_type_id == 5) {
                    $update_ay = intval($_POST['CycleAcademicYear']);
@@ -1838,7 +1848,10 @@ class Rpt_Info_Public
                    'Display' => $item->Display,
                    'PromotionSubmissionStartDate' => $item->PromotionSubmissionStartDate,
                    'PromotionSubmissionEndDate' => $item->PromotionSubmissionEndDate,
-                   'PromotionShowOutcomes' => $item->PromotionShowOutcomes,
+                   'PromotionShowMandatoryOutcomes' => $item->PromotionShowMandatoryOutcomes,
+                   'PromotionShowNonMandatoryOutcomes' => $item->PromotionShowNonMandatoryOutcomes,
+                   'PromotionShowEarlyOutcomes' => $item->PromotionShowEarlyOutcomes,
+                   'PromotionShowLibrarianOutcomes' => $item->PromotionShowLibrarianOutcomes,
                    'SabbaticalCompLimit' => $item->SabbaticalCompLimit,
                    'SabbaticalSubmissionStartDate' => $item->SabbaticalSubmissionStartDate,
                    'SabbaticalSubmissionEndDate' => $item->SabbaticalSubmissionEndDate,
@@ -1871,10 +1884,20 @@ class Rpt_Info_Public
        return 0;
    }
 
-   private function show_outcome_column( $template_type_id ) : bool
+    /**
+     *  simple flag about whether table should include outcome column
+     *
+     * @param $template_type_id
+     * @return bool
+     */
+    private function show_outcome_column($template_type_id ) : bool
    {
        foreach ( $this->cycle_list as $id => $item ) {
-           if ( ( $template_type_id == 2 ) && ( $item->PromotionShowOutcomes == 'Yes' ) ) {
+           if ( ( $template_type_id == 2 ) &&
+               ( ( $item->PromotionShowMandatoryOutcomes == 'Yes' )
+                    || ( $item->PromotionShowNonMandatoryOutcomes == 'Yes' )
+                    || ( $item->PromotionShowEarlyOutcomes == 'Yes' )
+                    || ( $item->PromotionShowLibrarianOutcomes == 'Yes' ) ) ) {
                return TRUE;
            }
        }
