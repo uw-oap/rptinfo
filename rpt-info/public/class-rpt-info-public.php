@@ -534,7 +534,7 @@ class Rpt_Info_Public
             echo '</thead>';
             echo '<tbody>';
             foreach ( $case_list as $case ) {
-                echo $case->listing_table_row($rpt_case_url, $this->cycle_list);
+                echo $case->listing_table_row($rpt_case_url, $outcome_column);
             }
             echo '</tbody>';
             echo '</table>';

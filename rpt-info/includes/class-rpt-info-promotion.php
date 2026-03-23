@@ -209,7 +209,7 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         $result .= '<td>' . $this->WorkflowStepName . '<br>(Step '
             . $this->WorkflowStepNumber . ')';
         $result .= '</td>';
-        if ( $outcome_col) {
+        if ( $outcome_col ) {
             $result .= '<td>';
             if ( $this->PromotionShowOutcome == 'Yes' ) {
                 $result .= $this->PromotionOutcomeName;
