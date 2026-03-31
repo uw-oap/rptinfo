@@ -273,7 +273,8 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, RptStatus, PreferredName
+MultiYear, EligibilityReport, EligibilityNote, HireDate, RptStatus, PreferredName,
+APFDecision, APFQtrsApproved, SabbaticalShowOutcome
 FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
@@ -362,7 +363,7 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, PreferredName
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, PreferredName, SabbaticalShowOutcome
 FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
@@ -406,7 +407,8 @@ InterfolioUnitID, UnitName, ParentID, ParentUnitName, LevelOneID, LevelOneUnitNa
 UWODSRankKey CurrentRankKey, RankName CurrentRankName, RankCategory, TrackTypeName, ServicePeriod, 
 'N/A' CaseStatus, 'No' SummerQtr, 'No' FallQtr, 'No' WinterQtr, 'No' SpringQtr, '' SalarySupportPct,
 RosterPct, '' MonthlySalary, '' EligibilityReport, '' EligibilityNote, 'No' MultiYear,
-AppointmentStartDate, AppointmentEndDate, TotalBasePayAmt MonthlySalary, HireDate, PreferredName
+AppointmentStartDate, AppointmentEndDate, TotalBasePayAmt MonthlySalary, HireDate, PreferredName,
+'No' SabbaticalShowOutcome
 from CurrentSabbaticalEligible
 where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
@@ -456,7 +458,8 @@ DueDate, AppointmentStartDate, AppointmentEndDate, HasJoint, HasSecondary, CaseS
 WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetID, DataSheetStatus, 
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
-MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, RptStatus, PreferredName
+MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, RptStatus, PreferredName,
+APFDecision, APFQtrsApproved, SabbaticalShowOutcome
 FROM RptSabbaticalDetails where CaseID = %s", $case_id);
         $this->last_query = $query;
 //        echo $this->last_query; exit;

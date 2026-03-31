@@ -20,6 +20,9 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public string $MultiYear = 'No';
     public string $EligibilityReport = '';
     public string $EligibilityNote = '';
+    public string $APFDecision = '';
+    public int $APFQtrsApproved = 0;
+    public string $SabbaticalShowOutcome = 'No';
 
     public function __construct( $case_row = NULL )
     {
@@ -55,6 +58,11 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
                 $this->EligibilityReport = $case_row->EligibilityReport;
                 $this->EligibilityNote = $case_row->EligibilityNote;
             }
+            if ( isset( $case_row->APFDecision ) ) {
+                $this->APFDecision = $case_row->APFDecision;
+                $this->APFQtrsApproved = $case_row->APFQtrsApproved;
+            }
+            $this->SabbaticalShowOutcome = $case_row->SabbaticalShowOutcome;
         }
 //        echo '<pre>' . print_r( $this, true ) . '</pre>'; exit;
     }
@@ -187,7 +195,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         return $result;
     }
 
-    public function listing_table_row( $rpt_case_url ) : string
+    public function listing_table_row( $rpt_case_url, $outcome_col = FALSE ) : string
     {
         global $wp;
         $result = '<tr class="border-bottom border-right">';
@@ -201,6 +209,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             $result .= 'N/A';
         }
         $result .= '</td>';
+        $result .= '<td>' . $this->AcademicYear . '</td>';
         $result .= '<td><strong>' . $this->display_name() . ' (' . $this->EmployeeID . ')</strong><br>';
         $result .= $this->CurrentRankName . ' in ' . $this->UnitName . ' ('
             . $this->AppointmentType . ')</td>';
@@ -208,6 +217,13 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         $result .= '<td>' . $this->CaseStatus . '<br>' . $this->WorkflowStepName . ' (Step '
             . $this->WorkflowStepNumber . ')';
         $result .= '</td>';
+        if ( $outcome_col ) {
+            $result .= '<td>';
+            if ( $this->SabbaticalShowOutcome == 'Yes' ) {
+                $result .= $this->APFDecision;
+            }
+            $result .= '</td>';
+        }
         $result .= '<td>';
         $result .= '<a href="' . esc_url(add_query_arg(array('case_id' => $this->CaseID,
                 'template_type' => $this->RptTemplateTypeID,

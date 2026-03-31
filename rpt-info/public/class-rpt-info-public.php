@@ -564,9 +564,13 @@ class Rpt_Info_Public
                 break;
             case '5': // sabbatical
                 $result .= '<th>ID</th>';
+                $result .= '<th>Cycle</th>';
                 $result .= '<th>Candidate Name</th>';
                 $result .= '<th>Quarters</th>';
                 $result .= '<th>Status</th>';
+                if ( $outcome_column ) {
+                    $result .= '<th>Decision</th>';
+                }
                 $result .= '<th>Action</th>';
                 break;
         }
@@ -1734,6 +1738,8 @@ class Rpt_Info_Public
            'Start date for sabbatical initializations');
        echo rpt_form_date_select('SabbaticalSubmissionEndDate', '',
             'End date for sabbatical initializations');
+       echo rpt_form_dropdown_list('SabbaticalShowOutcomes', 'No', 'Show outcomes?',
+           array('Yes' => 'Yes', 'No' => 'No'));
        echo '<button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>';
        echo '</div>'; // col 12
        echo '</div>'; // form group row
@@ -1893,13 +1899,19 @@ class Rpt_Info_Public
     private function show_outcome_column($template_type_id ) : bool
    {
        foreach ( $this->cycle_list as $id => $item ) {
-           if ( ( $template_type_id == 2 ) &&
-               ( ( $item->PromotionShowMandatoryOutcomes == 'Yes' )
-                    || ( $item->PromotionShowNonMandatoryOutcomes == 'Yes' )
-                    || ( $item->PromotionShowEarlyOutcomes == 'Yes' )
-                    || ( $item->PromotionShowLibrarianOutcomes == 'Yes' ) ) ) {
-               return TRUE;
-           }
+           switch ($template_type_id) {
+               case 2 :
+                   if ( ( $item->PromotionShowMandatoryOutcomes == 'Yes' )
+                        || ( $item->PromotionShowNonMandatoryOutcomes == 'Yes' )
+                        || ( $item->PromotionShowEarlyOutcomes == 'Yes' )
+                        || ( $item->PromotionShowLibrarianOutcomes == 'Yes' ) ) {
+                       return TRUE;
+                   }
+               case 5 :
+                  if ( $item->SabbaticalShowOutcomes == 'Yes' ) {
+                      return TRUE;
+                  }
+            }
        }
        return FALSE;
    }
