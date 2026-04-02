@@ -24,6 +24,18 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public int $APFQtrsApproved = 0;
     public string $SabbaticalShowOutcome = 'No';
 
+    private $ApfDecisionDisplay = array(
+        'Pending' => 'Pending',
+        'Approve' => 'Approve',
+        'ApproveContingent' => 'Approve contingent on promotion',
+        'DenyAgree' => 'Deny in agreement with SCC',
+        'DenyDisagree' => 'Deny in disagreement with SCC',
+        'HoldForER' => 'Hold for Employee Relations',
+        'HoldForInfo' => 'Hold for further information'
+    );
+
+
+
     public function __construct( $case_row = NULL )
     {
 //        echo '<pre>' . number_format($case_row->RosterPct * 100) . '</pre>'; exit;
@@ -220,9 +232,9 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         if ( $outcome_col ) {
             $result .= '<td>';
             if ( $this->SabbaticalShowOutcome == 'Yes' ) {
-                $result .= $this->APFDecision;
+                $result .= $this->ApfDecisionDisplay[$this->APFDecision];
                 if ( $this->APFDecision == 'Approve' || $this->APFDecision == 'ApproveContingent' ) {
-                    $result .= ' (' . $this->APFQtrsApproved . ')';
+                    $result .= ' (' . $this->APFQtrsApproved . ' quarters)';
                 }
             }
             $result .= '</td>';
