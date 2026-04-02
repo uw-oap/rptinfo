@@ -220,7 +220,10 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
         if ( $outcome_col ) {
             $result .= '<td>';
             if ( $this->SabbaticalShowOutcome == 'Yes' ) {
-                $result .= $this->APFDecision . ' (' . $this->APFQtrsApproved . ')';
+                $result .= $this->APFDecision;
+                if ( $this->APFDecision == 'Approve' || $this->APFDecision == 'ApproveContingent' ) {
+                    $result .= ' (' . $this->APFQtrsApproved . ')';
+                }
             }
             $result .= '</td>';
         }
