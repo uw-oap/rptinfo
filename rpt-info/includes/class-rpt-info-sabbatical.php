@@ -234,7 +234,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             if ( $this->SabbaticalShowOutcome == 'Yes' ) {
                 $result .= $this->ApfDecisionDisplay[$this->APFDecision];
                 if ( $this->APFDecision == 'Approve' || $this->APFDecision == 'ApproveContingent' ) {
-                    $result .= ' (' . $this->APFQtrsApproved . ' quarters)';
+                    $result .= ' (' . $this->APFQtrsApproved . ')';
                 }
             }
             $result .= '</td>';
