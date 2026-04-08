@@ -287,7 +287,7 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
         return $result;
     }
 
-    public function promotion_candidate_search( Rpt_Info_User $user_obj, $search_string) : array
+    public function promotion_candidate_search( Rpt_Info_User $user_obj, $academic_year, $search_string) : array
     {
         $result = [];
         $search_terms = explode(' ', $search_string);
@@ -297,11 +297,13 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units))
             . ") or Level1InterfolioUnitID in (". implode(',', array_keys($user_obj->Units))
             . ") or '28343' in (". implode(',', array_keys($user_obj->Units))
-            . ")) and (AppointmentType in ('Primary','Joint'))";
+            . ")) and (AppointmentType in ('Primary','Joint'))"
+            . ' and ((AcademicYear = ' . $academic_year . ') or (AcademicYear is null))';
         foreach ($search_terms as $term) {
             $query .= " and (SearchText like '%" . $term . "%')";
         }
         $this->last_query = $query;
+//        echo $this->last_query; exit;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['InterfolioUserID'] . '-' . $row['UWODSAppointmentTrackKey']] = $row;
         }

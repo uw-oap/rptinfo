@@ -587,6 +587,7 @@ class Rpt_Info_Public
     private function search_form()
     {
         global $wp;
+        $init_allowed_year = $this->init_case_allowed($this->active_template_type);
         $search_nonce = wp_create_nonce( 'rpt_info_search' );
         $ajax_object = array('ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => $search_nonce,
@@ -597,7 +598,8 @@ class Rpt_Info_Public
                 'track_id' => ''), home_url($wp->request))),
             'case_url' => esc_url(add_query_arg(array('rpt_page' => 'case',
                 'template_type' => $this->active_template_type,
-                'case_id' => ''), home_url($wp->request)))
+                'case_id' => ''), home_url($wp->request))),
+            'academic_year' => $init_allowed_year,
         );
 //        echo print_r($ajax_object);
         add_action('wp_footer', function() use ($ajax_object){
@@ -615,7 +617,7 @@ class Rpt_Info_Public
             . 'the candidate.</p>';
         echo '</div>';
         echo '</div>';
-        if ( $this->init_case_allowed($this->active_template_type) > 0 ) {
+        if ( $init_allowed_year > 0 ) {
             echo '<div class="form-group">';
             echo '<label for="rptinfo_search">Search by name or Employee ID</label>';
             echo '<input id="rptinfo_search" name="rptinfo_search" type="text" class="form-control col-lg-4" 
@@ -647,10 +649,11 @@ class Rpt_Info_Public
         $user_obj = $this->rpt_db->get_rpt_user_info($user_netid);
         $unit_query = $this->rpt_db->get_last_query();
         $template_type = intval($_POST['template_type']);
+        $academic_year = intval($_POST['academic_year']);
         $search_result = [];
         switch ( $template_type ) {
             case '2':
-                $search_result = $this->rpt_db->promotion_candidate_search($user_obj, $search_string);
+                $search_result = $this->rpt_db->promotion_candidate_search($user_obj, $academic_year, $search_string);
                 break;
             case '5':
                 $search_result = $this->rpt_db->sabbatical_candidate_search($user_obj, $search_string);

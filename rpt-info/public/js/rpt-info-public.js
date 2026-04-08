@@ -45,7 +45,8 @@
 						action: "rpt_info_candidate_search",         //action
 						searchstring: val,
 						user_id: my_ajax_obj.user_id,
-						template_type: my_ajax_obj.template_type
+						template_type: my_ajax_obj.template_type,
+						academic_year: my_ajax_obj.academic_year
 					}, function(response) {            //callback
 						$('#rptinfo_search_results').html(format_search_results(response));
 					}
