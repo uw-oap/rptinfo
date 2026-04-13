@@ -757,16 +757,18 @@ class Rpt_Info_Public
         if ( ( $track_id ) && ( ! $case_id ) && ( $init_allowed_year ) ) { // candidate but no case - see if there is one
             switch ( $this->active_template_type) {
                 case '2': // promotion
-                    $case_obj = $this->rpt_db->get_promotion_case_for_candidate($track_id);
+                    $case_obj = $this->rpt_db->get_promotion_case_for_candidate($track_id, $init_allowed_year);
                     break;
                 case '5': // sabbatical
-                    $case_obj = $this->rpt_db->get_sabbatical_case_for_candidate($track_id);
+                    $case_obj = $this->rpt_db->get_sabbatical_case_for_candidate($track_id, $init_allowed_year);
                     break;
             }
             if ( $case_obj ) { // case already exists
+//                echo 'found case'; exit;
                 $case_id = $case_obj->CaseID;
             }
             else { // initialize object with known info for candidate
+//                echo 'need new case'; exit;
                 switch ( $this->active_template_type) {
                     case '2': // promotion
                         $case_obj = $this->rpt_db->get_promotion_from_track($track_id);
@@ -779,7 +781,7 @@ class Rpt_Info_Public
                 }
                 $case_obj->InitiatorID = $this->rpt_user->InterfolioUserID;
                 $this->current_cycle = $this->cycle_list[$init_allowed_year];
-                $case_obj->AcademicYear = $this->current_cycle->AcademicYear;
+                $case_obj->AcademicYear = $init_allowed_year;
                 $case_obj->AcademicYearDisplay = $this->current_cycle->Display;
             }
 //            echo '<pre>' . print_r( $case_obj, true ) . '</pre>';

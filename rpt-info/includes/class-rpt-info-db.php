@@ -292,20 +292,23 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
         $result = [];
         $search_terms = explode(' ', $search_string);
         $query = "select InterfolioUserID, EmployeeID, LegalName, PreferredName, RankName, UnitName, AppointmentType, 
-       UWODSAppointmentTrackKey, CaseStatus, CaseID from CurrentPromotable where (InterfolioUnitID in ("
+       UWODSAppointmentTrackKey, CaseStatus, CaseID, AcademicYear from CurrentPromotable where (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or ParentID in ("
             . implode(',', array_keys($user_obj->Units))
             . ") or Level1InterfolioUnitID in (". implode(',', array_keys($user_obj->Units))
             . ") or '28343' in (". implode(',', array_keys($user_obj->Units))
-            . ")) and (AppointmentType in ('Primary','Joint'))"
-            . ' and ((AcademicYear = ' . $academic_year . ') or (AcademicYear is null))';
+            . ")) and (AppointmentType in ('Primary','Joint'))";
         foreach ($search_terms as $term) {
             $query .= " and (SearchText like '%" . $term . "%')";
         }
         $this->last_query = $query;
 //        echo $this->last_query; exit;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
-            $result[$row['InterfolioUserID'] . '-' . $row['UWODSAppointmentTrackKey']] = $row;
+            $temp = $row;
+            if ( $row['AcademicYear'] != $academic_year ) {
+                $temp['CaseID'] = '';
+            }
+            $result[$row['InterfolioUserID'] . '-' . $row['UWODSAppointmentTrackKey']] = $temp;
         }
         return $result;
     }
@@ -331,7 +334,7 @@ FROM RptSabbaticalDetails where " . $limit . " and (InterfolioUnitID in ("
         return $result;
     }
 
-    public function get_promotion_case_for_candidate(int $track_id) : ?Rpt_Info_Promotion
+    public function get_promotion_case_for_candidate(int $track_id, $academic_year) : ?Rpt_Info_Promotion
     {
         $result = NULL;
         $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, CandidateID, EmployeeID,
@@ -343,7 +346,8 @@ EffectiveDate, HasJoint, HasSecondary, SubcommitteeMembers, DataSheetID, Postpon
 Vote1Eligible, Vote1Affirmative, Vote1Negative, Vote1Absent, Vote1Abstaining, Vote2Eligible, Vote2Affirmative, 
 Vote2Negative, Vote2Absent, Vote2Abstaining, DataSheetID, TargetTrackTypeName, TargetRankDefaultTerm, PreferredName,
 TargetRankTenured, Postponed, RptTemplateTypeID, Leaves, Waivers, CoverSheetStatus, DataSheetStatus, CandidateKey,
-PromotionShowOutcome, PromotionOutcomeName FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s", $track_id);
+PromotionShowOutcome, PromotionOutcomeName FROM RptPromotionDetails where UWODSAppointmentTrackKey = %s 
+and AcademicYear = %s", $track_id, $academic_year);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -352,7 +356,7 @@ PromotionShowOutcome, PromotionOutcomeName FROM RptPromotionDetails where UWODSA
         return $result;
     }
 
-    public function get_sabbatical_case_for_candidate(int $track_id) : ?Rpt_Info_Sabbatical
+    public function get_sabbatical_case_for_candidate(int $track_id, $academic_year) : ?Rpt_Info_Sabbatical
     {
         $result = NULL;
         $query = $this->rpt_db->prepare("SELECT CaseID, RptCaseID, RptTemplateID, AcademicYear, TemplateName, 
@@ -366,7 +370,8 @@ WorkflowStepNumber, WorkflowStepName, CoverSheetStatus, CoverSheetID, DataSheetI
 SummerQtr, FallQtr, WinterQtr, SpringQtr, SalarySupportPct, RosterPct, MonthlySalary, TenureAmount, 
 HireDate, TrackStartDate, AppointmentStartDate, LastSabbaticalAcademicYear, ContingentOnExtension, 
 MultiYear, EligibilityReport, EligibilityNote, HireDate, CandidateKey, PreferredName, SabbaticalShowOutcome
-FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %s", $track_id);
+FROM RptSabbaticalDetails where UWODSAppointmentTrackKey = %s 
+and AcademicYear = %s", $track_id, $academic_year);
         $this->last_query = $query;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
@@ -390,6 +395,7 @@ PromotionCategoryID, PromotionCategoryName, ServicePeriod, NULL EffectiveDate, '
 'No' PromotionShowOutcome, 'Pending' PromotionOutcomeName
 FROM CurrentPromotable where UWODSAppointmentTrackKey = %s", $track_id);
         $this->last_query = $query;
+//        echo $this->last_query; exit;
         $result_row = $this->rpt_db->get_row($query);
         if ( $result_row ) {
             $result = new Rpt_Info_Promotion($result_row);
