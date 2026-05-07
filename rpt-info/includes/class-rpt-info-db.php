@@ -616,16 +616,17 @@ and UnitType = 'undep' and TemplateName like '%\_undep%' order by TemplateName",
         return $result;
     }
 
-    public function get_templates_for_user( Rpt_Info_User $user_obj )
+    public function get_templates_for_user( $template_type_id,  Rpt_Info_User $user_obj )
     {
         $result = [];
         $query = "SELECT RptTemplateID, InterfolioUnitID, UnitName, ParentID, ParentName, 
 LevelOneID, LevelOneName, TemplateName, Description, IsPublished, InUse, RptTemplateTypeID, UnitType,
-TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where InterfolioUnitID in ("
+TemplateTypeName, TemplateTypeInUse FROM RptTemplateDetails where (InterfolioUnitID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
             . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
-            . implode(',', array_keys($user_obj->Units)) . ")";
+            . implode(',', array_keys($user_obj->Units)) . "))"
+            . ' and (RptTemplateTypeID = ' . $template_type_id . ") and (IsPublished = 'Yes')";
         $this->last_query = $query;
         foreach ($this->rpt_db->get_results($query) as $row) {
             $result[$row->RptTemplateID] = new Rpt_Info_Template($row);

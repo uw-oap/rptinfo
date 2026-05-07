@@ -1331,7 +1331,7 @@ class Rpt_Info_Public
                 $template_list = $this->rpt_db->get_template_list($this->active_template_type, $unit_type);
             }
             else {
-                $template_list = $this->rpt_db->get_templates_for_user( $this->rpt_user );
+                $template_list = $this->rpt_db->get_templates_for_user($this->active_template_type,  $this->rpt_user );
             }
 //        echo '<pre>' . print_r($template_list, TRUE) . '</pre>';
             if (count($template_list) > 0) {
