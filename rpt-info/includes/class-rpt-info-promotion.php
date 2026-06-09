@@ -83,9 +83,22 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
     public function update_from_post( $posted_values ) : void
     {
         parent::update_from_post( $posted_values );
-        $this->TargetRankKey = intval($posted_values['TargetRankKey']);
-        $this->EffectiveDate = sanitize_text_field($posted_values['EffectiveDate']);
-        $this->PromotionCategoryID = intval($posted_values['PromotionCategoryID']);
+        $trigger_count = 0;
+        if ( intval($posted_values['TargetRankKey']) != $this->TargetRankKey ) {
+            $this->TargetRankKey = intval($posted_values['TargetRankKey']);
+            $trigger_count++;
+        }
+        if ( sanitize_text_field($posted_values['EffectiveDate']) != $this->EffectiveDate ) {
+            $this->EffectiveDate = sanitize_text_field($posted_values['EffectiveDate']);
+            $trigger_count++;
+        }
+        if ( intval($posted_values['PromotionCategoryID']) != $this->PromotionCategoryID ) {
+            $this->PromotionCategoryID = intval($posted_values['PromotionCategoryID']);
+            $trigger_count++;
+        }
+        if ( ( $this->CoverSheetStatus == 'Present' ) && ( $trigger_count > 0 ) ) {
+            $this->CoverSheetStatus = 'Submitted';
+        }
     }
 
     public function update_from_data_sheet_post( $posted_values ) : void
