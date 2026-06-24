@@ -410,6 +410,9 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         if ( $this->RptCaseID == 0 ) {
             return false;
         }
+        elseif ( ( $this->CaseStatusID < '3' ) || ( $is_admin ) ) { // draft, submitted, in progress
+            return true;
+        }
         return true;
     }
 
