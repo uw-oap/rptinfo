@@ -250,6 +250,35 @@ class Rpt_Info_Promotion extends Rpt_Info_Case
         return $result;
     }
 
+    public function full_column_row( $outcome_col = FALSE ) : string
+    {
+        $result = '<tr class="border-bottom border-right">';
+        $result .= '<td>' . $this->RptCaseID . '</td>';
+        $result .= '<td>' . $this->AcademicYear . '</td>';
+        $result .= '<td>' . $this->LegalName . '</td>';
+        $result .= '<td>' . $this->PreferredName . '</td>';
+        $result .= '<td>' . $this->EmployeeID . '</td>';
+        $result .= '<td>' . $this->CurrentRankName . '</td>';
+        $result .= '<td>' . $this->UnitName . '</td>';
+        $result .= '<td>' . $this->AppointmentType . '</td>';
+        $result .= '<td>' . $this->PromotionCategoryName . '</td>';
+        $result .= '<td>' . $this->CaseStatus . '</td>';
+        $result .= '<td>' . $this->RptStatus . '</td>';
+        $result .= '<td>' . $this->WorkflowStepName . '</td>';
+        if ( $outcome_col ) {
+            $result .= '<td>';
+            if ( $this->PromotionShowOutcome == 'Yes' ) {
+                $result .= $this->PromotionOutcomeName;
+            }
+            else {
+                $result .= '&nbsp;';
+            }
+            $result .= '</td>';
+        }
+        $result .= '</tr>';
+        return $result;
+    }
+
     public function promotion_info_card( $rpt_case_url, $is_admin = FALSE ) : string
     {
         global $wp;

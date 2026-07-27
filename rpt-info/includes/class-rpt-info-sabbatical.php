@@ -82,6 +82,7 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
     public function update_from_post( $posted_values ) : void
     {
         parent::update_from_post( $posted_values );
+        $trigger_count = 0;
         $qtr_count = 0;
         if (isset($posted_values['SummerQtr'])) {
             $this->SummerQtr = $posted_values['SummerQtr'];
@@ -246,6 +247,36 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
                 'rpt_page' => 'case'), home_url($wp->request)))
             . '" class="btn btn-outline-secondary">Details</a>';
         $result .= '</td>';
+        $result .= '</tr>';
+        return $result;
+    }
+
+    public function full_column_row( $outcome_col = FALSE ) : string
+    {
+        $result = '<tr class="border-bottom border-right">';
+        $result = '<tr>';
+        $result .= '<td>' . $this->RptCaseID . '</td>';
+        $result .= '<td>' . $this->AcademicYear . '</td>';
+        $result .= '<td>' . $this->LegalName . '</td>';
+        $result .= '<td>' . $this->PreferredName . '</td>';
+        $result .= '<td>' . $this->EmployeeID . '</td>';
+        $result .= '<td>' . $this->CurrentRankName . '</td>';
+        $result .= '<td>' . $this->UnitName . '</td>';
+        $result .= '<td>' . $this->quarter_list() . '</td>';
+        $result .= '<td>' . $this->CaseStatus . '</td>';
+        $result .= '<td>' . $this->RptStatus . '</td>';
+        $result .= '<td>' . $this->WorkflowStepName . '</td>';
+        if ( $outcome_col ) {
+            $result .= '<td>';
+            if ( $this->SabbaticalShowOutcome == 'Yes' ) {
+                $result .= $this->ApfDecisionDisplay[$this->APFDecision];
+                if ( $this->APFDecision == 'Approve' || $this->APFDecision == 'ApproveContingent' ) {
+                    $result .= ' (' . $this->APFQtrsApproved . ')';
+                }
+            }
+            $result .= '</td>';
+        }
+        $result .= '<td>';
         $result .= '</tr>';
         return $result;
     }

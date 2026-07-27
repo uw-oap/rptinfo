@@ -1398,16 +1398,21 @@ class Rpt_Info_Public
         echo '<p>' . $this->template_types[$this->active_template_type]->TemplateTypeName
             . ' RPT reporting</p>';
         echo '<p>';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                'template_type' => $this->active_template_type,
+                'report_type' => 'columns'),
+                home_url($wp->request)))
+            . '">Excel-friendly case list</a>';
         foreach ( $year_list as $year ) {
-            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'ay' => $year,
                     'template_type' => $this->active_template_type,
                     'report_type' => 'cases-by-scc'),
                     home_url($wp->request)))
-                . '">Cases by SCC ' . $year . '</a>&nbsp;|&nbsp;';
+                . '">Cases by SCC ' . $year . '</a>';
         }
         if ( $this->active_template_type == 2 ) {
-            echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'template_type' => $this->active_template_type,
                     'report_type' => 'voting'),
                     home_url($wp->request)))
@@ -1439,6 +1444,18 @@ class Rpt_Info_Public
         $report_type = get_query_var('report_type', '');
         $ay = get_query_var('ay', '2025');
         switch ( $report_type) {
+            case 'columns' :
+                switch ( $this->active_template_type) {
+                    case '2': // promotion
+                        $case_list = $this->rpt_db->get_promotion_cases_for_user($this->rpt_user);
+                        break;
+                    case '5': // sabbatical
+                        $case_list = $this->rpt_db->get_sabbatical_cases_for_user($this->rpt_user);
+                        break;
+                }
+                $outcome_column = $this->show_outcome_column($this->active_template_type);
+                $this->full_column_report($case_list, $outcome_column);
+                break;
             case 'cases-by-scc':
                 $report_data = $this->rpt_db->case_count_by_scc($this->active_template_type, $ay);
                 $report_header = array('LevelOneUnitName' => 'S/C/C',
@@ -1470,6 +1487,51 @@ class Rpt_Info_Public
             echo rpt_report_table($report_header, $report_data, 'LevelOneUnitName', 'LevelOneID',
                 $detail_report, $this->active_template_type, $ay);
         }
+    }
+
+    private function full_column_report( $case_list, $outcome_col = FALSE )
+    {
+        echo '<div class="row">';
+        echo '<div class="col-12">';
+        if ( count( $case_list ) > 0 ) {
+            echo '<table class="table table-bordered table-striped rpt-sort-table">';
+            echo '<thead>';
+            echo '<tr class="border-bottom border-right">';
+            echo '<th>RPT Case ID</th>';
+            echo '<th>Academic Year</th>';
+            echo '<th>Legal Name</th>';
+            echo '<th>Preferred Name</th>';
+            echo '<th>Employee ID</th>';
+            echo '<th>Current Rank</th>';
+            echo '<th>Unit Name</th>';
+            if ( $this->active_template_type == 2 ) {
+                echo '<th> Appointment Type</th>';
+                echo '<th>Promotion Type</th>';
+            }
+            elseif ( $this->active_template_type == 5 ) {
+                echo '<th>Quarters Requested</th>';
+            }
+            echo '<th>Case Status</th>';
+            echo '<th>RPT Status</th>';
+            echo '<th>Workflow Step</th>';
+            if ( $outcome_col ) {
+                echo '<th>Outcome</th>';
+            }
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ( $case_list as $case ) {
+                echo $case->full_column_row($outcome_col);
+            }
+            echo '</tbody>';
+            echo '</table>';
+        }
+        else {
+            echo '<p><em>None found.</em></p>';
+        }
+        echo '</div>'; // col 12
+        echo '</div>'; // row
+
     }
 
     private function voting_report()
