@@ -515,6 +515,12 @@ class Rpt_Info_Public
         echo '<p>Current cases: (' . count($case_list) . ' found)</p>';
         echo '</div>'; // col 6
         echo '<div class="col-6 text-right">';
+        echo '<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                'template_type' => $this->active_template_type,
+                'report_type' => 'columns'),
+                home_url($wp->request)))
+            . '" class="btn btn-primary active">Excel-friendly case list</a>';
+
         if ( $init_allowed_year > 0 ) {
             echo '<a href="'
                 . esc_url(add_query_arg(array('rpt_page' => 'case', 'case_id' => 'new',

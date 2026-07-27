@@ -276,7 +276,6 @@ class Rpt_Info_Sabbatical extends Rpt_Info_Case
             }
             $result .= '</td>';
         }
-        $result .= '<td>';
         $result .= '</tr>';
         return $result;
     }
