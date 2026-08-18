@@ -988,7 +988,7 @@ class Rpt_Info_Public
         echo rpt_form_hidden_field('MonthlySalary', $case_obj->MonthlySalary);
         echo rpt_form_hidden_field('TenureAmount', $case_obj->TenureAmount);
         echo rpt_form_hidden_field('AppointmentStartDate', $case_obj->AppointmentStartDate);
-        echo '<div class="form-goup row">';
+/*        echo '<div class="form-goup row">';
         echo '<div class="col-12">';
         echo '<p>' . $case_obj->AcademicYearDisplay . ' Quarter(s) requested: <span id="QtrCount"></span></p>';
         echo rpt_form_quarter_select($case_obj->SummerQtr, $case_obj->FallQtr, $case_obj->WinterQtr,
@@ -996,7 +996,7 @@ class Rpt_Info_Public
         echo rpt_form_dropdown_list('SalarySupportPct', $case_obj->SalarySupportPct,
             'Salary support:', $case_obj->salary_support_values());
         echo '</div>'; // col 12
-        echo '</div>'; // form group row
+        echo '</div>'; // form group row */
         echo rpt_yes_no_radio('MultiYear', $case_obj->MultiYear,
             'Multi-year distribution?', FALSE, TRUE);
         echo rpt_form_dropdown_list('LastSabbaticalAcademicYear', $case_obj->LastSabbaticalAcademicYear,
