@@ -1424,6 +1424,14 @@ class Rpt_Info_Public
                     home_url($wp->request)))
                 . '">Eligible Voting Faculty</a>';
         }
+        if ( $this->active_template_type == 5 ) {
+            echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
+                    'template_type' => $this->active_template_type,
+                    'report_type' => 'allotment',
+                    'ay' => '2027'),
+                    home_url($wp->request)))
+                . '">Sabbatical Allotment 2027</a>';
+        }
         if ( $this->rpt_user->SystemAdmin() ) {
             echo '&nbsp;|&nbsp;<a href="' . esc_url(add_query_arg(array('rpt_page' => 'report',
                     'template_type' => $this->active_template_type,
@@ -1448,7 +1456,7 @@ class Rpt_Info_Public
         }
         echo '</p>';
         $report_type = get_query_var('report_type', '');
-        $ay = get_query_var('ay', '2025');
+        $ay = get_query_var('ay', '2026');
         switch ( $report_type) {
             case 'columns' :
                 switch ( $this->active_template_type) {
@@ -1474,6 +1482,12 @@ class Rpt_Info_Public
                     $ay, $unit_id);
                 $report_header = array('UnitName' => 'Unit',
                     'CaseTotal' => 'Total');
+                $detail_report = '';
+                break;
+            case 'allotment' :
+                $report_data = $this->rpt_db->get_sabbatical_allotment_report($ay);
+                $report_header = array('UnitName' => 'S/C/C',
+                    'QuartersAllowed' => 'Allotment', 'QtrsApproved' => 'Approved');
                 $detail_report = '';
                 break;
             case 'voting':

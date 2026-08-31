@@ -729,6 +729,20 @@ from rpt.JointPromotions;";
         return $result;
     }
 
+    public function get_sabbatical_allotment_report($academic_year) : array
+    {
+        $result = [];
+        $query = $this->rpt_db->prepare("select UnitName, UWODSUnitKey, QuartersAllowed, QtrsApproved
+from SabbaticalAllotmentCheck
+where AcademicYear = %s",  $academic_year);
+        $this->last_query = $query;
+        foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
+            $result[$row['UnitName']] = $row;
+        }
+        return $result;
+
+    }
+
     /** ******************* person (candidate) functions ********************************** */
 
     public function get_candidate_leaves( Rpt_Info_Case $case_obj ) : void
