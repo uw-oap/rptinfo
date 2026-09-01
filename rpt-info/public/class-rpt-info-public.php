@@ -1485,7 +1485,7 @@ class Rpt_Info_Public
                 $detail_report = '';
                 break;
             case 'allotment' :
-                $report_data = $this->rpt_db->get_sabbatical_allotment_report($ay);
+                $report_data = $this->rpt_db->get_sabbatical_allotment_report($ay, $this->rpt_user);
                 $report_header = array('UnitName' => 'S/C/C',
                     'QuartersAllowed' => 'Allotment', 'QtrsApproved' => 'Approved');
                 $detail_report = '';

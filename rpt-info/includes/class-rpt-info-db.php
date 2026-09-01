@@ -729,13 +729,18 @@ from rpt.JointPromotions;";
         return $result;
     }
 
-    public function get_sabbatical_allotment_report($academic_year) : array
+    public function get_sabbatical_allotment_report($academic_year, Rpt_Info_User $user_obj) : array
     {
         $result = [];
-        $query = $this->rpt_db->prepare("select UnitName, UWODSUnitKey, QuartersAllowed, QtrsApproved
-from SabbaticalAllotmentCheck
-where AcademicYear = %s",  $academic_year);
+        $query = "select UnitName, UWODSUnitKey, QuartersAllowed, QtrsApproved
+from SabbaticalAllotmentCheck where AcademicYear = '" . $academic_year
+    . "' and (InterfolioUnitID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or  ParentID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or LevelOneID in ("
+            . implode(',', array_keys($user_obj->Units)) . ") or '28343' in ("
+            . implode(',', array_keys($user_obj->Units)) . "))";
         $this->last_query = $query;
+//        echo $this->last_query; exit;
         foreach ($this->rpt_db->get_results($query, ARRAY_A) as $row) {
             $result[$row['UnitName']] = $row;
         }
