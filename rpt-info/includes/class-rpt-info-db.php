@@ -241,8 +241,16 @@ FROM RptPromotionDetails where " . $limit . " and (InterfolioUnitID in ("
 //        echo $this->last_query;
         foreach ($this->rpt_db->get_results($query) as $row) {
 //            echo '<pre>' . print_r($row, true) . '</pre>'; exit;
-            $result[$row->CaseID] = new Rpt_Info_Promotion($row);
+            try {
+                $result[$row->CaseID] = new Rpt_Info_Promotion($row);
+            }
+            catch (Exception $e) {
+//                echo '<pre>' . print_r($row, true) . '</pre>'; exit;
+//                $result[$row->CaseID] = null;
+            }
+//            echo '<pre>' . print_r($result[$row->CaseID], true) . '</pre>'; exit;
         }
+//        echo '<pre>' . print_r($result, true) . '</pre>'; exit;
         return $result;
     }
 

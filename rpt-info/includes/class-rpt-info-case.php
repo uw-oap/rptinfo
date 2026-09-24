@@ -79,7 +79,9 @@ class Rpt_Info_Case
             if ( isset($case_row->InitiatorID) ) {
                 $this->InitiatorID = $case_row->InitiatorID;
             }
-            $this->InitiatorName = $case_row->InitiatorName;
+            if ( isset($case_row->InitiatorName) ) {
+                $this->InitiatorName = $case_row->InitiatorName;
+            }
             $this->CandidateKey = $case_row->CandidateKey;
             if ( isset($case_row->AcademicYear) ) {
                 $this->AcademicYear = $case_row->AcademicYear;
