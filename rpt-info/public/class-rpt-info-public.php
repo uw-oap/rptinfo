@@ -497,7 +497,7 @@ class Rpt_Info_Public
                 $case_list = $this->rpt_db->get_sabbatical_cases_for_user($this->rpt_user);
                 break;
         }
-//        echo '<pre>' . print_r($case_list, true) . '</pre>'; exit;
+//        echo '<pre>' . print_r($this->rpt_db->get_last_query(), true) . '</pre>'; exit;
         echo '<div class="row">';
         echo '<div class="col-12">';
         echo '<p>' . $page_text . '</p>';
@@ -1160,8 +1160,8 @@ class Rpt_Info_Public
         echo '<th>Total Eligible to Vote</th>';
         echo '<th>Total In Favor</th>';
         echo '<th>Total Opposed</th>';
-        echo '<th>Total Absent</th>';
         echo '<th>Total Abstaining</th>';
+        echo '<th>Total Absent</th>';
         echo '</tr>';
         echo '<tr>';
         echo '<td><input type="text" name="Vote1Eligible" id="Vote1Eligible" size="5" value="'
@@ -1170,10 +1170,10 @@ class Rpt_Info_Public
             . $case_obj->Vote1Affirmative . '" /></td>';
         echo '<td><input type="text" name="Vote1Negative" id="Vote1Negative" size="5" value="'
             . $case_obj->Vote1Negative . '" /></td>';
-        echo '<td><input type="text" name="Vote1Absent" id="Vote1Absent" size="5" value="'
-            . $case_obj->Vote1Absent . '" /></td>';
         echo '<td><input type="text" name="Vote1Abstaining" id="Vote1Abstaining" size="5" value="'
             . $case_obj->Vote1Abstaining . '" /></td>';
+        echo '<td><input type="text" name="Vote1Absent" id="Vote1Absent" size="5" value="'
+            . $case_obj->Vote1Absent . '" /></td>';
         echo '</tr>';
         echo '</table>';
         echo '<p><em>Vote counts must not include chair.</em></p>';
@@ -1185,8 +1185,8 @@ class Rpt_Info_Public
         echo '<th>Total Eligible to Vote</th>';
         echo '<th>Total In Favor</th>';
         echo '<th>Total Opposed</th>';
-        echo '<th>Total Absent</th>';
         echo '<th>Total Abstaining</th>';
+        echo '<th>Total Absent</th>';
         echo '</tr>';
         echo '<tr>';
         echo '<td><input type="text" name="Vote2Eligible" id="Vote2Eligible" size="5" value="'
@@ -1195,10 +1195,10 @@ class Rpt_Info_Public
             . $case_obj->Vote2Affirmative . '" /></td>';
         echo '<td><input type="text" name="Vote2Negative" id="Vote2Negative" size="5" value="'
             . $case_obj->Vote2Negative . '" /></td>';
-        echo '<td><input type="text" name="Vote2Absent" id="Vote2Absent" size="5" value="'
-            . $case_obj->Vote2Absent . '" /></td>';
         echo '<td><input type="text" name="Vote2Abstaining" id="Vote2Abstaining" size="5" value="'
             . $case_obj->Vote2Abstaining . '" /></td>';
+        echo '<td><input type="text" name="Vote2Absent" id="Vote2Absent" size="5" value="'
+            . $case_obj->Vote2Absent . '" /></td>';
         echo '</tr>';
         echo '</table>';
         echo rpt_form_textarea('SubcommitteeMembers', strip_tags($case_obj->SubcommitteeMembers),
